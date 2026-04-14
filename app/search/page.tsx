@@ -14,6 +14,7 @@ interface Clinic {
   is_24h: boolean
   is_appointment: boolean
   pet_types: string[]
+  rating: number | null
 }
 
 const TAG_COLORS: Record<string, string> = {
@@ -137,7 +138,12 @@ export default async function SearchPage({
               >
                 {/* Name + badges */}
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h2 className="text-base font-bold text-gray-800 leading-snug">{clinic.name}</h2>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <h2 className="text-base font-bold text-gray-800 leading-snug">{clinic.name}</h2>
+                    {clinic.rating != null && (
+                      <span className="text-xs font-medium text-amber-500 whitespace-nowrap shrink-0">⭐ {clinic.rating}</span>
+                    )}
+                  </div>
                   <div className="flex gap-1.5 shrink-0">
                     {clinic.is_24h && (
                       <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-red-500 text-white whitespace-nowrap">

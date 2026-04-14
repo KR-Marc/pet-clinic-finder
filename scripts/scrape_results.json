@@ -1,0 +1,117 @@
+[
+  {
+    "id": "4e27c44a-5a80-4163-a75d-bc8a01427ad1",
+    "name": "上群動物醫院",
+    "website": "https://www.shangqun.com.tw/",
+    "tags": [
+      "外科"
+    ],
+    "status": "updated"
+  },
+  {
+    "id": "fa1a63ec-c8bc-4727-83b9-1104972f1afe",
+    "name": "伊甸園動物醫院",
+    "website": "https://eden-vet.com/",
+    "tags": [
+      "腎臟科",
+      "24H急診"
+    ],
+    "status": "updated"
+  },
+  {
+    "id": "d9fc9d3c-c593-4828-94a8-255e84347e95",
+    "name": "台大動物醫院",
+    "website": "https://www.vh.ntu.edu.tw/",
+    "tags": [],
+    "status": "no_tags"
+  },
+  {
+    "id": "c259d6e0-e06b-4ba5-bc47-612ee8049cb1",
+    "name": "大安動物醫院",
+    "website": "https://daan-vet.com/",
+    "tags": [
+      "24H急診"
+    ],
+    "status": "updated"
+  },
+  {
+    "id": "4fb5920e-5ea1-4641-92d0-1929dea0761e",
+    "name": "常明動物醫院",
+    "website": "https://www.everbrightvet.com/",
+    "tags": [
+      "眼科",
+      "外科"
+    ],
+    "status": "updated"
+  },
+  {
+    "id": "ae931659-7ab3-43db-945c-c0e9288c7f08",
+    "name": "弘吉獸醫院",
+    "website": "https://hongjivetdentistry.com/",
+    "tags": [
+      "牙科",
+      "外科",
+      "中獸醫"
+    ],
+    "status": "updated"
+  },
+  {
+    "id": "a05adc84-78b4-4e23-98a4-5fb0ceb2c402",
+    "name": "敦品動物醫院",
+    "website": "https://drpet.com.tw/",
+    "tags": [
+      "牙科",
+      "外科"
+    ],
+    "status": "updated"
+  },
+  {
+    "id": "96d0e888-8e7a-4941-8120-3b4bbe3a93c2",
+    "name": "樂膚莉動物醫院",
+    "website": "https://lovelyvetderm.wixsite.com/derm",
+    "tags": [
+      "皮膚科"
+    ],
+    "status": "updated"
+  },
+  {
+    "id": "44124fc4-5bf5-42ac-a59d-fe98d3591980",
+    "name": "汎亞動物醫院",
+    "website": "http://panasia-vet.com/",
+    "tags": [],
+    "status": "no_tags"
+  },
+  {
+    "id": "981dc071-d45b-416c-a243-9761ccdf5f5f",
+    "name": "沐恩動物醫院",
+    "website": "http://www.muanamc.tw/",
+    "tags": [],
+    "status": "fetch_error",
+    "error": "This operation was aborted"
+  },
+  {
+    "id": "41518802-1134-4937-bf43-4d0dc4cdd6d4",
+    "name": "綠洲動物醫院",
+    "website": "https://www.oasisvets.tw/",
+    "tags": [
+      "牙科",
+      "腫瘤科",
+      "外科"
+    ],
+    "status": "updated"
+  },
+  {
+    "id": "fcfdeca8-7fd7-4c9e-a68f-fb94175ce73c",
+    "name": "路米動物醫院",
+    "website": "https://lumi.vet/",
+    "tags": [
+      "牙科",
+      "眼科",
+      "心臟科",
+      "腫瘤科",
+      "神經外科",
+      "24H急診"
+    ],
+    "status": "updated"
+  }
+]

@@ -14,6 +14,8 @@ interface Clinic {
   is_24h: boolean
   is_appointment: boolean
   pet_types: string[]
+  rating: number | null
+  opening_hours: string[] | null
 }
 
 const TAG_COLORS: Record<string, string> = {
@@ -81,7 +83,12 @@ export default async function ClinicPage({
             </div>
           </div>
 
-          <p className="text-sm text-teal-600 font-medium mb-4">{clinic.district}</p>
+          <div className="flex items-center gap-3 mb-4">
+            <p className="text-sm text-teal-600 font-medium">{clinic.district}</p>
+            {clinic.rating != null && (
+              <span className="text-sm font-semibold text-amber-500">⭐ {clinic.rating} / 5</span>
+            )}
+          </div>
 
           {/* Specialty tags */}
           <div className="flex flex-wrap gap-2 mb-5">
@@ -141,6 +148,20 @@ export default async function ClinicPage({
                 <div>
                   <p className="text-xs text-gray-400 font-medium mb-0.5">介紹</p>
                   <p className="text-sm text-gray-700">{clinic.description}</p>
+                </div>
+              </div>
+            )}
+
+            {clinic.opening_hours && clinic.opening_hours.length > 0 && (
+              <div className="flex items-start gap-3">
+                <span className="text-lg shrink-0">🕐</span>
+                <div>
+                  <p className="text-xs text-gray-400 font-medium mb-1">營業時間</p>
+                  <ul className="flex flex-col gap-0.5">
+                    {clinic.opening_hours.map((line, i) => (
+                      <li key={i} className="text-sm text-gray-700">{line}</li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             )}

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
 const QUICK_TAGS = ['口臭', '牙齦紅腫', '眼屎多', '一直抓', '咳嗽不停', '跛行', '腫塊', '抽搐', '血尿', '半夜急診']
 
@@ -15,6 +16,14 @@ export default function HomePage() {
   const router = useRouter()
   const [query, setQuery] = useState('')
   const [pet, setPet] = useState('')
+  const [clinicCount, setClinicCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    supabase
+      .from('clinics')
+      .select('id', { count: 'exact', head: true })
+      .then(({ count }) => { if (count != null) setClinicCount(count) })
+  }, [])
 
   const handleSubmit = (q: string = query) => {
     const trimmed = q.trim()
@@ -105,7 +114,7 @@ export default function HomePage() {
           >
             <span>🏥</span>
             <span>瀏覽所有診所</span>
-            <span className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">272 間</span>
+            <span className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">{clinicCount ?? '...'} 間</span>
           </button>
         </div>
       </div>
