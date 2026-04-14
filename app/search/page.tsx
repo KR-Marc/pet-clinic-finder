@@ -17,6 +17,11 @@ interface Clinic {
   rating: number | null
 }
 
+const KNOWN_TAGS = [
+  '牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科',
+  '神經外科', '泌尿科', '腎臟科', '外科', '24H急診', '復健', '中獸醫',
+]
+
 const TAG_COLORS: Record<string, string> = {
   '牙科': 'bg-yellow-100 text-yellow-700',
   '眼科': 'bg-blue-100 text-blue-700',
@@ -34,46 +39,71 @@ function tagColor(tag: string) {
 }
 
 async function fetchClinics(q: string, pet: string, district: string): Promise<Clinic[]> {
-  // Browse mode: no keyword → return all, sorted by district
+  // ── Browse mode: no keyword → return all clinics sorted by district ───────
   if (!q.trim()) {
     let query = supabase
       .from('clinics')
       .select('*')
       .order('district', { ascending: true })
       .order('name', { ascending: true })
-
-    if (pet && pet !== 'both') {
-      query = query.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
-    }
-    if (district) {
-      query = query.eq('district', district)
-    }
-
+    if (pet && pet !== 'both') query = query.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
+    if (district) query = query.eq('district', district)
     const { data } = await query
     return (data ?? []) as Clinic[]
   }
 
-  // Search mode: symptom keyword → specialty_tags → clinics
-  const { data: symptoms } = await supabase
+  const qLower = q.toLowerCase()
+
+  // ── Layer 1: Fuzzy symptom match ──────────────────────────────────────────
+  // Three checks (all case-insensitive):
+  //   a) keyword contains q         e.g. keyword "牙齦紅腫" ⊇ query "牙齦"
+  //   b) q contains keyword         e.g. query "牙齦問題" ⊇ keyword "牙齦"  (if it existed)
+  //   c) keyword shares a 2-char bigram with q
+  //      e.g. query "牙齦問題" has bigram "牙齦" which appears in keyword "牙齦紅腫"
+  const { data: allSymptoms } = await supabase
     .from('symptoms')
-    .select('specialty_tag')
-    .eq('keyword', q)
+    .select('keyword, specialty_tag')
 
-  const tags = [...new Set((symptoms ?? []).map((s: { specialty_tag: string }) => s.specialty_tag))]
+  // Build bigram set from query (every 2-char window)
+  const qBigrams = new Set<string>()
+  for (let i = 0; i < qLower.length - 1; i++) qBigrams.add(qLower.slice(i, i + 2))
 
-  let query = tags.length > 0
-    ? supabase.from('clinics').select('*').overlaps('specialty_tags', tags)
-    : supabase.from('clinics').select('*').contains('specialty_tags', [q])
-
-  if (pet && pet !== 'both') {
-    query = query.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
-  }
-  if (district) {
-    query = query.eq('district', district)
+  const fuzzyTags = new Set<string>()
+  for (const { keyword, specialty_tag } of (allSymptoms ?? []) as { keyword: string; specialty_tag: string }[]) {
+    const kLower = keyword.toLowerCase()
+    const directMatch = kLower.includes(qLower) || qLower.includes(kLower)
+    const bigramMatch = [...qBigrams].some((bg) => kLower.includes(bg))
+    if (directMatch || bigramMatch) fuzzyTags.add(specialty_tag)
   }
 
-  const { data } = await query
-  return (data ?? []) as Clinic[]
+  // ── Layer 2: Tag name match — bidirectional ───────────────────────────────
+  // "牙科問題" contains "牙科"  →  add 牙科
+  // "心臟" is contained in "心臟科"  →  add 心臟科
+  for (const tag of KNOWN_TAGS) {
+    const tLower = tag.toLowerCase()
+    if (qLower.includes(tLower) || tLower.includes(qLower)) fuzzyTags.add(tag)
+  }
+
+  // ── Layers 1+2: Fetch clinics matching resolved tags ──────────────────────
+  let tagClinics: Clinic[] = []
+  if (fuzzyTags.size > 0) {
+    let tagQuery = supabase.from('clinics').select('*').overlaps('specialty_tags', [...fuzzyTags])
+    if (pet && pet !== 'both') tagQuery = tagQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
+    if (district) tagQuery = tagQuery.eq('district', district)
+    const { data } = await tagQuery
+    tagClinics = (data ?? []) as Clinic[]
+  }
+
+  // ── Layer 3: Clinic name substring match ──────────────────────────────────
+  let nameQuery = supabase.from('clinics').select('*').ilike('name', `%${q}%`)
+  if (pet && pet !== 'both') nameQuery = nameQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
+  if (district) nameQuery = nameQuery.eq('district', district)
+  const { data: nameClinics } = await nameQuery
+
+  // ── Combine: tag matches first, then name-only additions ──────────────────
+  const seen = new Set(tagClinics.map((c) => c.id))
+  const nameOnly = ((nameClinics ?? []) as Clinic[]).filter((c) => !seen.has(c.id))
+  return [...tagClinics, ...nameOnly]
 }
 
 export default async function SearchPage({
