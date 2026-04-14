@@ -32,7 +32,27 @@ function tagColor(tag: string) {
   return TAG_COLORS[tag] ?? 'bg-gray-100 text-gray-600'
 }
 
-async function searchClinics(q: string, pet: string, district: string): Promise<Clinic[]> {
+async function fetchClinics(q: string, pet: string, district: string): Promise<Clinic[]> {
+  // Browse mode: no keyword → return all, sorted by district
+  if (!q.trim()) {
+    let query = supabase
+      .from('clinics')
+      .select('*')
+      .order('district', { ascending: true })
+      .order('name', { ascending: true })
+
+    if (pet && pet !== 'both') {
+      query = query.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
+    }
+    if (district) {
+      query = query.eq('district', district)
+    }
+
+    const { data } = await query
+    return (data ?? []) as Clinic[]
+  }
+
+  // Search mode: symptom keyword → specialty_tags → clinics
   const { data: symptoms } = await supabase
     .from('symptoms')
     .select('specialty_tag')
@@ -61,7 +81,8 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string; pet?: string; district?: string }>
 }) {
   const { q = '', pet = '', district = '' } = await searchParams
-  const clinics = q ? await searchClinics(q, pet, district) : []
+  const isBrowseMode = !q.trim()
+  const clinics = await fetchClinics(q, pet, district)
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -73,7 +94,7 @@ export default async function SearchPage({
           </Link>
           <span className="text-gray-300">|</span>
           <span className="text-gray-700 text-sm font-medium truncate flex-1">
-            {q ? `「${q}」的搜尋結果` : '搜尋結果'}
+            {isBrowseMode ? '瀏覽所有診所' : `「${q}」的搜尋結果`}
           </span>
         </div>
       </div>
@@ -136,26 +157,32 @@ export default async function SearchPage({
                   📍 {clinic.district}{clinic.address && clinic.address !== clinic.district && !clinic.address.startsWith(clinic.district) ? `　${clinic.address}` : ''}
                 </p>
 
-                {/* Specialty tags */}
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {clinic.specialty_tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${tagColor(tag)}`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {/* Specialty tags — only show if clinic has any */}
+                {clinic.specialty_tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {clinic.specialty_tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${tagColor(tag)}`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 {/* Phone + detail link */}
-                <div className="flex items-center justify-between">
-                  <a
-                    href={`tel:${clinic.phone}`}
-                    className="text-sm text-teal-600 hover:text-teal-700 font-medium"
-                  >
-                    📞 {clinic.phone}
-                  </a>
+                <div className="flex items-center justify-between mt-1">
+                  {clinic.phone ? (
+                    <a
+                      href={`tel:${clinic.phone}`}
+                      className="text-sm text-teal-600 hover:text-teal-700 font-medium"
+                    >
+                      📞 {clinic.phone}
+                    </a>
+                  ) : (
+                    <span className="text-sm text-gray-300">電話未提供</span>
+                  )}
                   <Link
                     href={`/clinic/${clinic.id}`}
                     className="text-sm text-gray-400 hover:text-teal-600 transition-colors"

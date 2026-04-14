@@ -24,6 +24,12 @@ export default function HomePage() {
     router.push(`/search?${params.toString()}`)
   }
 
+  const handleBrowseAll = () => {
+    const params = new URLSearchParams()
+    if (pet) params.set('pet', pet)
+    router.push(`/search?${params.toString()}`)
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col items-center px-4 py-16">
       {/* Header */}
@@ -89,6 +95,18 @@ export default function HomePage() {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Browse all clinics */}
+        <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+          <button
+            onClick={handleBrowseAll}
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-teal-600 transition-colors"
+          >
+            <span>🏥</span>
+            <span>瀏覽所有診所</span>
+            <span className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">272 間</span>
+          </button>
         </div>
       </div>
     </main>
