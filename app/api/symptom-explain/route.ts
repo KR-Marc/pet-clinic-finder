@@ -30,13 +30,25 @@ export async function POST(req: NextRequest) {
   )
 
   const data = await response.json()
+
+  // 如果 Gemini API 本身回傳錯誤
+  if (data.error) {
+    return NextResponse.json({ error: data.error.message }, { status: 500 })
+  }
+
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-  const clean = text.replace(/```json|```/g, '').trim()
+
+  // 移除所有可能的 markdown 包裝
+  const clean = text
+    .replace(/```json\s*/gi, '')
+    .replace(/```\s*/g, '')
+    .trim()
 
   try {
     const parsed = JSON.parse(clean)
     return NextResponse.json(parsed)
   } catch {
-    return NextResponse.json({ error: 'Parse error' }, { status: 500 })
+    // 回傳原始文字幫助 debug
+    return NextResponse.json({ error: 'Parse error', raw: text }, { status: 500 })
   }
 }
