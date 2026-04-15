@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import RecentlyViewedSection from './components/RecentlyViewedSection'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -133,15 +134,20 @@ export default function HomePage() {
               寵物專科診所搜尋
             </span>
           </div>
-          <button
-            onClick={handleBrowseAll}
-            className="text-mist hover:text-gold text-sm font-medium transition-colors duration-200"
-          >
-            瀏覽診所
-          </button>
-          <Link href="/favorites" className="text-mist hover:text-gold text-sm font-medium transition-colors duration-200">
-            🤍 收藏
-          </Link>
+          <div className="flex items-center gap-4">
+            <button onClick={handleBrowseAll} className="text-mist hover:text-gold text-sm font-medium transition-colors duration-200">
+              瀏覽診所
+            </button>
+            <Link href="/guide" className="text-mist hover:text-gold text-sm font-medium transition-colors duration-200">
+              🩺 症狀對照
+            </Link>
+            <Link href="/emergency" className="text-sm font-bold transition-colors hover:opacity-80" style={{ color: '#e16162' }}>
+              🚨 急診
+            </Link>
+            <Link href="/favorites" className="text-mist hover:text-gold text-sm font-medium transition-colors duration-200">
+              🤍 收藏
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -334,6 +340,39 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Quick links banner ──────────────────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link
+            href="/guide"
+            className="flex items-center gap-4 bg-sand rounded-2xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group"
+          >
+            <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: '#dcfce7' }}>
+              <span className="text-2xl">🩺</span>
+            </div>
+            <div>
+              <p className="font-bold text-ink group-hover:text-brand transition-colors">症狀對照表</p>
+              <p className="text-sm text-ink/50">不知道掛哪科？對照症狀快速找到專科</p>
+            </div>
+            <span className="ml-auto text-ink/30 group-hover:text-brand transition-colors text-lg">→</span>
+          </Link>
+          <Link
+            href="/emergency"
+            className="flex items-center gap-4 rounded-2xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group border"
+            style={{ background: 'rgba(225,97,98,0.08)', borderColor: 'rgba(225,97,98,0.2)' }}
+          >
+            <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(225,97,98,0.15)' }}>
+              <span className="text-2xl">🚨</span>
+            </div>
+            <div>
+              <p className="font-bold text-snow group-hover:opacity-80 transition-opacity">24H 急診動物醫院</p>
+              <p className="text-sm text-mist/60">台北市 12 間全天候急診院所</p>
+            </div>
+            <span className="ml-auto text-mist/30 group-hover:text-snow transition-colors text-lg">→</span>
+          </Link>
+        </div>
+      </section>
+
       {/* ── How it works — #2 ───────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-6 py-16 lg:py-20">
         <div className="text-center mb-12">
@@ -395,6 +434,8 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      <RecentlyViewedSection />
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <footer className="bg-ink">

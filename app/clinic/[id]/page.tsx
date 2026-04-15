@@ -6,6 +6,7 @@ import BackButton from './BackButton'
 import ShareButton from './ShareButton'
 import ReportButton from './ReportButton'
 import FavoriteButton from './FavoriteButton'
+import RecentlyViewedTracker from './RecentlyViewedTracker'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -140,6 +141,13 @@ export default async function ClinicPage({
 
   return (
     <main className="min-h-screen bg-brand">
+      <RecentlyViewedTracker
+        id={clinic.id}
+        name={clinic.name}
+        district={clinic.district}
+        rating={clinic.rating}
+        specialty_tags={clinic.specialty_tags}
+      />
 
       {/* ── Nav ────────────────────────────────────────────────────────────── */}
       <div className="bg-ink sticky top-0 z-10 shadow-md">
