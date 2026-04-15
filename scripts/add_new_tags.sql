@@ -68,4 +68,3 @@ INSERT INTO symptoms (keyword, specialty_tag, pet_type) VALUES
 ('健檢套餐', '健檢', 'both'),
 ('例行檢查', '健檢', 'both')
 
-ON CONFLICT (keyword, specialty_tag) DO NOTHING;
