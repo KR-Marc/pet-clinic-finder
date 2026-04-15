@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import ClinicList, { type Clinic } from './ClinicList'
+import SearchBar from './SearchBar'
 
 const KNOWN_TAGS = [
   '牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科',
@@ -70,21 +71,32 @@ export default async function SearchPage({
   const { q = '', pet = '', district = '', source = '' } = await searchParams
   const clinics = await fetchClinics(q, pet, district)
 
-  let title = `「${q}」的搜尋結果`
-  if (!q.trim()) {
-    title = source === 'nearby' ? '📍 附近的診所' : '瀏覽所有診所'
-  }
+  const subtitle = !q.trim()
+    ? (source === 'nearby' ? '📍 附近的診所' : '瀏覽所有診所')
+    : `「${q}」`
 
   return (
     <main className="min-h-screen bg-brand">
-      {/* Top bar */}
+      {/* ── Top bar ── */}
       <div className="bg-ink sticky top-0 z-10 shadow-md">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link href="/" className="text-mist hover:text-snow text-sm font-medium whitespace-nowrap transition-colors">
+          <Link
+            href="/"
+            className="text-mist hover:text-snow text-sm font-medium whitespace-nowrap transition-colors shrink-0"
+          >
             ← 回首頁
           </Link>
-          <span className="text-mist/30">|</span>
-          <span className="text-snow text-sm font-medium truncate flex-1">{title}</span>
+          <span className="text-mist/30 shrink-0">|</span>
+          <span className="text-snow text-sm font-medium truncate">{subtitle}</span>
+        </div>
+      </div>
+
+      {/* ── Inline search bar ── */}
+      <div className="bg-ink/60 border-b border-mist/10">
+        <div className="max-w-2xl mx-auto px-4 py-3">
+          <Suspense fallback={null}>
+            <SearchBar initialQ={q} initialPet={pet} />
+          </Suspense>
         </div>
       </div>
 
