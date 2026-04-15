@@ -10,7 +10,10 @@ const KNOWN_TAGS = [
 ]
 
 async function fetchClinics(q: string, pet: string, district: string): Promise<Clinic[]> {
-  if (!q.trim()) {
+  // 支援多症狀複合查詢（逗號分隔）
+  const queryTerms = q.split(',').map((t) => t.trim()).filter(Boolean)
+
+  if (queryTerms.length === 0) {
     let query = supabase
       .from('clinics')
       .select('*')
@@ -22,38 +25,55 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
     return (data ?? []) as Clinic[]
   }
 
-  const qLower = q.toLowerCase()
-
   const { data: allSymptoms } = await supabase
     .from('symptoms')
     .select('keyword, specialty_tag')
 
-  const qBigrams = new Set<string>()
-  for (let i = 0; i < qLower.length - 1; i++) qBigrams.add(qLower.slice(i, i + 2))
+  // 每個查詢詞各自找出對應的 specialty tags
+  const tagSetsPerTerm: Set<string>[] = queryTerms.map((term) => {
+    const tLower = term.toLowerCase()
+    const bigrams = new Set<string>()
+    for (let i = 0; i < tLower.length - 1; i++) bigrams.add(tLower.slice(i, i + 2))
 
-  const fuzzyTags = new Set<string>()
-  for (const { keyword, specialty_tag } of (allSymptoms ?? []) as { keyword: string; specialty_tag: string }[]) {
-    const kLower = keyword.toLowerCase()
-    const directMatch = kLower.includes(qLower) || qLower.includes(kLower)
-    const bigramMatch = [...qBigrams].some((bg) => kLower.includes(bg))
-    if (directMatch || bigramMatch) fuzzyTags.add(specialty_tag)
-  }
+    const tags = new Set<string>()
+    for (const { keyword, specialty_tag } of (allSymptoms ?? []) as { keyword: string; specialty_tag: string }[]) {
+      const kLower = keyword.toLowerCase()
+      const directMatch = kLower.includes(tLower) || tLower.includes(kLower)
+      const bigramMatch = [...bigrams].some((bg) => kLower.includes(bg))
+      if (directMatch || bigramMatch) tags.add(specialty_tag)
+    }
+    for (const tag of KNOWN_TAGS) {
+      const tagLower = tag.toLowerCase()
+      if (tLower.includes(tagLower) || tagLower.includes(tLower)) tags.add(tag)
+    }
+    return tags
+  })
 
-  for (const tag of KNOWN_TAGS) {
-    const tLower = tag.toLowerCase()
-    if (qLower.includes(tLower) || tLower.includes(qLower)) fuzzyTags.add(tag)
-  }
-
+  // 單一症狀：用 overlaps（OR 邏輯）
+  // 多症狀：先各自查，再取交集（AND 邏輯）
   let tagClinics: Clinic[] = []
-  if (fuzzyTags.size > 0) {
-    let tagQuery = supabase.from('clinics').select('*').overlaps('specialty_tags', [...fuzzyTags])
+  const allFuzzyTags = new Set<string>([...tagSetsPerTerm.flatMap((s) => [...s])])
+
+  if (allFuzzyTags.size > 0) {
+    let tagQuery = supabase.from('clinics').select('*').overlaps('specialty_tags', [...allFuzzyTags])
     if (pet && pet !== 'both') tagQuery = tagQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
     if (district) tagQuery = tagQuery.eq('district', district)
     const { data } = await tagQuery
-    tagClinics = (data ?? []) as Clinic[]
+    let results = (data ?? []) as Clinic[]
+
+    // 多症狀時，過濾出同時符合所有症狀對應 tag 的診所
+    if (queryTerms.length > 1) {
+      results = results.filter((clinic) =>
+        tagSetsPerTerm.every((tagSet) =>
+          tagSet.size === 0 || clinic.specialty_tags.some((t) => tagSet.has(t))
+        )
+      )
+    }
+    tagClinics = results
   }
 
-  let nameQuery = supabase.from('clinics').select('*').ilike('name', `%${q}%`)
+  // 名稱搜尋只用第一個關鍵字
+  let nameQuery = supabase.from('clinics').select('*').ilike('name', `%${queryTerms[0]}%`)
   if (pet && pet !== 'both') nameQuery = nameQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
   if (district) nameQuery = nameQuery.eq('district', district)
   const { data: nameClinics } = await nameQuery
@@ -71,9 +91,12 @@ export default async function SearchPage({
   const { q = '', pet = '', district = '', source = '' } = await searchParams
   const clinics = await fetchClinics(q, pet, district)
 
-  const subtitle = !q.trim()
+  const queryTerms = q.split(',').map((t) => t.trim()).filter(Boolean)
+  const subtitle = queryTerms.length === 0
     ? (source === 'nearby' ? '📍 附近的診所' : '瀏覽所有診所')
-    : `「${q}」`
+    : queryTerms.length === 1
+      ? `「${queryTerms[0]}」`
+      : `「${queryTerms.join('」+「')}」複合搜尋`
 
   return (
     <main className="min-h-screen bg-brand">
@@ -106,7 +129,7 @@ export default async function SearchPage({
             <div className="h-4 w-32 bg-ink rounded animate-pulse" />
           </div>
         }>
-          <ClinicList clinics={clinics} />
+          <ClinicList clinics={clinics} queryTerms={queryTerms} />
         </Suspense>
       </div>
     </main>

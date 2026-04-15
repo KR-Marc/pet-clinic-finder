@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react'
 import PetFilter from './PetFilter'
 import DistrictFilter from './DistrictFilter'
 import OpenFilter from './OpenFilter'
+import SymptomExplainer from './SymptomExplainer'
 
 export interface Clinic {
   id: string
@@ -89,7 +90,7 @@ const selectClass =
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function ClinicList({ clinics }: { clinics: Clinic[] }) {
+export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clinic[]; queryTerms?: string[] }) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -152,6 +153,7 @@ export default function ClinicList({ clinics }: { clinics: Clinic[] }) {
 
   return (
     <>
+      <SymptomExplainer symptoms={queryTerms} />
       {/* ── Sticky filter bar ────────────────────────────────────────────── */}
       <div
         className="sticky top-[44px] z-10 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-1"
