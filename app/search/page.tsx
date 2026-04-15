@@ -9,6 +9,45 @@ const KNOWN_TAGS = [
   '神經外科', '泌尿科', '腎臟科', '外科', '24H急診', '復健', '中獸醫',
 ]
 
+async function getTagsFromAI(terms: string[]): Promise<string[]> {
+  const AI_KNOWN_TAGS = ['牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科', '神經外科', '泌尿科', '腎臟科', '外科', '復健', '中獸醫', '24H急診', '重症加護', '內科', '呼吸科', '健檢', '行為醫學']
+  const apiKey = process.env.GEMINI_API_KEY
+  console.log('[AI Fallback] apiKey exists:', !!apiKey, 'length:', apiKey?.length ?? 0)
+  if (!apiKey) return []
+
+  const prompt = `寵物出現以下症狀：${terms.join('、')}
+
+從以下專科清單中，選出最相關的 1-3 個專科（只輸出專科名稱，用逗號分隔，不要其他文字）：
+${AI_KNOWN_TAGS.join('、')}`
+
+  try {
+    console.log('[AI Fallback] calling Gemini with prompt:', prompt.slice(0, 50))
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 200, temperature: 0 },
+        }),
+      }
+    )
+    const data = await res.json()
+    console.log('[AI Fallback] response status:', res.status)
+    console.log('[AI Fallback] data keys:', Object.keys(data))
+    console.log('[AI Fallback] full data:', JSON.stringify(data).slice(0, 300))
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+    console.log('[AI Fallback] raw text:', JSON.stringify(text))
+    const result = text.split(/[,，、\n]/).map((t: string) => t.trim()).filter((t: string) => AI_KNOWN_TAGS.includes(t))
+    console.log('[AI Fallback] parsed result:', result)
+    return result
+  } catch (e) {
+    console.log('[AI Fallback] error:', e)
+    return []
+  }
+}
+
 async function fetchClinics(q: string, pet: string, district: string): Promise<Clinic[]> {
   // 支援多症狀複合查詢（逗號分隔）
   const queryTerms = q.split(',').map((t) => t.trim()).filter(Boolean)
@@ -23,36 +62,6 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
     if (district) query = query.eq('district', district)
     const { data } = await query
     return (data ?? []) as Clinic[]
-  }
-
-  async function getTagsFromAI(terms: string[]): Promise<string[]> {
-    const KNOWN_TAGS = ['牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科', '神經外科', '泌尿科', '腎臟科', '外科', '復健', '中獸醫', '24H急診', '重症加護', '內科', '呼吸科', '健檢', '行為醫學']
-    const apiKey = process.env.GEMINI_API_KEY
-    if (!apiKey) return []
-
-    const prompt = `寵物出現以下症狀：${terms.join('、')}
-
-從以下專科清單中，選出最相關的 1-3 個專科（只輸出專科名稱，用逗號分隔，不要其他文字）：
-${KNOWN_TAGS.join('、')}`
-
-    try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { maxOutputTokens: 50, temperature: 0 },
-          }),
-        }
-      )
-      const data = await res.json()
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-      return text.split(/[,，、]/).map((t: string) => t.trim()).filter((t: string) => KNOWN_TAGS.includes(t))
-    } catch {
-      return []
-    }
   }
 
   const { data: allSymptoms } = await supabase
@@ -86,8 +95,11 @@ ${KNOWN_TAGS.join('、')}`
 
   // 如果 symptoms 表找不到任何 tag，用 AI 判斷
   if (allFuzzyTags.size === 0 && queryTerms.length > 0) {
+    console.log('[AI Fallback] Triggering for terms:', queryTerms)
     const aiTags = await getTagsFromAI(queryTerms)
+    console.log('[AI Fallback] Got tags:', aiTags)
     aiTags.forEach(t => allFuzzyTags.add(t))
+    console.log('[AI Fallback] allFuzzyTags after:', [...allFuzzyTags])
   }
 
   if (allFuzzyTags.size > 0) {
