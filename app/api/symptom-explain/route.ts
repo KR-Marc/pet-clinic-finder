@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
   // 使用 v1 而非 v1beta，並使用正確的 model ID
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
