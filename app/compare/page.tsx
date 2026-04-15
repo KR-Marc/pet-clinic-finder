@@ -136,7 +136,7 @@ export default async function ComparePage({
               {clinics.map((clinic) => (
                 <td key={clinic.id} className="px-4 py-4 align-top">
                   {clinic.phone ? (
-                    <a href={`tel:${clinic.phone}`} className="text-sm font-semibold text-brand hover:opacity-70 transition-opacity">
+                    <a href={`tel:${clinic.phone}`} className="text-sm font-semibold hover:opacity-70 transition-opacity" style={{ color: '#f9bc60' }}>
                       {clinic.phone}
                     </a>
                   ) : (
