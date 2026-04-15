@@ -44,7 +44,7 @@ const SPECIALTIES = [
   { icon: '🚨', name: '24H急診', desc: '昏倒、呼吸困難、緊急',     q: '半夜急診', iconBg: '#ffe4e6' }, // rose-100
   { icon: '🔪', name: '外科',    desc: '腫塊切除、結紮、外傷縫合', q: '外科',    iconBg: '#ccfbf1' }, // teal-100
   { icon: '🌿', name: '中獸醫',  desc: '針灸、中藥、慢性病調理',   q: '中獸醫',  iconBg: '#e0f2fe' }, // sky-100
-  { icon: '💉', name: '健檢',    desc: '年度健檢、疫苗、血液檢查', q: '健檢',    iconBg: '#f3e8ff' }, // purple-100
+  { icon: '💧', name: '泌尿科',  desc: '血尿、頻尿、尿結石、膀胱炎', q: '泌尿科',  iconBg: '#f3e8ff' }, // purple-100
   { icon: '🏃', name: '復健',    desc: '術後恢復、關節退化、水療', q: '復健',    iconBg: '#fef9c3' }, // yellow-100
 ]
 
