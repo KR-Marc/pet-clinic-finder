@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import PetFilter from './PetFilter'
 import DistrictFilter from './DistrictFilter'
@@ -21,9 +21,12 @@ export interface Clinic {
   opening_hours: string[] | null
 }
 
-// ── Time helpers ──────────────────────────────────────────────────────────────
+// ── Constants ─────────────────────────────────────────────────────────────────
 
+const PAGE_SIZE = 20
 const WEEKDAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+
+// ── Time helpers ──────────────────────────────────────────────────────────────
 
 function getTodayName(): string {
   const tw = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Taipei' }))
@@ -66,11 +69,32 @@ function sortClinics(clinics: Clinic[], sort: SortOption): Clinic[] {
   return clinics
 }
 
+// ── Pagination helper ─────────────────────────────────────────────────────────
+
+function getPageNumbers(current: number, total: number): (number | '…')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const out: (number | '…')[] = [1]
+  if (current > 3) out.push('…')
+  for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) out.push(i)
+  if (current < total - 2) out.push('…')
+  out.push(total)
+  return out
+}
+
+// ── Flat select style (shared) ────────────────────────────────────────────────
+
+const selectClass =
+  'appearance-none bg-ink border border-mist/30 text-mist rounded-lg px-3 py-1.5 pr-7 text-xs focus:outline-none focus:border-gold cursor-pointer'
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ClinicList({ clinics }: { clinics: Clinic[] }) {
+  const router = useRouter()
   const searchParams = useSearchParams()
+
   const openOnly = searchParams.get('open') === 'true'
+  const district = searchParams.get('district') ?? ''
+  const currentPage = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
   const [sort, setSort] = useState<SortOption>('rating')
 
   const filtered = useMemo(
@@ -78,189 +102,276 @@ export default function ClinicList({ clinics }: { clinics: Clinic[] }) {
     [clinics, openOnly],
   )
 
-  const sorted = useMemo(
-    () => sortClinics(filtered, sort),
-    [filtered, sort],
+  const sorted = useMemo(() => sortClinics(filtered, sort), [filtered, sort])
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
+  const page = Math.min(currentPage, totalPages)
+  const paginated = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  const handlePageChange = (p: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (p <= 1) params.delete('page')
+    else params.set('page', String(p))
+    router.push(`/search?${params.toString()}`)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleSortChange = (newSort: SortOption) => {
+    setSort(newSort)
+    // Reset to page 1
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('page')
+    router.push(`/search?${params.toString()}`)
+  }
+
+  // The sort select rendered twice (different positions on mobile vs desktop)
+  const SortSelect = (
+    <div className="relative">
+      <select
+        value={sort}
+        onChange={(e) => handleSortChange(e.target.value as SortOption)}
+        className={selectClass}
+      >
+        <option value="default">預設排序</option>
+        <option value="rating">評分最高</option>
+        <option value="open_first">今日營業優先</option>
+      </select>
+      <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-mist/60 text-xs">▾</span>
+    </div>
   )
 
   return (
     <>
-      {/* ── Filter bar — sticky below top nav ─────────────────────────────── */}
+      {/* ── Sticky filter bar ────────────────────────────────────────────── */}
       <div
-        className="sticky top-[44px] z-10 -mx-4 px-4 py-3 mb-5"
+        className="sticky top-[44px] z-10 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-1"
         style={{
           background: 'rgba(0,30,29,0.96)',
           backdropFilter: 'blur(12px)',
           borderBottom: '1px solid rgba(171,209,198,0.12)',
         }}
       >
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          {/* Left: count + pet + open filters */}
-          <div className="flex items-center gap-2 flex-wrap">
+        {/* Mobile: 2 rows — Desktop: 1 row */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+
+          {/* Row 1 on mobile: count (left) + sort (right) */}
+          <div className="flex items-center justify-between sm:justify-start gap-2">
             <p className="text-sm font-semibold whitespace-nowrap" style={{ color: '#f9bc60' }}>
               找到{' '}
               <span className="text-base font-bold">{filtered.length}</span>{' '}
               間診所
             </p>
+            {/* Sort: mobile only in row 1 */}
+            <div className="sm:hidden">{SortSelect}</div>
+          </div>
+
+          {/* Row 2 on mobile: filters + district | also sm+ middle */}
+          <div className="flex items-center gap-1.5 flex-wrap sm:flex-1">
             <PetFilter />
             <OpenFilter />
-          </div>
-          {/* Right: sort + district */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortOption)}
-              className="border border-mist/40 rounded-lg px-2.5 py-1.5 text-xs bg-ink text-mist focus:outline-none focus:ring-1 focus:ring-gold"
-            >
-              <option value="default">預設排序</option>
-              <option value="rating">評分最高</option>
-              <option value="open_first">今日營業優先</option>
-            </select>
             <DistrictFilter />
           </div>
+
+          {/* Sort: desktop only, right-aligned */}
+          <div className="hidden sm:block">{SortSelect}</div>
+
         </div>
       </div>
 
-      {/* ── Empty state ───────────────────────────────────────────────────── */}
-      {sorted.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-5xl mb-4">🔍</div>
-          <p className="text-lg font-medium text-snow">找不到符合的診所</p>
-          <p className="text-sm mt-1 text-mist">試試其他關鍵字，或移除篩選條件</p>
-          <Link
-            href="/"
-            className="inline-block mt-6 px-5 py-2 bg-gold text-ink rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity"
-          >
-            重新搜尋
-          </Link>
-        </div>
-      ) : (
-        /* ── Clinic cards ────────────────────────────────────────────────── */
-        <div className="flex flex-col gap-4">
-          {sorted.map((clinic) => {
-            const todayHours = getTodayHours(clinic.opening_hours)
-            const isClosed = todayHours === '休息'
-            const hasHours = todayHours !== null
+      {/* ── Results ──────────────────────────────────────────────────────── */}
+      <div className="pt-4">
+        {sorted.length === 0 ? (
+          /* Empty state */
+          <div className="text-center py-20">
+            <div className="text-5xl mb-4">🔍</div>
+            <p className="text-lg font-medium text-snow">找不到符合的診所</p>
+            <p className="text-sm mt-2 text-mist">試試其他關鍵字，或移除篩選條件</p>
+            {district && (
+              <p className="text-sm mt-1 text-gold">試試移除「{district}」行政區篩選</p>
+            )}
+            <Link
+              href="/"
+              className="inline-block mt-6 px-5 py-2 bg-gold text-ink rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity"
+            >
+              重新搜尋
+            </Link>
+          </div>
+        ) : (
+          <>
+            {/* Clinic cards */}
+            <div className="flex flex-col gap-3">
+              {paginated.map((clinic) => {
+                const todayHours = getTodayHours(clinic.opening_hours)
+                const isClosed = todayHours === '休息'
+                const hasHours = todayHours !== null
 
-            const visibleTags = clinic.specialty_tags.slice(0, 4)
-            const extraCount = Math.max(0, clinic.specialty_tags.length - 4)
+                const visibleTags = clinic.specialty_tags.slice(0, 4)
+                const extraCount = Math.max(0, clinic.specialty_tags.length - 4)
 
-            return (
-              <div
-                key={clinic.id}
-                className="bg-sand rounded-xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
-              >
-                {/* ROW 1 — Name + rating + badges */}
-                <div className="flex items-start justify-between gap-2 mb-1.5">
-                  <h2
-                    className="text-lg font-semibold leading-snug"
-                    style={{ color: '#001e1d' }}
+                return (
+                  <div
+                    key={clinic.id}
+                    className="bg-sand rounded-xl p-5 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
                   >
-                    {clinic.name}
-                  </h2>
-                  <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
-                    {clinic.rating != null && (
-                      <span
-                        className="text-sm font-bold whitespace-nowrap"
+                    {/* ROW 1 — Name + rating + badges */}
+                    <div className="flex items-start justify-between gap-2 mb-1.5">
+                      <h2 className="text-lg font-semibold leading-snug" style={{ color: '#001e1d' }}>
+                        {clinic.name}
+                      </h2>
+                      <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+                        {clinic.rating != null && (
+                          <span className="text-sm font-bold whitespace-nowrap" style={{ color: '#f9bc60' }}>
+                            ⭐ {clinic.rating}
+                          </span>
+                        )}
+                        {clinic.is_24h && (
+                          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-coral text-snow whitespace-nowrap">
+                            24H
+                          </span>
+                        )}
+                        {clinic.is_appointment && (
+                          <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-gold text-ink whitespace-nowrap">
+                            需預約
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* ROW 2 — Location */}
+                    <p className="text-sm mb-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}>
+                      📍 {clinic.district}
+                      {clinic.address &&
+                        clinic.address !== clinic.district &&
+                        !clinic.address.startsWith(clinic.district)
+                        ? `　${clinic.address}`
+                        : ''}
+                    </p>
+
+                    {/* ROW 3 — Today's hours */}
+                    <p
+                      className="text-xs font-medium mb-3"
+                      style={{
+                        color: !hasHours
+                          ? 'rgba(0,30,29,0.3)'
+                          : isClosed
+                            ? '#e16162'
+                            : '#16a34a',
+                      }}
+                    >
+                      {!hasHours
+                        ? '🕐 營業時間未提供'
+                        : isClosed
+                          ? '🕐 今日 休息'
+                          : `🕐 今日 ${todayHours}`}
+                    </p>
+
+                    {/* ROW 4 — Specialty tags (max 4 + overflow) */}
+                    {clinic.specialty_tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {visibleTags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-3 py-1 rounded-full text-sm font-medium bg-brand text-snow"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {extraCount > 0 && (
+                          <span
+                            className="px-3 py-1 rounded-full text-sm font-medium"
+                            style={{ background: 'rgba(0,30,29,0.08)', color: 'rgba(0,30,29,0.45)' }}
+                          >
+                            +{extraCount} 更多
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Divider */}
+                    <div style={{ borderTop: '1px solid rgba(0,30,29,0.1)', marginBottom: '0.75rem' }} />
+
+                    {/* ROW 5 — Phone + detail link */}
+                    <div className="flex items-center justify-between">
+                      {clinic.phone ? (
+                        <a
+                          href={`tel:${clinic.phone}`}
+                          className="text-sm font-medium transition-opacity hover:opacity-70"
+                          style={{ color: 'rgba(0,30,29,0.65)' }}
+                        >
+                          📞 {clinic.phone}
+                        </a>
+                      ) : (
+                        <span className="text-sm" style={{ color: 'rgba(0,30,29,0.3)' }}>
+                          電話未提供
+                        </span>
+                      )}
+                      <Link
+                        href={`/clinic/${clinic.id}`}
+                        className="text-sm font-semibold hover:underline underline-offset-2 transition-all"
                         style={{ color: '#f9bc60' }}
                       >
-                        ⭐ {clinic.rating}
-                      </span>
-                    )}
-                    {clinic.is_24h && (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-coral text-snow whitespace-nowrap">
-                        24H
-                      </span>
-                    )}
-                    {clinic.is_appointment && (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-gold text-ink whitespace-nowrap">
-                        需預約
-                      </span>
-                    )}
+                        查看詳情 →
+                      </Link>
+                    </div>
                   </div>
-                </div>
+                )
+              })}
+            </div>
 
-                {/* ROW 2 — Location */}
-                <p className="text-sm mb-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}>
-                  📍 {clinic.district}
-                  {clinic.address &&
-                    clinic.address !== clinic.district &&
-                    !clinic.address.startsWith(clinic.district)
-                    ? `　${clinic.address}`
-                    : ''}
-                </p>
-
-                {/* ROW 3 — Today's hours */}
-                <p
-                  className="text-xs font-medium mb-3"
-                  style={{
-                    color: !hasHours
-                      ? 'rgba(0,30,29,0.3)'
-                      : isClosed
-                        ? '#e16162'
-                        : '#16a34a',
-                  }}
-                >
-                  {!hasHours
-                    ? '🕐 營業時間未提供'
-                    : isClosed
-                      ? '🕐 今日 休息'
-                      : `🕐 今日 ${todayHours}`}
-                </p>
-
-                {/* ROW 4 — Specialty tags (max 4 + overflow) */}
-                {clinic.specialty_tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {visibleTags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand text-snow"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                    {extraCount > 0 && (
-                      <span
-                        className="px-2.5 py-0.5 rounded-full text-xs font-medium"
-                        style={{ background: 'rgba(0,30,29,0.08)', color: 'rgba(0,30,29,0.45)' }}
-                      >
-                        +{extraCount} 更多
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Divider */}
-                <div style={{ borderTop: '1px solid rgba(0,30,29,0.1)', marginBottom: '0.75rem' }} />
-
-                {/* ROW 5 — Phone + detail link */}
-                <div className="flex items-center justify-between">
-                  {clinic.phone ? (
-                    <a
-                      href={`tel:${clinic.phone}`}
-                      className="text-sm font-medium transition-colors hover:opacity-70"
-                      style={{ color: 'rgba(0,30,29,0.65)' }}
-                    >
-                      📞 {clinic.phone}
-                    </a>
-                  ) : (
-                    <span className="text-sm" style={{ color: 'rgba(0,30,29,0.3)' }}>
-                      電話未提供
-                    </span>
-                  )}
-                  <Link
-                    href={`/clinic/${clinic.id}`}
-                    className="text-sm font-semibold hover:underline underline-offset-2 transition-all"
-                    style={{ color: '#f9bc60' }}
+            {/* ── Pagination ──────────────────────────────────────────────── */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex flex-col items-center gap-3">
+                {/* Page buttons */}
+                <div className="flex items-center gap-1">
+                  {/* Prev */}
+                  <button
+                    onClick={() => handlePageChange(page - 1)}
+                    disabled={page <= 1}
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-mist hover:text-gold"
                   >
-                    查看詳情 →
-                  </Link>
+                    «
+                  </button>
+
+                  {getPageNumbers(page, totalPages).map((p, i) =>
+                    p === '…' ? (
+                      <span key={`ellipsis-${i}`} className="px-2 py-1.5 text-sm text-mist/40">
+                        …
+                      </span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => handlePageChange(p)}
+                        className="min-w-[2rem] px-2 py-1.5 rounded-lg text-sm font-medium transition-all"
+                        style={
+                          p === page
+                            ? { background: '#f9bc60', color: '#001e1d', fontWeight: 700 }
+                            : { color: '#abd1c6' }
+                        }
+                      >
+                        {p}
+                      </button>
+                    )
+                  )}
+
+                  {/* Next */}
+                  <button
+                    onClick={() => handlePageChange(page + 1)}
+                    disabled={page >= totalPages}
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-mist hover:text-gold"
+                  >
+                    »
+                  </button>
                 </div>
+
+                {/* Page info */}
+                <p className="text-xs text-mist/50">
+                  第 {page} 頁，共 {totalPages} 頁（{filtered.length} 筆結果）
+                </p>
               </div>
-            )
-          })}
-        </div>
-      )}
+            )}
+          </>
+        )}
+      </div>
     </>
   )
 }

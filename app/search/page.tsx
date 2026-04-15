@@ -100,7 +100,7 @@ export default async function SearchPage({
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-5">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-5">
         <Suspense fallback={
           <div className="flex items-center gap-3 mb-5">
             <div className="h-4 w-32 bg-ink rounded animate-pulse" />

@@ -31,16 +31,23 @@ export default function DistrictFilter() {
   }
 
   return (
-    <select
-      value={current}
-      onChange={handleChange}
-      className="border border-mist/40 rounded-lg px-3 py-1.5 text-sm bg-ink text-mist focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
-    >
-      {DISTRICTS.map((d) => (
-        <option key={d} value={d === '全部行政區' ? '' : d}>
-          {d}
-        </option>
-      ))}
-    </select>
+    <div className="relative">
+      <select
+        value={current}
+        onChange={handleChange}
+        className="appearance-none bg-ink border border-mist/30 text-mist rounded-lg px-3 py-1.5 pr-7 text-xs focus:outline-none focus:border-gold cursor-pointer"
+      >
+        {DISTRICTS.map((d) => (
+          <option
+            key={d}
+            value={d === '全部行政區' ? '' : d}
+            style={{ background: '#001e1d', color: '#fffffe' }}
+          >
+            {d}
+          </option>
+        ))}
+      </select>
+      <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-mist/60 text-xs">▾</span>
+    </div>
   )
 }

@@ -33,14 +33,18 @@ const FEATURES = [
 ]
 
 const SPECIALTIES = [
-  { icon: '🦷', name: '牙科',    desc: '口臭、掉牙、牙齦紅腫',   q: '牙科',    iconBg: '#fef3c7' },
-  { icon: '👁️', name: '眼科',    desc: '眼屎多、眼睛紅、白內障', q: '眼科',    iconBg: '#dbeafe' },
-  { icon: '❤️', name: '心臟科',  desc: '咳嗽、容易喘、心雜音',   q: '心臟科',  iconBg: '#fee2e2' },
-  { icon: '🦴', name: '骨科',    desc: '跛行、骨折、不肯走路',   q: '骨科',    iconBg: '#f3f4f6' },
-  { icon: '🎗️', name: '腫瘤科',  desc: '腫塊、癌症、化療',       q: '腫瘤科',  iconBg: '#ede9fe' },
-  { icon: '🌿', name: '皮膚科',  desc: '一直抓、掉毛、皮膚紅疹', q: '皮膚科',  iconBg: '#dcfce7' },
-  { icon: '🧠', name: '神經科',  desc: '抽搐、癲癇、走路歪',     q: '抽搐',    iconBg: '#e0e7ff' },
-  { icon: '🚨', name: '24H急診', desc: '昏倒、呼吸困難、緊急',   q: '半夜急診', iconBg: '#ffedd5' },
+  { icon: '🦷', name: '牙科',    desc: '口臭、掉牙、牙齦紅腫',     q: '牙科',    iconBg: '#fef3c7' },
+  { icon: '👁️', name: '眼科',    desc: '眼屎多、眼睛紅、白內障',   q: '眼科',    iconBg: '#dbeafe' },
+  { icon: '❤️', name: '心臟科',  desc: '咳嗽、容易喘、心雜音',     q: '心臟科',  iconBg: '#fee2e2' },
+  { icon: '🦴', name: '骨科',    desc: '跛行、骨折、不肯走路',     q: '骨科',    iconBg: '#f3f4f6' },
+  { icon: '🎗️', name: '腫瘤科',  desc: '腫塊、癌症、化療',         q: '腫瘤科',  iconBg: '#ede9fe' },
+  { icon: '🌿', name: '皮膚科',  desc: '一直抓、掉毛、皮膚紅疹',   q: '皮膚科',  iconBg: '#dcfce7' },
+  { icon: '🧠', name: '神經科',  desc: '抽搐、癲癇、走路歪',       q: '抽搐',    iconBg: '#e0e7ff' },
+  { icon: '🚨', name: '24H急診', desc: '昏倒、呼吸困難、緊急',     q: '半夜急診', iconBg: '#ffedd5' },
+  { icon: '🏥', name: '內科',    desc: '食慾不振、嘔吐、發燒',     q: '內科',    iconBg: '#ecfdf5' },
+  { icon: '🌬️', name: '呼吸科',  desc: '打噴嚏、流鼻水、呼吸異常', q: '呼吸科',  iconBg: '#f0f9ff' },
+  { icon: '💉', name: '健檢',    desc: '年度健檢、疫苗、血液檢查', q: '健檢',    iconBg: '#fdf4ff' },
+  { icon: '🧘', name: '行為醫學', desc: '焦慮、攻擊、亂尿',         q: '行為醫學', iconBg: '#fff7ed' },
 ]
 
 // ── Geolocation helper ────────────────────────────────────────────────────────
