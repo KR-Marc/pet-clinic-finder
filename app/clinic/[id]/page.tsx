@@ -214,13 +214,13 @@ export default async function ClinicPage({
             )}
 
             {/* Opening hours table */}
-            {Object.keys(hoursMap).length > 0 && (
-              <div className="flex items-start gap-3">
-                <span className="text-xl shrink-0 mt-0.5">🕐</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium mb-2" style={{ color: 'rgba(0,30,29,0.4)' }}>
-                    營業時間
-                  </p>
+            <div className="flex items-start gap-3">
+              <span className="text-xl shrink-0 mt-0.5">🕐</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium mb-2" style={{ color: 'rgba(0,30,29,0.4)' }}>
+                  營業時間
+                </p>
+                {Object.keys(hoursMap).length > 0 ? (
                   <div className="rounded-lg overflow-hidden border border-ink/10">
                     {WEEKDAYS_TABLE.map((day) => {
                       const hrs = hoursMap[day]
@@ -245,11 +245,7 @@ export default async function ClinicPage({
                           <span
                             className="text-xs text-right"
                             style={{
-                              color: isClosed
-                                ? '#e16162'
-                                : isToday
-                                  ? '#001e1d'
-                                  : 'rgba(0,30,29,0.7)',
+                              color: isClosed ? '#e16162' : isToday ? '#001e1d' : 'rgba(0,30,29,0.7)',
                               fontWeight: isToday ? 700 : 400,
                             }}
                           >
@@ -259,9 +255,13 @@ export default async function ClinicPage({
                       )
                     })}
                   </div>
-                </div>
+                ) : (
+                  <p className="text-xs" style={{ color: 'rgba(0,30,29,0.4)' }}>
+                    營業時間未收錄，建議來電確認
+                  </p>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Description */}
             {clinic.description && (
@@ -283,7 +283,9 @@ export default async function ClinicPage({
               height="100%"
               style={{ border: 0, display: 'block', minHeight: '350px' }}
               loading="lazy"
-              src={`https://maps.google.com/maps?q=${mapQuery}&output=embed`}
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/search?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${mapQuery}`}
             />
           </div>
         </div>
