@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
   const prompt = `你是一位專業獸醫助理。用戶的寵物出現以下症狀：${symptoms.join('、')}。
 
-請用繁體中文簡短回答，以 JSON 格式輸出，不要有任何其他文字：
+請用繁體中文簡短回答，以 JSON 格式輸出，不要有任何其他文字，不要加 markdown 代碼塊：
 {
   "summary": "一句話說明這些症狀可能代表什麼（20字以內）",
   "causes": ["可能原因1", "可能原因2", "可能原因3"],
@@ -17,38 +17,36 @@ export async function POST(req: NextRequest) {
 }`
 
   const apiKey = process.env.GEMINI_API_KEY
+
+  // 使用 v1 而非 v1beta，並使用正確的 model ID
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 300 },
+        generationConfig: {
+          maxOutputTokens: 300,
+          temperature: 0.3,
+        },
       }),
     }
   )
 
   const data = await response.json()
 
-  // 如果 Gemini API 本身回傳錯誤
   if (data.error) {
     return NextResponse.json({ error: data.error.message }, { status: 500 })
   }
 
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-
-  // 移除所有可能的 markdown 包裝
-  const clean = text
-    .replace(/```json\s*/gi, '')
-    .replace(/```\s*/g, '')
-    .trim()
+  const clean = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim()
 
   try {
     const parsed = JSON.parse(clean)
     return NextResponse.json(parsed)
   } catch {
-    // 回傳原始文字幫助 debug
     return NextResponse.json({ error: 'Parse error', raw: text }, { status: 500 })
   }
 }
