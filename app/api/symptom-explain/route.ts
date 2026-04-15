@@ -16,22 +16,21 @@ export async function POST(req: NextRequest) {
   "urgency": "low 或 medium 或 high（low=可觀察，medium=近期就診，high=立即就醫）"
 }`
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY ?? '',
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  })
+  const apiKey = process.env.GEMINI_API_KEY
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 300 },
+      }),
+    }
+  )
 
   const data = await response.json()
-  const text = data.content?.[0]?.text ?? ''
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
   const clean = text.replace(/```json|```/g, '').trim()
 
   try {
