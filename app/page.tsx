@@ -42,10 +42,10 @@ const SPECIALTIES = [
   { icon: '🌿', name: '皮膚科',  desc: '一直抓、掉毛、皮膚紅疹',   q: '皮膚科',  iconBg: '#dcfce7' }, // green-100
   { icon: '🧠', name: '神經科',  desc: '抽搐、癲癇、走路歪',       q: '抽搐',    iconBg: '#ede9fe' }, // violet-100
   { icon: '🚨', name: '24H急診', desc: '昏倒、呼吸困難、緊急',     q: '半夜急診', iconBg: '#ffe4e6' }, // rose-100
-  { icon: '🏥', name: '內科',    desc: '食慾不振、嘔吐、發燒',     q: '內科',    iconBg: '#ccfbf1' }, // teal-100
-  { icon: '🌬️', name: '呼吸科',  desc: '打噴嚏、流鼻水、呼吸異常', q: '呼吸科',  iconBg: '#e0f2fe' }, // sky-100
+  { icon: '🔪', name: '外科',    desc: '腫塊切除、結紮、外傷縫合', q: '外科',    iconBg: '#ccfbf1' }, // teal-100
+  { icon: '🌿', name: '中獸醫',  desc: '針灸、中藥、慢性病調理',   q: '中獸醫',  iconBg: '#e0f2fe' }, // sky-100
   { icon: '💉', name: '健檢',    desc: '年度健檢、疫苗、血液檢查', q: '健檢',    iconBg: '#f3e8ff' }, // purple-100
-  { icon: '🧘', name: '行為醫學', desc: '焦慮、攻擊、亂尿',         q: '行為醫學', iconBg: '#fef9c3' }, // yellow-100
+  { icon: '🏃', name: '復健',    desc: '術後恢復、關節退化、水療', q: '復健',    iconBg: '#fef9c3' }, // yellow-100
 ]
 
 // ── Geolocation helper ────────────────────────────────────────────────────────
