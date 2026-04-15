@@ -33,14 +33,14 @@ const FEATURES = [
 ]
 
 const SPECIALTIES = [
-  { icon: '🦷', name: '牙科',    desc: '口臭、掉牙、牙齦紅腫',       q: '牙科'    },
-  { icon: '👁️', name: '眼科',    desc: '眼屎多、眼睛紅、白內障',     q: '眼科'    },
-  { icon: '❤️', name: '心臟科',  desc: '咳嗽、容易喘、心雜音',       q: '心臟科'  },
-  { icon: '🦴', name: '骨科',    desc: '跛行、骨折、不肯走路',       q: '骨科'    },
-  { icon: '🎗️', name: '腫瘤科',  desc: '腫塊、癌症、化療',           q: '腫瘤科'  },
-  { icon: '🌿', name: '皮膚科',  desc: '一直抓、掉毛、皮膚紅疹',     q: '皮膚科'  },
-  { icon: '🧠', name: '神經科',  desc: '抽搐、癲癇、走路歪',         q: '抽搐'    },
-  { icon: '🚨', name: '24H急診', desc: '昏倒、呼吸困難、緊急',       q: '半夜急診' },
+  { icon: '🦷', name: '牙科',    desc: '口臭、掉牙、牙齦紅腫',   q: '牙科',    iconBg: '#fef3c7' },
+  { icon: '👁️', name: '眼科',    desc: '眼屎多、眼睛紅、白內障', q: '眼科',    iconBg: '#dbeafe' },
+  { icon: '❤️', name: '心臟科',  desc: '咳嗽、容易喘、心雜音',   q: '心臟科',  iconBg: '#fee2e2' },
+  { icon: '🦴', name: '骨科',    desc: '跛行、骨折、不肯走路',   q: '骨科',    iconBg: '#f3f4f6' },
+  { icon: '🎗️', name: '腫瘤科',  desc: '腫塊、癌症、化療',       q: '腫瘤科',  iconBg: '#ede9fe' },
+  { icon: '🌿', name: '皮膚科',  desc: '一直抓、掉毛、皮膚紅疹', q: '皮膚科',  iconBg: '#dcfce7' },
+  { icon: '🧠', name: '神經科',  desc: '抽搐、癲癇、走路歪',     q: '抽搐',    iconBg: '#e0e7ff' },
+  { icon: '🚨', name: '24H急診', desc: '昏倒、呼吸困難、緊急',   q: '半夜急診', iconBg: '#ffedd5' },
 ]
 
 // ── Geolocation helper ────────────────────────────────────────────────────────
@@ -155,12 +155,16 @@ export default function HomePage() {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-snow leading-tight mb-6">
               找到最適合<br />
               你毛孩的<br />
-              <span className="text-gold">專科診所</span>
+              <span className="text-gold text-5xl sm:text-6xl lg:text-7xl">專科診所</span>
             </h1>
 
-            <p className="text-mist text-base sm:text-lg mb-8 max-w-md leading-relaxed">
+            {/* Subtitle — #4: larger, slight opacity */}
+            <p className="text-mist text-lg sm:text-xl opacity-90 max-w-md leading-relaxed mb-6">
               描述症狀，我們幫你找到台北市最專業的動物醫院
             </p>
+
+            {/* Divider — #4 */}
+            <div className="w-16 h-px bg-mist/30 mb-8" />
 
             {/* Search box */}
             <div className="flex gap-2 mb-4">
@@ -233,20 +237,22 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right column — 40% illustration */}
+          {/* Right column — 40% illustration — #1 */}
           <div className="hidden lg:block lg:col-span-2">
-            <div className="relative rounded-3xl bg-ink/40 p-6 overflow-hidden min-h-[420px]">
+            <div className="relative rounded-3xl border border-white/20 shadow-2xl p-6 overflow-hidden min-h-[420px]"
+              style={{ background: 'rgba(0,30,29,0.85)', backdropFilter: 'blur(12px)' }}
+            >
               {/* Decorative blobs */}
               <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-gold/15 blur-3xl pointer-events-none" />
               <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-mist/15 blur-3xl pointer-events-none" />
 
               {/* Header label */}
-              <p className="text-mist/50 text-xs font-medium uppercase tracking-wide mb-4">
+              <p className="text-mist/50 text-xs font-medium uppercase tracking-wide mb-4 relative z-10">
                 搜尋結果預覽
               </p>
 
               {/* Mock clinic card 1 */}
-              <div className="bg-sand rounded-2xl p-4 mb-3 shadow-lg -rotate-1 hover:rotate-0 transition-transform duration-300">
+              <div className="bg-sand rounded-2xl p-4 mb-3 shadow-xl border border-white/20 -rotate-1 hover:rotate-0 transition-transform duration-300 relative z-10">
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <p className="font-bold text-ink text-sm">敦品動物醫院</p>
@@ -263,7 +269,7 @@ export default function HomePage() {
               </div>
 
               {/* Mock clinic card 2 */}
-              <div className="bg-sand rounded-2xl p-4 mb-3 shadow-lg rotate-1 hover:rotate-0 transition-transform duration-300">
+              <div className="bg-sand rounded-2xl p-4 mb-3 shadow-xl border border-white/20 rotate-1 hover:rotate-0 transition-transform duration-300 relative z-10">
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <p className="font-bold text-ink text-sm">路米動物醫院</p>
@@ -279,7 +285,7 @@ export default function HomePage() {
               </div>
 
               {/* Mock clinic card 3 — partially visible */}
-              <div className="bg-sand rounded-2xl p-4 shadow-lg opacity-60 scale-95 -mb-2">
+              <div className="bg-sand rounded-2xl p-4 shadow-xl border border-white/20 opacity-60 scale-95 -mb-2 relative z-10">
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <p className="font-bold text-ink text-sm">汎亞動物醫院</p>
@@ -320,7 +326,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── How it works ────────────────────────────────────────────────────── */}
+      {/* ── How it works — #2 ───────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-6 py-16 lg:py-20">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-snow mb-3">如何使用</h2>
@@ -328,20 +334,29 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {FEATURES.map((f, i) => (
-            <div key={f.title} className="bg-ink rounded-2xl p-7 relative overflow-hidden group hover:ring-1 hover:ring-gold/30 transition-all duration-200">
-              {/* Step number watermark */}
-              <span className="absolute top-4 right-5 text-6xl font-black text-snow/5 select-none">
+            <div
+              key={f.title}
+              className="bg-sand rounded-2xl p-7 relative overflow-hidden transition-all duration-200 hover:scale-[1.02] hover:shadow-xl"
+            >
+              {/* Step number — gold, visible, top-right */}
+              <span className="absolute top-4 right-5 text-6xl font-black select-none leading-none"
+                style={{ color: '#f9bc60', opacity: 0.25 }}
+              >
                 {i + 1}
               </span>
-              <span className="text-3xl mb-4 block">{f.icon}</span>
-              <h3 className="text-snow font-bold text-lg mb-2">{f.title}</h3>
-              <p className="text-mist text-sm leading-relaxed">{f.desc}</p>
+              <span className="text-4xl mb-4 block relative z-10">{f.icon}</span>
+              <h3 className="font-semibold text-lg mb-2 relative z-10" style={{ color: '#001e1d' }}>
+                {f.title}
+              </h3>
+              <p className="text-sm leading-relaxed relative z-10" style={{ color: '#004643' }}>
+                {f.desc}
+              </p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── Popular specialties ──────────────────────────────────────────────── */}
+      {/* ── Popular specialties — #3 ─────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-6 pb-16 lg:pb-24">
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold text-snow mb-3">熱門專科搜尋</h2>
@@ -352,13 +367,20 @@ export default function HomePage() {
             <button
               key={spec.name}
               onClick={() => router.push(`/search?q=${encodeURIComponent(spec.q)}`)}
-              className="group bg-sand hover:bg-brand rounded-2xl p-5 text-left transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 border border-transparent hover:border-gold/20"
+              className="group bg-sand hover:bg-brand rounded-2xl p-6 text-left transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 border border-transparent hover:border-gold/20"
+              style={{ minHeight: '160px' }}
             >
-              <span className="text-2xl sm:text-3xl mb-3 block">{spec.icon}</span>
-              <h3 className="font-bold text-ink group-hover:text-snow text-sm sm:text-base mb-1 transition-colors duration-200">
+              {/* Icon circle */}
+              <div
+                className="w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-colors duration-200 group-hover:bg-white/10"
+                style={{ backgroundColor: spec.iconBg }}
+              >
+                <span className="text-4xl leading-none">{spec.icon}</span>
+              </div>
+              <h3 className="font-semibold text-lg text-ink group-hover:text-snow mb-1 transition-colors duration-200">
                 {spec.name}
               </h3>
-              <p className="text-ink/50 group-hover:text-mist text-xs leading-relaxed transition-colors duration-200">
+              <p className="text-sm text-ink/50 group-hover:text-mist leading-relaxed transition-colors duration-200">
                 {spec.desc}
               </p>
             </button>
