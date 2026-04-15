@@ -25,6 +25,36 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
     return (data ?? []) as Clinic[]
   }
 
+  async function getTagsFromAI(terms: string[]): Promise<string[]> {
+    const KNOWN_TAGS = ['牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科', '神經外科', '泌尿科', '腎臟科', '外科', '復健', '中獸醫', '24H急診', '重症加護', '內科', '呼吸科', '健檢', '行為醫學']
+    const apiKey = process.env.GEMINI_API_KEY
+    if (!apiKey) return []
+
+    const prompt = `寵物出現以下症狀：${terms.join('、')}
+
+從以下專科清單中，選出最相關的 1-3 個專科（只輸出專科名稱，用逗號分隔，不要其他文字）：
+${KNOWN_TAGS.join('、')}`
+
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { maxOutputTokens: 50, temperature: 0 },
+          }),
+        }
+      )
+      const data = await res.json()
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+      return text.split(/[,，、]/).map((t: string) => t.trim()).filter((t: string) => KNOWN_TAGS.includes(t))
+    } catch {
+      return []
+    }
+  }
+
   const { data: allSymptoms } = await supabase
     .from('symptoms')
     .select('keyword, specialty_tag')
@@ -53,6 +83,12 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
   // 多症狀：先各自查，再取交集（AND 邏輯）
   let tagClinics: Clinic[] = []
   const allFuzzyTags = new Set<string>([...tagSetsPerTerm.flatMap((s) => [...s])])
+
+  // 如果 symptoms 表找不到任何 tag，用 AI 判斷
+  if (allFuzzyTags.size === 0 && queryTerms.length > 0) {
+    const aiTags = await getTagsFromAI(queryTerms)
+    aiTags.forEach(t => allFuzzyTags.add(t))
+  }
 
   if (allFuzzyTags.size > 0) {
     let tagQuery = supabase.from('clinics').select('*').overlaps('specialty_tags', [...allFuzzyTags])
