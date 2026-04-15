@@ -15,12 +15,16 @@ export default function PetFilter() {
   const current = searchParams.get('pet') ?? ''
   const q = searchParams.get('q') ?? ''
   const district = searchParams.get('district') ?? ''
+  const open = searchParams.get('open') ?? ''
+  const source = searchParams.get('source') ?? ''
 
   const handleClick = (pet: string) => {
     const params = new URLSearchParams()
     if (q) params.set('q', q)
     if (pet) params.set('pet', pet)
     if (district) params.set('district', district)
+    if (open) params.set('open', open)
+    if (source) params.set('source', source)
     router.push(`/search?${params.toString()}`)
   }
 
@@ -30,10 +34,10 @@ export default function PetFilter() {
         <button
           key={opt.value}
           onClick={() => handleClick(opt.value)}
-          className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
+          className={`px-3 py-1 rounded-full text-xs font-medium transition-all border ${
             current === opt.value
-              ? 'bg-teal-600 text-white border-teal-600'
-              : 'bg-white text-gray-600 border-gray-300 hover:border-teal-400 hover:text-teal-600'
+              ? 'bg-gold text-ink border-gold'
+              : 'bg-transparent text-mist border-mist/50 hover:border-gold hover:text-gold'
           }`}
         >
           {opt.label}

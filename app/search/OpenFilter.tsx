@@ -25,10 +25,10 @@ export default function OpenFilter() {
   return (
     <button
       onClick={toggle}
-      className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border whitespace-nowrap ${
+      className={`px-3 py-1 rounded-full text-xs font-medium transition-all border whitespace-nowrap ${
         open
-          ? 'bg-green-600 text-white border-green-600'
-          : 'bg-white text-gray-600 border-gray-300 hover:border-green-500 hover:text-green-600'
+          ? 'bg-gold text-ink border-gold'
+          : 'bg-transparent text-mist border-mist/50 hover:border-gold hover:text-gold'
       }`}
     >
       {open ? '🟢 今日營業中' : '今日營業中'}

@@ -16,6 +16,8 @@ export default function DistrictFilter() {
   const current = searchParams.get('district') ?? ''
   const q = searchParams.get('q') ?? ''
   const pet = searchParams.get('pet') ?? ''
+  const open = searchParams.get('open') ?? ''
+  const source = searchParams.get('source') ?? ''
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const district = e.target.value
@@ -23,6 +25,8 @@ export default function DistrictFilter() {
     if (q) params.set('q', q)
     if (pet) params.set('pet', pet)
     if (district) params.set('district', district)
+    if (open) params.set('open', open)
+    if (source) params.set('source', source)
     router.push(`/search?${params.toString()}`)
   }
 
@@ -30,7 +34,7 @@ export default function DistrictFilter() {
     <select
       value={current}
       onChange={handleChange}
-      className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+      className="border border-mist/40 rounded-lg px-3 py-1.5 text-sm bg-ink text-mist focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
     >
       {DISTRICTS.map((d) => (
         <option key={d} value={d === '全部行政區' ? '' : d}>

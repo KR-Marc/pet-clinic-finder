@@ -21,15 +21,12 @@ async function reverseGeocodeDistrict(lat: number, lng: number): Promise<string 
   if (!res.ok) return null
   const data = await res.json()
   if (data.status !== 'OK' || !data.results?.length) return null
-
-  // Walk all results' address_components to find the district (區)
   for (const result of data.results) {
     for (const component of result.address_components as { long_name: string; types: string[] }[]) {
       if (
         component.types.includes('administrative_area_level_3') ||
         component.types.includes('sublocality_level_1')
       ) {
-        // Return only if it ends with 區 (district in Taipei)
         if (component.long_name.endsWith('區')) return component.long_name
       }
     }
@@ -66,29 +63,18 @@ export default function HomePage() {
   }
 
   const handleNearby = () => {
-    if (!navigator.geolocation) {
-      setGeoState('error')
-      return
-    }
+    if (!navigator.geolocation) { setGeoState('error'); return }
     setGeoState('loading')
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
           const { latitude, longitude } = pos.coords
           const district = await reverseGeocodeDistrict(latitude, longitude)
-          if (district) {
-            const params = new URLSearchParams({ district, source: 'nearby' })
-            if (pet) params.set('pet', pet)
-            router.push(`/search?${params.toString()}`)
-          } else {
-            // District not found — fall back to browse all with source=nearby
-            const params = new URLSearchParams({ source: 'nearby' })
-            if (pet) params.set('pet', pet)
-            router.push(`/search?${params.toString()}`)
-          }
-        } catch {
-          setGeoState('error')
-        }
+          const params = new URLSearchParams({ source: 'nearby' })
+          if (district) params.set('district', district)
+          if (pet) params.set('pet', pet)
+          router.push(`/search?${params.toString()}`)
+        } catch { setGeoState('error') }
       },
       () => setGeoState('error'),
       { timeout: 10_000, maximumAge: 60_000 },
@@ -96,14 +82,14 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center px-4 py-16">
+    <main className="min-h-screen bg-brand flex flex-col items-center px-4 py-16">
       {/* Header */}
       <div className="mb-10 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-teal-100 rounded-2xl mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-ink rounded-2xl mb-4 shadow-lg">
           <span className="text-3xl">🐾</span>
         </div>
-        <h1 className="text-3xl font-bold text-teal-700 mb-2">寵物專科診所搜尋</h1>
-        <p className="text-gray-500 text-base">描述症狀，找到台北最合適的專科動物醫院</p>
+        <h1 className="text-3xl font-bold text-snow mb-2">寵物專科診所搜尋</h1>
+        <p className="text-mist text-base">描述症狀，找到台北最合適的專科動物醫院</p>
       </div>
 
       {/* Search area */}
@@ -116,11 +102,11 @@ export default function HomePage() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
             placeholder="描述你的寵物症狀，例如：口臭、掉毛、一直抓"
-            className="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white shadow-sm"
+            className="flex-1 bg-ink border border-mist/40 rounded-xl px-4 py-3 text-base text-snow placeholder:text-mist/50 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent shadow-sm"
           />
           <button
             onClick={() => handleSubmit()}
-            className="bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white px-6 py-3 rounded-xl font-medium transition-colors shadow-sm whitespace-nowrap"
+            className="bg-gold hover:opacity-90 active:opacity-80 text-ink px-6 py-3 rounded-xl font-semibold transition-opacity shadow-sm whitespace-nowrap"
           >
             搜尋
           </button>
@@ -132,10 +118,10 @@ export default function HomePage() {
             <button
               key={opt.value}
               onClick={() => setPet(opt.value)}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-colors border ${
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-all border ${
                 pet === opt.value
-                  ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
-                  : 'bg-white text-gray-600 border-gray-300 hover:border-teal-400 hover:text-teal-600'
+                  ? 'bg-gold text-ink border-gold shadow-sm'
+                  : 'bg-transparent text-mist border-mist/50 hover:border-gold hover:text-gold'
               }`}
             >
               {opt.label}
@@ -145,16 +131,13 @@ export default function HomePage() {
 
         {/* Quick symptom tags */}
         <div className="mt-8">
-          <p className="text-sm text-gray-400 mb-3 font-medium">熱門症狀搜尋</p>
+          <p className="text-mist/60 text-sm mb-3 font-medium">熱門症狀搜尋</p>
           <div className="flex flex-wrap gap-2">
             {QUICK_TAGS.map((tag) => (
               <button
                 key={tag}
-                onClick={() => {
-                  setQuery(tag)
-                  handleSubmit(tag)
-                }}
-                className="px-3 py-1.5 rounded-full text-sm bg-white text-teal-700 hover:bg-teal-50 border border-teal-200 hover:border-teal-400 transition-colors shadow-sm"
+                onClick={() => { setQuery(tag); handleSubmit(tag) }}
+                className="px-3 py-1.5 rounded-full text-sm text-mist bg-transparent border border-mist/40 hover:border-gold hover:text-gold transition-all"
               >
                 {tag}
               </button>
@@ -162,38 +145,34 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Bottom actions: nearby + browse all */}
-        <div className="mt-6 pt-6 border-t border-gray-200 flex items-center justify-center gap-4 flex-wrap">
-          {/* Geolocation button */}
+        {/* Bottom actions */}
+        <div className="mt-6 pt-6 border-t border-mist/20 flex items-center justify-center gap-4 flex-wrap">
+          {/* Geolocation */}
           <button
             onClick={handleNearby}
             disabled={geoState === 'loading'}
-            className={`inline-flex items-center gap-2 text-sm font-medium transition-colors px-4 py-2 rounded-xl border ${
+            className={`inline-flex items-center gap-2 text-sm font-medium transition-all px-4 py-2 rounded-xl border ${
               geoState === 'error'
-                ? 'text-red-500 border-red-200 bg-red-50'
+                ? 'text-coral border-coral/40 bg-coral/10'
                 : geoState === 'loading'
-                  ? 'text-gray-400 border-gray-200 bg-gray-50 cursor-not-allowed'
-                  : 'text-teal-600 border-teal-200 bg-white hover:bg-teal-50 hover:border-teal-400 shadow-sm'
+                  ? 'text-mist/40 border-mist/20 cursor-not-allowed'
+                  : 'text-snow border-mist/40 hover:bg-ink hover:border-gold hover:text-gold'
             }`}
           >
             <span>📍</span>
             <span>
-              {geoState === 'loading'
-                ? '定位中...'
-                : geoState === 'error'
-                  ? '無法取得位置'
-                  : '找附近診所'}
+              {geoState === 'loading' ? '定位中...' : geoState === 'error' ? '無法取得位置' : '找附近診所'}
             </span>
           </button>
 
           {/* Browse all */}
           <button
             onClick={handleBrowseAll}
-            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-teal-600 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-gold hover:opacity-80 transition-opacity"
           >
             <span>🏥</span>
             <span>瀏覽所有診所</span>
-            <span className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">
+            <span className="text-xs bg-ink text-mist px-2 py-0.5 rounded-full">
               {clinicCount ?? '...'} 間
             </span>
           </button>
