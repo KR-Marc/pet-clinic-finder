@@ -1,7 +1,9 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import BackButton from './BackButton'
+import ShareButton from './ShareButton'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -51,6 +53,47 @@ function parseHoursMap(openingHours: string[]): Record<string, string> {
     if (idx >= 0) map[entry.slice(0, idx)] = entry.slice(idx + 2)
   }
   return map
+}
+
+// ── Metadata ─────────────────────────────────────────────────────────────────
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params
+  const { data } = await supabase
+    .from('clinics')
+    .select('name, district, address, specialty_tags, description')
+    .eq('id', id)
+    .single()
+
+  if (!data) {
+    return {
+      title: '診所未找到 | 台北寵物專科診所搜尋',
+    }
+  }
+
+  const tags = data.specialty_tags?.length > 0
+    ? data.specialty_tags.join('、')
+    : '動物醫院'
+
+  const description = data.description
+    || `${data.name}位於台北市${data.district}，提供${tags}等專科服務。查看營業時間、地址與聯絡方式。`
+
+  return {
+    title: `${data.name} | 台北寵物專科診所`,
+    description,
+    openGraph: {
+      title: `${data.name} | 台北寵物專科診所`,
+      description,
+      url: `https://pet-clinic-finder.vercel.app/clinic/${id}`,
+      siteName: '台北寵物專科診所搜尋',
+      locale: 'zh_TW',
+      type: 'website',
+    },
+  }
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
@@ -307,10 +350,11 @@ export default async function ClinicPage({
           >
             🗺️ Google Maps 導航
           </a>
+          <ShareButton name={clinic.name} />
         </div>
 
         {/* ── Similar clinics ───────────────────────────────────────────────── */}
-        {similar && similar.length > 0 && (
+        {similar && similar.length > 0 ? (
           <div>
             <h2 className="text-lg font-bold text-snow mb-4">同區域其他診所</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -349,6 +393,17 @@ export default async function ClinicPage({
                 </Link>
               ))}
             </div>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-mist/20 px-6 py-5 text-center">
+            <p className="text-sm text-mist/60 mb-3">此區域暫無其他專科診所資料</p>
+            <Link
+              href="/search"
+              className="inline-block px-5 py-2 rounded-full text-sm font-semibold transition-opacity hover:opacity-80"
+              style={{ background: '#f9bc60', color: '#001e1d' }}
+            >
+              搜尋全台北診所 →
+            </Link>
           </div>
         )}
       </div>
