@@ -7,6 +7,8 @@ import PetFilter from './PetFilter'
 import DistrictFilter from './DistrictFilter'
 import OpenFilter from './OpenFilter'
 import SymptomExplainer from './SymptomExplainer'
+import CompareBar from './CompareBar'
+import DistanceBadge from './DistanceBadge'
 
 export interface Clinic {
   id: string
@@ -20,6 +22,8 @@ export interface Clinic {
   pet_types: string[]
   rating: number | null
   opening_hours: string[] | null
+  lat: number | null
+  lng: number | null
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -99,6 +103,7 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
   const currentPage = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
   const [sort, setSort] = useState<SortOption>('rating')
   const [activeTag, setActiveTag] = useState<string>('')
+  const [compareList, setCompareList] = useState<Clinic[]>([])
 
   const filtered = useMemo(() => {
     let result = openOnly ? clinics.filter(isOpenToday) : clinics
@@ -133,6 +138,14 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
     const params = new URLSearchParams(searchParams.toString())
     params.delete('page')
     router.push(`/search?${params.toString()}`)
+  }
+
+  const toggleCompare = (clinic: Clinic) => {
+    setCompareList((prev) => {
+      if (prev.some((c) => c.id === clinic.id)) return prev.filter((c) => c.id !== clinic.id)
+      if (prev.length >= 3) return prev
+      return [...prev, clinic]
+    })
   }
 
   // The sort select rendered twice (different positions on mobile vs desktop)
@@ -286,6 +299,10 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
                         : ''}
                     </p>
 
+                    <div className="mb-1.5">
+                      <DistanceBadge lat={clinic.lat ?? null} lng={clinic.lng ?? null} />
+                    </div>
+
                     {/* ROW 3 — Today's hours */}
                     <p
                       className="text-xs font-medium mb-3"
@@ -329,8 +346,19 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
                     {/* Divider */}
                     <div style={{ borderTop: '1px solid rgba(0,30,29,0.1)', marginBottom: '0.75rem' }} />
 
-                    {/* ROW 5 — Phone + detail link */}
+                    {/* ROW 5 — Phone + compare checkbox + detail link */}
                     <div className="flex items-center justify-between">
+                      <button
+                        onClick={() => toggleCompare(clinic)}
+                        className="text-xs font-medium transition-all shrink-0 mr-2"
+                        style={
+                          compareList.some((c) => c.id === clinic.id)
+                            ? { color: '#f9bc60' }
+                            : { color: 'rgba(171,209,198,0.4)' }
+                        }
+                      >
+                        {compareList.some((c) => c.id === clinic.id) ? '☑ 比較中' : '☐ 加入比較'}
+                      </button>
                       {clinic.phone ? (
                         <a
                           href={`tel:${clinic.phone}`}
@@ -411,6 +439,11 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
           </>
         )}
       </div>
+      <CompareBar
+        selected={compareList}
+        onRemove={(id) => setCompareList((prev) => prev.filter((c) => c.id !== id))}
+        onClear={() => setCompareList([])}
+      />
     </>
   )
 }
