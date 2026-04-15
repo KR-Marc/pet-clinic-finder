@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import BackButton from './BackButton'
 import ShareButton from './ShareButton'
 import ReportButton from './ReportButton'
+import FavoriteButton from './FavoriteButton'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -357,6 +358,13 @@ export default async function ClinicPage({
             🗺️ Google Maps 導航
           </a>
           <ShareButton name={clinic.name} />
+          <FavoriteButton clinic={{
+            id: clinic.id,
+            name: clinic.name,
+            district: clinic.district,
+            rating: clinic.rating,
+            specialty_tags: clinic.specialty_tags,
+          }} />
         </div>
 
         {/* ── Similar clinics ───────────────────────────────────────────────── */}

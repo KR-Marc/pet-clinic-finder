@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -138,6 +139,9 @@ export default function HomePage() {
           >
             瀏覽診所
           </button>
+          <Link href="/favorites" className="text-mist hover:text-gold text-sm font-medium transition-colors duration-200">
+            🤍 收藏
+          </Link>
         </div>
       </nav>
 
