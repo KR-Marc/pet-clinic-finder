@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import type { Metadata } from 'next'
+import PhoneLink from './PhoneLink'
 
 export const metadata: Metadata = {
   title: '台北寵物24H急診動物醫院 | 寵物專科診所搜尋',
@@ -108,14 +109,7 @@ export default async function EmergencyPage() {
                 📍 {clinic.district}・{clinic.address}
               </p>
 
-              <a
-                href={`tel:${clinic.phone}`}
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1.5 mt-2 mb-3 text-sm font-semibold transition-opacity hover:opacity-70"
-                style={{ color: '#001e1d' }}
-              >
-                📞 {clinic.phone}
-              </a>
+              <PhoneLink phone={clinic.phone} />
 
               {clinic.specialty_tags?.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
