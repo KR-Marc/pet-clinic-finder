@@ -147,6 +147,10 @@ export default async function ClinicPage({
           <Link href="/" className="text-mist/50 hover:text-snow text-sm transition-colors shrink-0">
             🐾 首頁
           </Link>
+          <span className="text-mist/30 shrink-0">|</span>
+          <Link href="/emergency" className="text-xs font-bold transition-colors shrink-0 hover:opacity-80" style={{ color: '#e16162' }}>
+            🚨 急診
+          </Link>
         </div>
       </div>
 
@@ -190,12 +194,13 @@ export default async function ClinicPage({
           {clinic.specialty_tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {clinic.specialty_tags.map((tag) => (
-                <span
+                <Link
                   key={tag}
-                  className="px-3 py-1 rounded-full text-sm font-medium bg-ink text-mist"
+                  href={`/search?q=${encodeURIComponent(tag)}`}
+                  className="px-3 py-1 rounded-full text-sm font-medium bg-ink text-mist hover:bg-mist/20 transition-colors"
                 >
                   {tag}
-                </span>
+                </Link>
               ))}
             </div>
           )}
