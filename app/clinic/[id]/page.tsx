@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import BackButton from './BackButton'
 import ShareButton from './ShareButton'
+import ReportButton from './ReportButton'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -411,6 +412,11 @@ export default async function ClinicPage({
             </Link>
           </div>
         )}
+
+        {/* Report button */}
+        <div className="mt-8 flex justify-center">
+          <ReportButton clinicId={clinic.id} clinicName={clinic.name} />
+        </div>
       </div>
     </main>
   )

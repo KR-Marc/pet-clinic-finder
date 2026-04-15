@@ -25,6 +25,7 @@ export interface Clinic {
 
 const PAGE_SIZE = 20
 const WEEKDAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+const SPECIALTY_TAGS = ['牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科', '神經外科', '內科', '健檢', '行為醫學']
 
 // ── Time helpers ──────────────────────────────────────────────────────────────
 
@@ -96,11 +97,13 @@ export default function ClinicList({ clinics }: { clinics: Clinic[] }) {
   const district = searchParams.get('district') ?? ''
   const currentPage = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
   const [sort, setSort] = useState<SortOption>('rating')
+  const [activeTag, setActiveTag] = useState<string>('')
 
-  const filtered = useMemo(
-    () => (openOnly ? clinics.filter(isOpenToday) : clinics),
-    [clinics, openOnly],
-  )
+  const filtered = useMemo(() => {
+    let result = openOnly ? clinics.filter(isOpenToday) : clinics
+    if (activeTag) result = result.filter((c) => c.specialty_tags.includes(activeTag))
+    return result
+  }, [clinics, openOnly, activeTag])
 
   const sorted = useMemo(() => sortClinics(filtered, sort), [filtered, sort])
 
@@ -119,6 +122,13 @@ export default function ClinicList({ clinics }: { clinics: Clinic[] }) {
   const handleSortChange = (newSort: SortOption) => {
     setSort(newSort)
     // Reset to page 1
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('page')
+    router.push(`/search?${params.toString()}`)
+  }
+
+  const handleTagFilter = (tag: string) => {
+    setActiveTag((prev) => (prev === tag ? '' : tag))
     const params = new URLSearchParams(searchParams.toString())
     params.delete('page')
     router.push(`/search?${params.toString()}`)
@@ -174,6 +184,33 @@ export default function ClinicList({ clinics }: { clinics: Clinic[] }) {
 
           {/* Sort: desktop only, right-aligned */}
           <div className="hidden sm:block">{SortSelect}</div>
+
+          {/* Row 3: Specialty tag quick filter */}
+          <div className="flex items-center gap-1.5 flex-wrap pt-1 sm:pt-0 border-t border-mist/10 sm:border-0 w-full">
+            {SPECIALTY_TAGS.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => handleTagFilter(tag)}
+                className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
+                style={
+                  activeTag === tag
+                    ? { background: '#f9bc60', color: '#001e1d' }
+                    : { background: 'rgba(171,209,198,0.12)', color: '#abd1c6' }
+                }
+              >
+                {tag}
+              </button>
+            ))}
+            {activeTag && (
+              <button
+                onClick={() => handleTagFilter('')}
+                className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
+                style={{ background: 'rgba(225,97,98,0.2)', color: '#e16162' }}
+              >
+                ✕ 清除
+              </button>
+            )}
+          </div>
 
         </div>
       </div>
