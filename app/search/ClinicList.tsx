@@ -195,8 +195,8 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
         {/* Row 1: count */}
         <div className="flex items-center mb-3">
           <p className="text-sm font-semibold" style={{ color: '#f9bc60' }}>
-            找到 <span className="text-base font-bold">{filtered.length > 0 ? filtered.length : aiFallbackClinics.length}</span> 間診所
-            {filtered.length === 0 && aiFallbackClinics.length > 0 && (
+            找到 <span className="text-base font-bold">{sorted.length > 0 ? sorted.length : aiFallbackClinics.length}</span> 間診所
+            {sorted.length === 0 && aiFallbackClinics.length > 0 && (
               <span className="ml-1.5 text-xs font-normal" style={{ color: 'rgba(171,209,198,0.5)' }}>AI 建議</span>
             )}
           </p>
