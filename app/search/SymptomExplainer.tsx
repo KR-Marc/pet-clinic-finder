@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 interface ExplainerData {
@@ -7,6 +8,7 @@ interface ExplainerData {
   causes: string[]
   advice: string
   urgency: 'low' | 'medium' | 'high'
+  specialties?: string[]
 }
 
 export default function SymptomExplainer({ symptoms }: { symptoms: string[] }) {
@@ -105,6 +107,25 @@ export default function SymptomExplainer({ symptoms }: { symptoms: string[] }) {
           <p className="text-xs leading-relaxed" style={{ color: 'rgba(171,209,198,0.7)' }}>
             💡 {data.advice}
           </p>
+
+          {/* Specialties */}
+          {data.specialties && data.specialties.length > 0 && (
+            <div className="mt-2 pt-2 border-t border-mist/10">
+              <p className="text-xs text-mist/50 mb-1.5">建議就診專科</p>
+              <div className="flex flex-wrap gap-1.5">
+                {data.specialties.map((s: string) => (
+                  <Link
+                    key={s}
+                    href={`/search?q=${encodeURIComponent(s)}`}
+                    className="px-2.5 py-0.5 rounded-full text-xs font-semibold transition-opacity hover:opacity-80"
+                    style={{ background: '#f9bc60', color: '#001e1d' }}
+                  >
+                    {s} →
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

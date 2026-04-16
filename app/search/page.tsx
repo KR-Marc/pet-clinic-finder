@@ -9,36 +9,6 @@ const KNOWN_TAGS = [
   '神經外科', '泌尿科', '腎臟科', '外科', '24H急診', '復健', '中獸醫',
 ]
 
-async function getTagsFromAI(terms: string[]): Promise<string[]> {
-  const AI_KNOWN_TAGS = ['牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科', '神經外科', '泌尿科', '腎臟科', '外科', '復健', '中獸醫', '24H急診', '重症加護', '內科', '呼吸科', '健檢', '行為醫學']
-  const apiKey = process.env.GEMINI_API_KEY
-  if (!apiKey) return []
-
-  const prompt = `寵物出現以下症狀：${terms.join('、')}
-
-從以下專科清單中，選出最相關的 1-3 個專科（只輸出專科名稱，用逗號分隔，不要其他文字）：
-${AI_KNOWN_TAGS.join('、')}`
-
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 200, temperature: 0 },
-        }),
-      }
-    )
-    const data = await res.json()
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-    const result = text.split(/[,，、\n]/).map((t: string) => t.trim()).filter((t: string) => AI_KNOWN_TAGS.includes(t))
-    return result
-  } catch {
-    return []
-  }
-}
 
 async function fetchClinics(q: string, pet: string, district: string): Promise<Clinic[]> {
   // 支援多症狀複合查詢（逗號分隔）
@@ -87,8 +57,22 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
 
   // 如果 symptoms 表找不到任何 tag，用 AI 判斷
   if (allFuzzyTags.size === 0 && queryTerms.length > 0) {
-    const aiTags = await getTagsFromAI(queryTerms)
-    aiTags.forEach(t => allFuzzyTags.add(t))
+    try {
+      const baseUrl = process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000'
+      const res = await fetch(`${baseUrl}/api/symptom-explain`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symptoms: queryTerms }),
+      })
+      const data = await res.json()
+      if (data.specialties && Array.isArray(data.specialties)) {
+        data.specialties.forEach((t: string) => allFuzzyTags.add(t))
+      }
+    } catch {
+      // silent fail
+    }
   }
 
   if (allFuzzyTags.size > 0) {
