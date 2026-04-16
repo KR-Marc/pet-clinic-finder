@@ -59,7 +59,9 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
     for (const { keyword, specialty_tag } of (allSymptoms ?? []) as { keyword: string; specialty_tag: string }[]) {
       const kLower = keyword.toLowerCase()
       const directMatch = kLower.includes(tLower) || tLower.includes(kLower)
-      const bigramMatch = [...bigrams].some((bg) => kLower.includes(bg))
+      // bigram 需至少 2 個命中，避免單字誤配（口炎的「口」配到不相關 tag）
+      const bigramHits = [...bigrams].filter((bg) => kLower.includes(bg)).length
+      const bigramMatch = tLower.length >= 4 ? bigramHits >= 2 : bigramHits >= 1
       if (directMatch || bigramMatch) tags.add(specialty_tag)
     }
     for (const tag of KNOWN_TAGS) {
