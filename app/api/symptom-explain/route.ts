@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
   const { symptoms } = await req.json()
+
   if (!symptoms || symptoms.length === 0) {
     return NextResponse.json({ error: 'No symptoms provided' }, { status: 400 })
   }
@@ -9,7 +10,6 @@ export async function POST(req: NextRequest) {
   const KNOWN_TAGS = ['牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科', '神經外科', '泌尿科', '腎臟科', '外科', '復健', '中獸醫', '24H急診', '重症加護', '內科', '呼吸科', '健檢', '行為醫學']
 
   const prompt = `你是一位專業獸醫助理。用戶的寵物出現以下症狀：${symptoms.join('、')}。
-
 請用繁體中文回答，以 JSON 格式輸出，不要有任何其他文字，不要加 markdown 代碼塊：
 {
   "summary": "一句話說明這些症狀可能代表什麼（20字以內）",
@@ -20,7 +20,9 @@ export async function POST(req: NextRequest) {
 }`
 
   const apiKey = process.env.GEMINI_API_KEY
-  async function callGemini(retries = 2): Promise<Response> {
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function callGemini(retries = 2): Promise<any> {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
