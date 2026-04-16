@@ -188,8 +188,8 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
           <PetFilter />
           <OpenFilter />
         </div>
-        {/* Row 3: district + sort 同排對齊 */}
-        <div className="flex items-center justify-between gap-2 mb-3">
+        {/* Row 3: district + sort 緊靠在一起靠左 */}
+        <div className="flex items-center gap-2 mb-3">
           <DistrictFilter />
           {SortSelect}
         </div>
