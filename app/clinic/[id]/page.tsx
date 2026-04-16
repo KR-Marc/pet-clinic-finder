@@ -24,6 +24,8 @@ interface Clinic {
   pet_types: string[]
   rating: number | null
   opening_hours: string[] | null
+  review_count: number | null
+  updated_at: string | null
 }
 
 interface SimilarClinic {
@@ -139,6 +141,9 @@ export default async function ClinicPage({
 
   const mapQuery = encodeURIComponent(`${clinic.name} ${clinic.address} 台北`)
 
+  // 簡單異常偵測：評論數超過 1000 且評分高於 4.8 顯示提示
+  const showReviewWarning = (clinic.review_count ?? 0) > 1000 && (clinic.rating ?? 0) >= 4.8
+
   return (
     <main className="min-h-screen bg-brand">
       <RecentlyViewedTracker
@@ -178,6 +183,11 @@ export default async function ClinicPage({
             {clinic.rating != null && (
               <span className="text-sm font-bold" style={{ color: '#f9bc60' }}>
                 ⭐ {clinic.rating}
+                {clinic.review_count != null && (
+                  <span className="text-xs font-normal ml-1" style={{ color: 'rgba(249,188,96,0.6)' }}>
+                    （{clinic.review_count.toLocaleString()} 則評論）
+                  </span>
+                )}
               </span>
             )}
             {clinic.is_24h && (
@@ -212,6 +222,13 @@ export default async function ClinicPage({
                   {tag}
                 </Link>
               ))}
+            </div>
+          )}
+
+          {showReviewWarning && (
+            <div className="mt-3 flex items-center gap-2 text-xs px-3 py-2 rounded-lg" style={{ background: 'rgba(249,188,96,0.1)', color: '#f9bc60', border: '1px solid rgba(249,188,96,0.2)' }}>
+              <span>⚠️</span>
+              <span>此診所評論數量較多，建議參考多方資訊後再決定就診</span>
             </div>
           )}
         </div>
@@ -430,7 +447,17 @@ export default async function ClinicPage({
         )}
 
         {/* Report button */}
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex flex-col items-center gap-3">
+          {/* 資料來源 + 最後更新時間 */}
+          <div className="flex items-center gap-3 text-xs" style={{ color: 'rgba(171,209,198,0.4)' }}>
+            <span>資料來源：Google Maps</span>
+            {clinic.updated_at && (
+              <>
+                <span>·</span>
+                <span>最後更新：{new Date(clinic.updated_at).toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              </>
+            )}
+          </div>
           <ReportButton clinicId={clinic.id} clinicName={clinic.name} />
         </div>
       </div>

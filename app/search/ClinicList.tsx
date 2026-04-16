@@ -24,6 +24,8 @@ export interface Clinic {
   opening_hours: string[] | null
   lat: number | null
   lng: number | null
+  review_count: number | null
+  updated_at: string | null
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -272,9 +274,16 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
                       </h2>
                       <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
                         {clinic.rating != null && (
-                          <span className="text-sm font-bold whitespace-nowrap" style={{ color: '#f9bc60' }}>
-                            ⭐ {clinic.rating}
-                          </span>
+                          <div className="flex flex-col items-end">
+                            <span className="text-sm font-bold whitespace-nowrap" style={{ color: '#f9bc60' }}>
+                              ⭐ {clinic.rating}
+                            </span>
+                            {clinic.review_count != null && (
+                              <span className="text-xs whitespace-nowrap" style={{ color: 'rgba(249,188,96,0.5)' }}>
+                                {clinic.review_count.toLocaleString()} 則
+                              </span>
+                            )}
+                          </div>
                         )}
                         {clinic.is_24h && (
                           <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-coral text-snow whitespace-nowrap">
