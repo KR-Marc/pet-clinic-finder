@@ -9,6 +9,7 @@ import OpenFilter from './OpenFilter'
 import SymptomExplainer from './SymptomExplainer'
 import CompareBar from './CompareBar'
 import DistanceBadge from './DistanceBadge'
+import { supabase } from '@/lib/supabase'
 
 export interface Clinic {
   id: string
@@ -106,6 +107,7 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
   const [sort, setSort] = useState<SortOption>('rating')
   const [activeTag, setActiveTag] = useState<string>('')
   const [compareList, setCompareList] = useState<Clinic[]>([])
+  const [aiFallbackClinics, setAiFallbackClinics] = useState<Clinic[]>([])
 
   const filtered = useMemo(() => {
     let result = openOnly ? clinics.filter(isOpenToday) : clinics
@@ -168,7 +170,20 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
 
   return (
     <>
-      <SymptomExplainer symptoms={queryTerms} clinicCount={filtered.length} />
+      <SymptomExplainer
+        symptoms={queryTerms}
+        onSpecialties={async (aiTags) => {
+          if (sorted.length > 0) return // 已有結果不需要補查
+          // client-side 用 AI specialties 補查診所
+          const { data } = await supabase
+            .from('clinics')
+            .select('*')
+            .overlaps('specialty_tags', aiTags)
+          if (data && data.length > 0) {
+            setAiFallbackClinics(data as Clinic[])
+          }
+        }}
+      />
       {/* ── Sticky filter bar ────────────────────────────────────────────── */}
       <div
         className="rounded-xl px-4 py-3 mb-4"
@@ -225,6 +240,47 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
       <div className="pt-4">
         {sorted.length === 0 ? (
           /* Empty state */
+          aiFallbackClinics.length > 0 ? (
+            <div>
+              <p className="text-xs text-mist/50 mb-4 text-center">以下為 AI 建議的相關診所</p>
+              <div className="flex flex-col gap-3">
+                {aiFallbackClinics.slice(0, 10).map((clinic) => {
+                  const todayHours = getTodayHours(clinic.opening_hours)
+                  const isClosed = todayHours === '休息'
+                  const hasHours = todayHours !== null
+                  return (
+                    <div key={clinic.id} className="bg-sand rounded-xl p-5 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                      <div className="flex items-start justify-between gap-2 mb-1.5">
+                        <h2 className="text-lg font-semibold leading-snug flex items-center gap-1.5" style={{ color: '#001e1d' }}>
+                          <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: isOpenToday(clinic) ? '#4ade80' : '#e16162' }} />
+                          {clinic.name}
+                        </h2>
+                        {clinic.rating != null && (
+                          <span className="text-sm font-bold whitespace-nowrap" style={{ color: '#f9bc60' }}>⭐ {clinic.rating}</span>
+                        )}
+                      </div>
+                      <p className="text-sm mb-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}>📍 {clinic.district} {clinic.address}</p>
+                      <p className="text-xs font-medium mb-3" style={{ color: !hasHours ? 'rgba(0,30,29,0.3)' : isClosed ? '#e16162' : '#16a34a' }}>
+                        {!hasHours ? '🕐 營業時間未提供' : isClosed ? '🕐 今日 休息' : `🕐 今日 ${todayHours}`}
+                      </p>
+                      {clinic.specialty_tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {clinic.specialty_tags.slice(0, 4).map((tag) => (
+                            <span key={tag} className="px-3 py-1 rounded-full text-sm font-medium bg-brand text-snow">{tag}</span>
+                          ))}
+                        </div>
+                      )}
+                      <div style={{ borderTop: '1px solid rgba(0,30,29,0.1)', marginBottom: '0.75rem' }} />
+                      <div className="flex items-center justify-between">
+                        <a href={`tel:${clinic.phone}`} className="text-sm font-medium" style={{ color: 'rgba(0,30,29,0.65)' }}>📞 {clinic.phone}</a>
+                        <a href={`/clinic/${clinic.id}`} className="text-sm font-semibold hover:underline" style={{ color: '#f9bc60' }}>查看詳情 →</a>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          ) : (
           <div className="text-center py-16">
             <div className="text-5xl mb-4">🔍</div>
             <p className="text-lg font-medium text-snow">找不到符合的診所</p>
@@ -253,6 +309,7 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
               </div>
             </div>
           </div>
+          )
         ) : (
           <>
             {/* Clinic cards */}

@@ -88,7 +88,7 @@ function getSupplements(specialties: string[], urgency: string): Supplement[] {
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
-export default function SymptomExplainer({ symptoms, clinicCount = -1 }: { symptoms: string[], clinicCount?: number }) {
+export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms: string[], onSpecialties?: (tags: string[]) => void }) {
   const [data, setData] = useState<ExplainerData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -107,11 +107,9 @@ export default function SymptomExplainer({ symptoms, clinicCount = -1 }: { sympt
       .then((res) => {
         if (res.error) throw new Error(res.error)
         setData(res)
-        // 如果目前診所為 0 且 AI 有回傳 specialties，自動用 specialties 重新搜尋
-        if (clinicCount === 0 && res.specialties && res.specialties.length > 0) {
-          const params = new URLSearchParams(window.location.search)
-          params.set('q', res.specialties[0])
-          window.location.href = `/search?${params.toString()}`
+        // 把 AI 分析的 specialties 回傳給父元件
+        if (res.specialties && res.specialties.length > 0 && onSpecialties) {
+          onSpecialties(res.specialties)
         }
       })
       .catch(() => setError(true))
