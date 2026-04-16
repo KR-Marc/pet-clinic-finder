@@ -108,6 +108,17 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
   const [activeTag, setActiveTag] = useState<string>('')
   const [compareList, setCompareList] = useState<Clinic[]>([])
   const [aiFallbackClinics, setAiFallbackClinics] = useState<Clinic[]>([])
+  const [logged, setLogged] = useState(false)
+
+  const logSearch = (count: number, isAi: boolean) => {
+    if (logged || queryTerms.length === 0) return
+    setLogged(true)
+    fetch('/api/log-search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keyword: queryTerms.join(','), clinic_count: count, is_ai_fallback: isAi }),
+    }).catch(() => {})
+  }
 
   const filtered = useMemo(() => {
     let result = openOnly ? clinics.filter(isOpenToday) : clinics
@@ -120,6 +131,9 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
   const page = Math.min(currentPage, totalPages)
   const paginated = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  if (sorted.length > 0 && page === 1 && !logged && queryTerms.length > 0) {
+    setTimeout(() => logSearch(sorted.length, false), 500)
+  }
 
   const handlePageChange = (p: number) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -181,6 +195,7 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
             .overlaps('specialty_tags', aiTags)
           if (data && data.length > 0) {
             setAiFallbackClinics(data as Clinic[])
+            logSearch(Math.min(data.length, 10), true)
           }
         }}
       />
@@ -517,6 +532,24 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
             )}
           </>
         )}
+      </div>
+      {/* 資料來源說明 */}
+      <div className="mt-6 rounded-xl px-4 py-3 text-xs" style={{ background: 'rgba(249,188,96,0.06)', border: '1px solid rgba(249,188,96,0.15)' }}>
+        <p className="font-semibold mb-1" style={{ color: 'rgba(249,188,96,0.8)' }}>⚠️ 資料說明</p>
+        <p style={{ color: 'rgba(171,209,198,0.55)' }}>診所資訊來源為 Google Maps，電話、地址、營業時間可能與實際有所落差。就診前建議先來電確認，或參考診所官網。</p>
+      </div>
+      {/* 行政區快速入口 */}
+      <div className="mt-4 mb-2">
+        <p className="text-xs text-mist/40 mb-2">依行政區搜尋</p>
+        <div className="flex flex-wrap gap-1.5">
+          {['大安區','信義區','中山區','內湖區','士林區','文山區','松山區','中正區','萬華區','北投區','南港區','大同區'].map((d) => (
+            <a key={d} href={`/district/${encodeURIComponent(d)}`}
+              className="px-2.5 py-1 rounded-full text-xs font-medium transition-colors border"
+              style={{ color: 'rgba(171,209,198,0.5)', borderColor: 'rgba(171,209,198,0.15)', background: 'rgba(0,30,29,0.3)' }}>
+              {d}
+            </a>
+          ))}
+        </div>
       </div>
       <CompareBar
         selected={compareList}

@@ -92,12 +92,16 @@ export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms
   const [data, setData] = useState<ExplainerData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [loadingStep, setLoadingStep] = useState(0)
 
   useEffect(() => {
     if (symptoms.length === 0) return
     setLoading(true)
     setError(false)
     setData(null)
+    setLoadingStep(0)
+    const t1 = setTimeout(() => setLoadingStep(1), 800)
+    const t2 = setTimeout(() => setLoadingStep(2), 2500)
     fetch('/api/symptom-explain', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -113,7 +117,11 @@ export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms
         }
       })
       .catch(() => setError(true))
-      .finally(() => setLoading(false))
+      .finally(() => {
+        setLoading(false)
+        clearTimeout(t1)
+        clearTimeout(t2)
+      })
   }, [symptoms.join(',')])
 
   if (symptoms.length === 0) return null
@@ -135,8 +143,12 @@ export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms
 
       {loading && (
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-gold animate-pulse" />
-          <p className="text-sm text-mist/60">正在分析症狀…</p>
+          <div className="w-3 h-3 rounded-full bg-gold animate-pulse shrink-0" />
+          <p className="text-sm text-mist/60">
+            {loadingStep === 0 && '正在理解症狀描述…'}
+            {loadingStep === 1 && '正在比對可能病因…'}
+            {loadingStep === 2 && '正在尋找適合的專科…'}
+          </p>
         </div>
       )}
 
