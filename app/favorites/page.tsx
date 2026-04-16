@@ -83,13 +83,22 @@ export default function FavoritesPage() {
                     ))}
                   </div>
                 )}
-                <Link
-                  href={`/clinic/${clinic.id}`}
-                  className="text-xs font-semibold hover:underline"
-                  style={{ color: '#f9bc60' }}
-                >
-                  查看詳情 →
-                </Link>
+                <div className="flex items-center justify-between">
+                  <Link
+                    href={`/clinic/${clinic.id}`}
+                    className="text-xs font-semibold hover:underline"
+                    style={{ color: '#f9bc60' }}
+                  >
+                    查看詳情 →
+                  </Link>
+                  <Link
+                    href={`/compare?ids=${clinic.id}`}
+                    className="text-xs font-medium px-2.5 py-1 rounded-full border transition-colors hover:text-snow"
+                    style={{ color: 'rgba(171,209,198,0.5)', borderColor: 'rgba(171,209,198,0.2)' }}
+                  >
+                    ＋ 比較
+                  </Link>
+                </div>
               </div>
             ))}
           </div>

@@ -222,7 +222,7 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
       <div className="pt-4">
         {sorted.length === 0 ? (
           /* Empty state */
-          <div className="text-center py-20">
+          <div className="text-center py-16">
             <div className="text-5xl mb-4">🔍</div>
             <p className="text-lg font-medium text-snow">找不到符合的診所</p>
             <p className="text-sm mt-2 text-mist">試試其他關鍵字，或移除篩選條件</p>
@@ -235,6 +235,20 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
             >
               重新搜尋
             </Link>
+            <div className="mt-8">
+              <p className="text-xs text-mist/50 mb-3">你可能想搜尋</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {['嘔吐','掉毛','抽搐','血尿','眼睛分泌物','口臭','食慾不振','咳嗽','跛行','皮膚搔癢'].map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/search?q=${encodeURIComponent(tag)}`}
+                    className="px-3 py-1.5 rounded-full text-xs font-medium bg-ink text-mist hover:text-gold border border-mist/20 transition-colors"
+                  >
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
           <>
@@ -255,7 +269,11 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
                   >
                     {/* ROW 1 — Name + rating + badges */}
                     <div className="flex items-start justify-between gap-2 mb-1.5">
-                      <h2 className="text-lg font-semibold leading-snug" style={{ color: '#001e1d' }}>
+                      <h2 className="text-lg font-semibold leading-snug flex items-center gap-1.5" style={{ color: '#001e1d' }}>
+                        <span
+                          className="w-2 h-2 rounded-full shrink-0 mt-0.5"
+                          style={{ background: isOpenToday(clinic) ? '#4ade80' : '#e16162' }}
+                        />
                         {clinic.name}
                       </h2>
                       <div className="flex items-center gap-1.5 shrink-0 mt-0.5">

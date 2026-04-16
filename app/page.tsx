@@ -323,28 +323,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Stats bar ───────────────────────────────────────────────────────── */}
-      <section className="bg-ink">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="grid grid-cols-3 divide-x divide-mist/20">
-            {[
-              { icon: '🏥', number: clinicCount ?? 272, unit: '間', label: '台北市動物醫院' },
-              { icon: '🔬', number: 194,                unit: '項', label: '專科標籤覆蓋'  },
-              { icon: '📍', number: 12,                 unit: '區', label: '行政區完整覆蓋' },
-            ].map((stat) => (
-              <div key={stat.label} className="px-6 sm:px-10 text-center">
-                <p className="text-2xl mb-1">{stat.icon}</p>
-                <p className="text-2xl sm:text-3xl font-bold text-snow">
-                  {stat.number}
-                  <span className="text-gold ml-1 text-xl">{stat.unit}</span>
-                </p>
-                <p className="text-mist text-xs sm:text-sm mt-1">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── Quick links banner ──────────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -441,6 +419,25 @@ export default function HomePage() {
       </section>
 
       <RecentlyViewedSection />
+
+      {/* ── Districts ── */}
+      <section className="max-w-7xl mx-auto px-6 pb-12">
+        <div className="text-center mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-snow mb-2">依行政區找診所</h2>
+          <p className="text-mist text-sm">台北市 12 個行政區，完整覆蓋</p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-2">
+          {['大安區','信義區','中山區','內湖區','士林區','文山區','松山區','中正區','萬華區','北投區','南港區','大同區'].map((d) => (
+            <Link
+              key={d}
+              href={`/district/${encodeURIComponent(d)}`}
+              className="px-4 py-2 rounded-full text-sm font-medium bg-ink text-mist hover:bg-mist/20 hover:text-snow transition-colors border border-mist/15"
+            >
+              {d}
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <footer className="bg-ink">

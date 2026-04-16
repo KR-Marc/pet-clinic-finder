@@ -210,20 +210,34 @@ export default function SymptomExplainer({ symptoms }: { symptoms: string[] }) {
                 <p className="text-xs text-mist/50 mb-1.5">🛒 居家保養建議</p>
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {supplements.map((s) => (
-                    <a
-                      key={s.label}
-                      href={`https://shopee.tw/search?keyword=${encodeURIComponent(s.keyword)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-2.5 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
-                      style={{
-                        background: 'rgba(249,188,96,0.12)',
-                        color: '#f9bc60',
-                        border: '1px solid rgba(249,188,96,0.25)',
-                      }}
-                    >
-                      {s.label} ↗
-                    </a>
+                    <span key={s.label} className="inline-flex items-center gap-1">
+                      <a
+                        href={`https://shopee.tw/search?keyword=${encodeURIComponent(s.keyword)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2.5 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
+                        style={{
+                          background: 'rgba(249,188,96,0.12)',
+                          color: '#f9bc60',
+                          border: '1px solid rgba(249,188,96,0.25)',
+                        }}
+                      >
+                        {s.label} 蝦皮↗
+                      </a>
+                      <a
+                        href={`https://ecshweb.pchome.com.tw/search/v3.3/?q=${encodeURIComponent(s.keyword)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
+                        style={{
+                          background: 'rgba(171,209,198,0.1)',
+                          color: '#abd1c6',
+                          border: '1px solid rgba(171,209,198,0.2)',
+                        }}
+                      >
+                        PC↗
+                      </a>
+                    </span>
                   ))}
                 </div>
                 <p className="text-xs" style={{ color: 'rgba(171,209,198,0.35)' }}>

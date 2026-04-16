@@ -382,6 +382,16 @@ export default async function ClinicPage({
           >
             🗺️ Google Maps 導航
           </a>
+          {clinic.website && (
+            <a
+              href={clinic.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 py-3 rounded-xl text-center font-medium text-sm transition-colors hover:opacity-80 border border-mist/30 bg-ink text-mist"
+            >
+              🌐 官網預約
+            </a>
+          )}
           <ShareButton name={clinic.name} />
           <FavoriteButton clinic={{
             id: clinic.id,
