@@ -168,7 +168,7 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
 
   return (
     <>
-      <SymptomExplainer symptoms={queryTerms} />
+      <SymptomExplainer symptoms={queryTerms} clinicCount={filtered.length} />
       {/* ── Sticky filter bar ────────────────────────────────────────────── */}
       <div
         className="rounded-xl px-4 py-3 mb-4"
