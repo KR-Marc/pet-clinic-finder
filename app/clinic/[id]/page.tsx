@@ -142,7 +142,7 @@ export default async function ClinicPage({
   const mapQuery = encodeURIComponent(`${clinic.name} ${clinic.address} 台北`)
 
   // 簡單異常偵測：評論數超過 1000 且評分高於 4.8 顯示提示
-  const showReviewWarning = (clinic.review_count ?? 0) > 1000 && (clinic.rating ?? 0) >= 4.8
+  const showReviewWarning = (clinic.review_count ?? 0) > 2000 && (clinic.rating ?? 0) >= 4.0
 
   return (
     <main className="min-h-screen bg-brand">
