@@ -127,25 +127,30 @@ export default function HomePage() {
 
       {/* ── Navbar ──────────────────────────────────────────────────────────── */}
       <nav className="bg-ink sticky top-0 z-50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🐾</span>
-            <span className="text-snow font-bold text-base sm:text-lg tracking-tight">
-              寵物專科診所搜尋
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-lg">🐾</span>
+            <span className="text-snow font-bold text-sm sm:text-base tracking-tight leading-tight">
+              <span className="hidden xs:inline">寵物專科診所搜尋</span>
+              <span className="xs:hidden">寵物診所搜尋</span>
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <button onClick={handleBrowseAll} className="text-mist hover:text-gold text-sm font-medium transition-colors duration-200">
-              瀏覽診所
+          <div className="flex items-center gap-1 sm:gap-3">
+            <button onClick={handleBrowseAll} className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5">
+              <span className="hidden sm:inline">瀏覽診所</span>
+              <span className="sm:hidden">🏥</span>
             </button>
-            <Link href="/guide" className="text-mist hover:text-gold text-sm font-medium transition-colors duration-200">
-              🩺 症狀對照
+            <Link href="/guide" className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5">
+              <span className="hidden sm:inline">🩺 症狀對照</span>
+              <span className="sm:hidden">🩺</span>
             </Link>
-            <Link href="/emergency" className="text-sm font-bold transition-colors hover:opacity-80" style={{ color: '#e16162' }}>
-              🚨 急診
+            <Link href="/emergency" className="text-xs sm:text-sm font-bold transition-colors hover:opacity-80 px-2 py-1.5 rounded-lg hover:bg-white/5" style={{ color: '#e16162' }}>
+              <span className="hidden sm:inline">🚨 急診</span>
+              <span className="sm:hidden">🚨</span>
             </Link>
-            <Link href="/favorites" className="text-mist hover:text-gold text-sm font-medium transition-colors duration-200">
-              🤍 收藏
+            <Link href="/favorites" className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5">
+              <span className="hidden sm:inline">🤍 收藏</span>
+              <span className="sm:hidden">🤍</span>
             </Link>
           </div>
         </div>
