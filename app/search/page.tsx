@@ -134,10 +134,12 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
   const allFuzzyTags = new Set<string>([...tagSetsPerTerm.flatMap((s) => [...s])])
 
   // 無論是否已有 tag，都嘗試用 AI 補充（並 remap 不存在的 tag）
+  let lastAiTags: string[] = []
   if (queryTerms.length > 0) {
     const cacheKey = queryTerms.join(',')
     if (aiTagCache.has(cacheKey)) {
-      aiTagCache.get(cacheKey)!.forEach((t: string) => allFuzzyTags.add(t))
+      lastAiTags = aiTagCache.get(cacheKey)!
+      lastAiTags.forEach((t: string) => allFuzzyTags.add(t))
     } else {
       try {
         const baseUrl = process.env.VERCEL_URL
@@ -152,6 +154,7 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
         if (data.specialties && Array.isArray(data.specialties)) {
           const remapped = remapTags(data.specialties)
           aiTagCache.set(cacheKey, remapped)
+          lastAiTags = remapped
           remapped.forEach((t: string) => allFuzzyTags.add(t))
         }
         // 如果 AI 萃取出關鍵症狀詞，也加進 fuzzy tags 做二次比對
@@ -161,8 +164,9 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
             .select('specialty_tag')
             .in('keyword', data.extractedSymptoms)
           if (extraSymptoms) {
-            remapTags(extraSymptoms.map((s: { specialty_tag: string }) => s.specialty_tag))
-              .forEach((t: string) => allFuzzyTags.add(t))
+            const extraRemapped = remapTags(extraSymptoms.map((s: { specialty_tag: string }) => s.specialty_tag))
+            extraRemapped.forEach((t: string) => allFuzzyTags.add(t))
+            lastAiTags = [...new Set([...lastAiTags, ...extraRemapped])]
           }
         }
       } catch {
@@ -190,16 +194,12 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
   }
 
   // 兜底：若 tagClinics 為空但 AI 有回傳 specialties，單獨用 AI specialties 再查一次
-  if (tagClinics.length === 0) {
-    const cacheKey = queryTerms.join(',')
-    const aiTags = aiTagCache.get(cacheKey) ?? []
-    if (aiTags.length > 0) {
-      let fallbackQuery = supabase.from('clinics').select('*').overlaps('specialty_tags', aiTags)
-      if (pet && pet !== 'both') fallbackQuery = fallbackQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
-      if (district) fallbackQuery = fallbackQuery.eq('district', district)
-      const { data: fallbackData } = await fallbackQuery
-      tagClinics = (fallbackData ?? []) as Clinic[]
-    }
+  if (tagClinics.length === 0 && lastAiTags.length > 0) {
+    let fallbackQuery = supabase.from('clinics').select('*').overlaps('specialty_tags', lastAiTags)
+    if (pet && pet !== 'both') fallbackQuery = fallbackQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
+    if (district) fallbackQuery = fallbackQuery.eq('district', district)
+    const { data: fallbackData } = await fallbackQuery
+    tagClinics = (fallbackData ?? []) as Clinic[]
   }
 
   // 名稱搜尋只用第一個關鍵字
