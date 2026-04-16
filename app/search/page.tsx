@@ -25,6 +25,9 @@ function remapTags(tags: string[]): string[] {
   return tags.map(t => TAG_REMAP[t] ?? t)
 }
 
+// In-memory cache for AI tag results（process 層級，跨 request 共享）
+const aiTagCache = new Map<string, string[]>()
+
 
 async function fetchClinics(q: string, pet: string, district: string): Promise<Clinic[]> {
   // 支援多症狀複合查詢（逗號分隔）
@@ -95,21 +98,28 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
 
   // 無論是否已有 tag，都嘗試用 AI 補充（並 remap 不存在的 tag）
   if (queryTerms.length > 0) {
-    try {
-      const baseUrl = process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : 'http://localhost:3000'
-      const res = await fetch(`${baseUrl}/api/symptom-explain`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ symptoms: queryTerms }),
-      })
-      const data = await res.json()
-      if (data.specialties && Array.isArray(data.specialties)) {
-        remapTags(data.specialties).forEach((t: string) => allFuzzyTags.add(t))
+    const cacheKey = queryTerms.join(',')
+    if (aiTagCache.has(cacheKey)) {
+      aiTagCache.get(cacheKey)!.forEach((t: string) => allFuzzyTags.add(t))
+    } else {
+      try {
+        const baseUrl = process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : 'http://localhost:3000'
+        const res = await fetch(`${baseUrl}/api/symptom-explain`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ symptoms: queryTerms }),
+        })
+        const data = await res.json()
+        if (data.specialties && Array.isArray(data.specialties)) {
+          const remapped = remapTags(data.specialties)
+          aiTagCache.set(cacheKey, remapped)
+          remapped.forEach((t: string) => allFuzzyTags.add(t))
+        }
+      } catch {
+        // silent fail
       }
-    } catch {
-      // silent fail
     }
   }
 
