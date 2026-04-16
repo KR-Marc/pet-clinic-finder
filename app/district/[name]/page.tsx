@@ -119,7 +119,7 @@ interface Clinic {
 
 // ── Static params ────────────────────────────────────────────────────────────
 export async function generateStaticParams() {
-  return Object.keys(DISTRICTS).map((name) => ({ name: encodeURIComponent(name) }))
+  return Object.keys(DISTRICTS).map((name) => ({ name }))
 }
 
 // ── Metadata ─────────────────────────────────────────────────────────────────
