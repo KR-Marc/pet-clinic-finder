@@ -68,7 +68,12 @@ export default function SymptomExplainer({ symptoms }: { symptoms: string[] }) {
       )}
 
       {error && (
-        <p className="text-sm text-mist/50">暫時無法分析，請直接參考下方診所列表。</p>
+        <div className="flex items-center gap-2">
+          <span>🔍</span>
+          <p className="text-sm" style={{ color: 'rgba(171,209,198,0.6)' }}>
+            AI 分析暫時無法使用，請直接參考下方診所列表，或稍後重新整理頁面再試。
+          </p>
+        </div>
       )}
 
       {data && (

@@ -20,19 +20,27 @@ export async function POST(req: NextRequest) {
 }`
 
   const apiKey = process.env.GEMINI_API_KEY
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 800, temperature: 0.3 },
-      }),
+  async function callGemini(retries = 2): Promise<Response> {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 800, temperature: 0.3 },
+        }),
+      }
+    )
+    const data = await res.json()
+    if (data.error && retries > 0) {
+      await new Promise(r => setTimeout(r, 1000))
+      return callGemini(retries - 1)
     }
-  )
+    return data
+  }
 
-  const data = await response.json()
+  const data = await callGemini()
 
   if (data.error) {
     return NextResponse.json({ error: data.error.message }, { status: 500 })
@@ -43,7 +51,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const parsed = JSON.parse(clean)
-    // 過濾 specialties 只保留已知 tag
     if (parsed.specialties) {
       parsed.specialties = parsed.specialties.filter((t: string) => KNOWN_TAGS.includes(t))
     }
