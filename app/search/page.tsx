@@ -47,6 +47,24 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
       const tagLower = tag.toLowerCase()
       if (tLower.includes(tagLower) || tagLower.includes(tLower)) tags.add(tag)
     }
+    // 別名對照：口語詞 → 正式 tag
+    const ALIAS: Record<string, string> = {
+      '急診': '24H急診', '半夜': '24H急診', '緊急': '24H急診', '24小時': '24H急診',
+      '腸胃': '外科', '拉肚': '外科', '嘔吐': '外科',
+      '掉毛': '皮膚科', '搔癢': '皮膚科', '皮膚': '皮膚科',
+      '眼睛': '眼科', '眼屎': '眼科',
+      '牙': '牙科', '口臭': '牙科',
+      '骨折': '骨科', '跛行': '骨科', '關節': '骨科',
+      '心臟': '心臟科', '喘': '心臟科',
+      '腎': '腎臟科', '尿': '泌尿科', '血尿': '泌尿科',
+      '腫塊': '腫瘤科', '腫瘤': '腫瘤科',
+      '抽搐': '神經外科', '癲癇': '神經外科',
+      '針灸': '中獸醫', '中藥': '中獸醫',
+      '復健': '復健', '術後': '復健',
+    }
+    for (const [alias, tag] of Object.entries(ALIAS)) {
+      if (tLower.includes(alias)) tags.add(tag)
+    }
     return tags
   })
 
