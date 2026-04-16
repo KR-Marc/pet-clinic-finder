@@ -154,6 +154,17 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
           aiTagCache.set(cacheKey, remapped)
           remapped.forEach((t: string) => allFuzzyTags.add(t))
         }
+        // 如果 AI 萃取出關鍵症狀詞，也加進 fuzzy tags 做二次比對
+        if (data.extractedSymptoms && Array.isArray(data.extractedSymptoms)) {
+          const { data: extraSymptoms } = await supabase
+            .from('symptoms')
+            .select('specialty_tag')
+            .in('keyword', data.extractedSymptoms)
+          if (extraSymptoms) {
+            remapTags(extraSymptoms.map((s: { specialty_tag: string }) => s.specialty_tag))
+              .forEach((t: string) => allFuzzyTags.add(t))
+          }
+        }
       } catch {
         // silent fail
       }
