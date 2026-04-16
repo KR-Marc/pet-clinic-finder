@@ -12,7 +12,6 @@ const KNOWN_TAGS = [
 async function getTagsFromAI(terms: string[]): Promise<string[]> {
   const AI_KNOWN_TAGS = ['牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科', '神經外科', '泌尿科', '腎臟科', '外科', '復健', '中獸醫', '24H急診', '重症加護', '內科', '呼吸科', '健檢', '行為醫學']
   const apiKey = process.env.GEMINI_API_KEY
-  console.log('[AI Fallback] apiKey exists:', !!apiKey, 'length:', apiKey?.length ?? 0)
   if (!apiKey) return []
 
   const prompt = `寵物出現以下症狀：${terms.join('、')}
@@ -21,7 +20,6 @@ async function getTagsFromAI(terms: string[]): Promise<string[]> {
 ${AI_KNOWN_TAGS.join('、')}`
 
   try {
-    console.log('[AI Fallback] calling Gemini with prompt:', prompt.slice(0, 50))
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
@@ -34,16 +32,10 @@ ${AI_KNOWN_TAGS.join('、')}`
       }
     )
     const data = await res.json()
-    console.log('[AI Fallback] response status:', res.status)
-    console.log('[AI Fallback] data keys:', Object.keys(data))
-    console.log('[AI Fallback] full data:', JSON.stringify(data).slice(0, 300))
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-    console.log('[AI Fallback] raw text:', JSON.stringify(text))
     const result = text.split(/[,，、\n]/).map((t: string) => t.trim()).filter((t: string) => AI_KNOWN_TAGS.includes(t))
-    console.log('[AI Fallback] parsed result:', result)
     return result
-  } catch (e) {
-    console.log('[AI Fallback] error:', e)
+  } catch {
     return []
   }
 }
@@ -95,11 +87,8 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
 
   // 如果 symptoms 表找不到任何 tag，用 AI 判斷
   if (allFuzzyTags.size === 0 && queryTerms.length > 0) {
-    console.log('[AI Fallback] Triggering for terms:', queryTerms)
     const aiTags = await getTagsFromAI(queryTerms)
-    console.log('[AI Fallback] Got tags:', aiTags)
     aiTags.forEach(t => allFuzzyTags.add(t))
-    console.log('[AI Fallback] allFuzzyTags after:', [...allFuzzyTags])
   }
 
   if (allFuzzyTags.size > 0) {
@@ -128,7 +117,23 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
 
   const seen = new Set(tagClinics.map((c) => c.id))
   const nameOnly = ((nameClinics ?? []) as Clinic[]).filter((c) => !seen.has(c.id))
-  return [...tagClinics, ...nameOnly]
+
+  // 計算每間診所的相關性分數
+  // 分數 = 診所的 specialty_tags 中有幾個在 allFuzzyTags 裡
+  const scoredTagClinics = tagClinics.map((clinic) => {
+    const matchCount = clinic.specialty_tags.filter((t) => allFuzzyTags.has(t)).length
+    return { clinic, score: matchCount }
+  })
+
+  // 先依相關性分數降序，分數相同再依評分降序
+  scoredTagClinics.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score
+    const ratingA = a.clinic.rating ?? 0
+    const ratingB = b.clinic.rating ?? 0
+    return ratingB - ratingA
+  })
+
+  return [...scoredTagClinics.map((s) => s.clinic), ...nameOnly]
 }
 
 export default async function SearchPage({
