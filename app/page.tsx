@@ -8,7 +8,7 @@ import RecentlyViewedSection from './components/RecentlyViewedSection'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
-const QUICK_TAGS = ['口臭', '牙齦紅腫', '眼屎多', '一直抓', '咳嗽不停', '跛行', '腫塊', '抽搐', '血尿', '半夜急診']
+const QUICK_TAGS = ['嘔吐', '拉肚子', '抽搐', '血尿', '血便', '呼吸困難', '食慾不振', '咳嗽', '沒精神', '掉毛', '一直抓', '半夜急診']
 
 const PET_OPTIONS = [
   { label: '全部', value: '' },
