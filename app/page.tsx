@@ -81,6 +81,30 @@ export default function HomePage() {
   const [pet, setPet] = useState('')
   const [clinicCount, setClinicCount] = useState<number | null>(null)
   const [geoState, setGeoState] = useState<GeoState>('idle')
+  const [listening, setListening] = useState(false)
+
+  const handleVoiceInput = () => {
+    if (typeof window === 'undefined') return
+    const SpeechRecognition =
+      (window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown }).SpeechRecognition ||
+      (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition
+    if (!SpeechRecognition) { alert('您的瀏覽器不支援語音輸入'); return }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const recognition = new (SpeechRecognition as any)()
+    recognition.lang = 'zh-TW'
+    recognition.interimResults = false
+    recognition.maxAlternatives = 1
+    setListening(true)
+    recognition.start()
+    recognition.onresult = (e: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => {
+      const transcript = e.results[0][0].transcript
+      setQuery(transcript)
+      setListening(false)
+      handleSubmit(transcript)
+    }
+    recognition.onerror = () => setListening(false)
+    recognition.onend = () => setListening(false)
+  }
 
   useEffect(() => {
     supabase
@@ -195,6 +219,13 @@ export default function HomePage() {
                 placeholder="描述你的寵物症狀，例如：口臭、掉毛、一直抓"
                 className="flex-1 bg-ink border border-mist/30 rounded-xl px-4 py-3.5 text-base text-snow placeholder:text-mist/40 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent shadow-sm"
               />
+              <button
+                onClick={handleVoiceInput}
+                title="語音輸入"
+                className={`px-3.5 py-3.5 rounded-xl border transition-all ${listening ? 'bg-coral border-coral text-snow animate-pulse' : 'bg-ink border-mist/30 text-mist hover:border-gold hover:text-gold'}`}
+              >
+                🎤
+              </button>
               <button
                 onClick={() => handleSubmit()}
                 className="bg-gold hover:opacity-90 active:opacity-80 text-ink px-6 py-3.5 rounded-xl font-bold text-base transition-opacity shadow-sm whitespace-nowrap"

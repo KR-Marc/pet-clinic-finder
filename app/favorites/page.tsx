@@ -92,11 +92,12 @@ export default function FavoritesPage() {
                     查看詳情 →
                   </Link>
                   <Link
-                    href={`/compare?ids=${clinic.id}`}
+                    href="/search"
+                    title="前往搜尋頁，從診所卡片勾選加入比較"
                     className="text-xs font-medium px-2.5 py-1 rounded-full border transition-colors hover:text-snow"
                     style={{ color: 'rgba(171,209,198,0.5)', borderColor: 'rgba(171,209,198,0.2)' }}
                   >
-                    ＋ 比較
+                    ⇄ 比較
                   </Link>
                 </div>
               </div>

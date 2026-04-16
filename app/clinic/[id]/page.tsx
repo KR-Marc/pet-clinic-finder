@@ -140,6 +140,10 @@ export default async function ClinicPage({
   const isOpenToday = todayHours !== null && todayHours !== '休息'
 
   const mapQuery = encodeURIComponent(`${clinic.name} ${clinic.address} 台北`)
+  // 附近同專科地圖查詢：用第一個專科tag + 行政區
+  const nearbyMapQuery = clinic.specialty_tags.length > 0
+    ? encodeURIComponent(`台北市${clinic.district}${clinic.specialty_tags[0]}動物醫院`)
+    : encodeURIComponent(`台北市${clinic.district}動物醫院`)
 
   // 簡單異常偵測：評論數超過 1000 且評分高於 4.8 顯示提示
   const showReviewWarning = (clinic.review_count ?? 0) > 2000 && (clinic.rating ?? 0) >= 4.0
@@ -351,16 +355,19 @@ export default async function ClinicPage({
           </div>
 
           {/* RIGHT — map */}
-          <div className="lg:col-span-2 rounded-xl overflow-hidden" style={{ minHeight: '350px' }}>
+          <div className="lg:col-span-2 rounded-xl overflow-hidden relative" style={{ minHeight: '350px' }}>
+            <div className="absolute top-2 left-2 z-10 px-2 py-1 rounded text-xs font-medium" style={{background:'rgba(0,30,29,0.7)',color:'#abd1c6'}}>
+              📍 附近{clinic.specialty_tags[0] ?? ''}診所
+            </div>
             <iframe
-              title={`${clinic.name} 地圖`}
+              title={`${clinic.name} 附近同專科診所地圖`}
               width="100%"
               height="100%"
               style={{ border: 0, display: 'block', minHeight: '350px' }}
               loading="lazy"
               allowFullScreen
               referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/search?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${mapQuery}`}
+              src={`https://www.google.com/maps/embed/v1/search?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${nearbyMapQuery}`}
             />
           </div>
         </div>
