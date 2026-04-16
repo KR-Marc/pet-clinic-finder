@@ -194,12 +194,18 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
       >
         {/* Row 1: count */}
         <div className="flex items-center mb-3">
-          <p className="text-sm font-semibold" style={{ color: '#f9bc60' }}>
-            找到 <span className="text-base font-bold">{sorted.length > 0 ? sorted.length : aiFallbackClinics.length}</span> 間診所
-            {sorted.length === 0 && aiFallbackClinics.length > 0 && (
-              <span className="ml-1.5 text-xs font-normal" style={{ color: 'rgba(171,209,198,0.5)' }}>AI 建議</span>
-            )}
-          </p>
+          {(() => {
+            const displayCount = aiFallbackClinics.length > 0 ? aiFallbackClinics.length : sorted.length
+            const isAi = aiFallbackClinics.length > 0 && sorted.length === 0
+            return (
+              <p className="text-sm font-semibold" style={{ color: '#f9bc60' }}>
+                找到 <span className="text-base font-bold">{displayCount}</span> 間診所
+                {isAi && (
+                  <span className="ml-1.5 text-xs font-normal" style={{ color: 'rgba(171,209,198,0.5)' }}>AI 建議</span>
+                )}
+              </p>
+            )
+          })()}
         </div>
         {/* Row 2: pet + open */}
         <div className="flex items-center gap-2 flex-wrap mb-2">
