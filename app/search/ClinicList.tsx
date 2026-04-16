@@ -177,57 +177,44 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
           border: '1px solid rgba(171,209,198,0.12)',
         }}
       >
-        {/* Mobile: 2 rows — Desktop: 1 row */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-
-          {/* Row 1 on mobile: count (left) + sort (right) */}
-          <div className="flex items-center justify-between sm:justify-start gap-2">
-            <p className="text-sm font-semibold whitespace-nowrap" style={{ color: '#f9bc60' }}>
-              找到{' '}
-              <span className="text-base font-bold">{filtered.length}</span>{' '}
-              間診所
-            </p>
-            {/* Sort: mobile only in row 1 */}
-            <div className="sm:hidden">{SortSelect}</div>
-          </div>
-
-          {/* Row 2 on mobile: filters + district | also sm+ middle */}
-          <div className="flex items-center gap-1.5 flex-wrap sm:flex-1">
-            <PetFilter />
-            <OpenFilter />
-            <DistrictFilter />
-          </div>
-
-          {/* Sort: desktop only, right-aligned */}
-          <div className="hidden sm:block">{SortSelect}</div>
-
-          {/* Row 3: Specialty tag quick filter */}
-          <div className="flex items-center gap-1.5 flex-wrap pt-1 sm:pt-0 border-t border-mist/10 sm:border-0 w-full">
-            {SPECIALTY_TAGS.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => handleTagFilter(tag)}
-                className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
-                style={
-                  activeTag === tag
-                    ? { background: '#f9bc60', color: '#001e1d' }
-                    : { background: 'rgba(171,209,198,0.12)', color: '#abd1c6' }
-                }
-              >
-                {tag}
-              </button>
-            ))}
-            {activeTag && (
-              <button
-                onClick={() => handleTagFilter('')}
-                className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
-                style={{ background: 'rgba(225,97,98,0.2)', color: '#e16162' }}
-              >
-                ✕ 清除
-              </button>
-            )}
-          </div>
-
+        {/* Row 1: count + sort */}
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-semibold" style={{ color: '#f9bc60' }}>
+            找到 <span className="text-base font-bold">{filtered.length}</span> 間診所
+          </p>
+          {SortSelect}
+        </div>
+        {/* Row 2: pet + open + district filters */}
+        <div className="flex items-center gap-2 flex-wrap mb-3">
+          <PetFilter />
+          <OpenFilter />
+          <DistrictFilter />
+        </div>
+        {/* Row 3: specialty tag pills (scrollable on mobile) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide" style={{ borderTop: '1px solid rgba(171,209,198,0.1)', paddingTop: '10px' }}>
+          {SPECIALTY_TAGS.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => handleTagFilter(tag)}
+              className="px-3 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap shrink-0"
+              style={
+                activeTag === tag
+                  ? { background: '#f9bc60', color: '#001e1d' }
+                  : { background: 'rgba(171,209,198,0.1)', color: '#abd1c6', border: '1px solid rgba(171,209,198,0.15)' }
+              }
+            >
+              {tag}
+            </button>
+          ))}
+          {activeTag && (
+            <button
+              onClick={() => handleTagFilter('')}
+              className="px-3 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap shrink-0"
+              style={{ background: 'rgba(225,97,98,0.15)', color: '#e16162', border: '1px solid rgba(225,97,98,0.2)' }}
+            >
+              ✕ 清除
+            </button>
+          )}
         </div>
       </div>
 
