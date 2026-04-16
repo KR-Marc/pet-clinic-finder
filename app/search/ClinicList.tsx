@@ -177,18 +177,18 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
           border: '1px solid rgba(171,209,198,0.12)',
         }}
       >
-        {/* Row 1: count + sort */}
-        <div className="flex items-center justify-between mb-3">
+        {/* Row 1: count */}
+        <div className="flex items-center mb-3">
           <p className="text-sm font-semibold" style={{ color: '#f9bc60' }}>
             找到 <span className="text-base font-bold">{filtered.length}</span> 間診所
           </p>
-          {SortSelect}
         </div>
-        {/* Row 2: pet + open + district filters */}
+        {/* Row 2: pet + open + district + sort */}
         <div className="flex items-center gap-2 flex-wrap mb-3">
           <PetFilter />
           <OpenFilter />
           <DistrictFilter />
+          <div className="ml-auto">{SortSelect}</div>
         </div>
         {/* Row 3: specialty tag pills (scrollable on mobile) */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide" style={{ borderTop: '1px solid rgba(171,209,198,0.1)', paddingTop: '10px' }}>
