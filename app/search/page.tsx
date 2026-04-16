@@ -9,6 +9,22 @@ const KNOWN_TAGS = [
   '神經外科', '泌尿科', '腎臟科', '外科', '24H急診', '復健', '中獸醫',
 ]
 
+// AI 可能回傳但資料庫沒有的 tag → 對應到實際存在的 tag
+const TAG_REMAP: Record<string, string> = {
+  '內科': '外科',
+  '健檢': '外科',
+  '行為醫學': '中獸醫',
+  '呼吸科': '心臟科',
+  '重症加護': '24H急診',
+  '一般科': '外科',
+  '腸胃科': '外科',
+  '感染科': '外科',
+}
+
+function remapTags(tags: string[]): string[] {
+  return tags.map(t => TAG_REMAP[t] ?? t)
+}
+
 
 async function fetchClinics(q: string, pet: string, district: string): Promise<Clinic[]> {
   // 支援多症狀複合查詢（逗號分隔）
@@ -77,8 +93,8 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
   let tagClinics: Clinic[] = []
   const allFuzzyTags = new Set<string>([...tagSetsPerTerm.flatMap((s) => [...s])])
 
-  // 如果 symptoms 表找不到任何 tag，用 AI 判斷
-  if (allFuzzyTags.size === 0 && queryTerms.length > 0) {
+  // 無論是否已有 tag，都嘗試用 AI 補充（並 remap 不存在的 tag）
+  if (queryTerms.length > 0) {
     try {
       const baseUrl = process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}`
@@ -90,7 +106,7 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
       })
       const data = await res.json()
       if (data.specialties && Array.isArray(data.specialties)) {
-        data.specialties.forEach((t: string) => allFuzzyTags.add(t))
+        remapTags(data.specialties).forEach((t: string) => allFuzzyTags.add(t))
       }
     } catch {
       // silent fail
