@@ -171,11 +171,10 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
       <SymptomExplainer symptoms={queryTerms} />
       {/* ── Sticky filter bar ────────────────────────────────────────────── */}
       <div
-        className="sticky top-[44px] z-10 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-1"
+        className="rounded-xl px-4 py-3 mb-4"
         style={{
-          background: 'rgba(0,30,29,0.96)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(171,209,198,0.12)',
+          background: 'rgba(0,30,29,0.5)',
+          border: '1px solid rgba(171,209,198,0.12)',
         }}
       >
         {/* Mobile: 2 rows — Desktop: 1 row */}
