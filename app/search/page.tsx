@@ -62,7 +62,9 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
       '針灸': '中獸醫', '中藥': '中獸醫',
       '復健': '復健', '術後': '復健',
       '肛門': '外科', '摩地板': '外科', '磨地板': '外科', '寄生蟲': '外科',
-      '內科': '內科', '健檢': '健檢', '呼吸': '呼吸科',
+      '結紮': '外科', '絕育': '外科', '手術': '外科', '切除': '外科', '縫合': '外科',
+      '健康檢查': '健檢', '健檢': '外科', '預防': '外科',
+      '內科': '外科', '呼吸': '心臟科',
     }
     for (const [alias, tag] of Object.entries(ALIAS)) {
       if (tLower.includes(alias)) tags.add(tag)
