@@ -189,6 +189,19 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
     tagClinics = results
   }
 
+  // 兜底：若 tagClinics 為空但 AI 有回傳 specialties，單獨用 AI specialties 再查一次
+  if (tagClinics.length === 0) {
+    const cacheKey = queryTerms.join(',')
+    const aiTags = aiTagCache.get(cacheKey) ?? []
+    if (aiTags.length > 0) {
+      let fallbackQuery = supabase.from('clinics').select('*').overlaps('specialty_tags', aiTags)
+      if (pet && pet !== 'both') fallbackQuery = fallbackQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
+      if (district) fallbackQuery = fallbackQuery.eq('district', district)
+      const { data: fallbackData } = await fallbackQuery
+      tagClinics = (fallbackData ?? []) as Clinic[]
+    }
+  }
+
   // 名稱搜尋只用第一個關鍵字
   let nameQuery = supabase.from('clinics').select('*').ilike('name', `%${queryTerms[0]}%`)
   if (pet && pet !== 'both') nameQuery = nameQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
