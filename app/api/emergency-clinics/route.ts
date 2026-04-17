@@ -6,14 +6,9 @@ export async function GET() {
   const { data, error } = await supabase
     .from('clinics')
     .select('id, name, district, address, phone, rating, review_count, specialty_tags, opening_hours, is_24h')
+    .contains('specialty_tags', ['24H急診'])
     .order('rating', { ascending: false })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  // server side filter
-  const filtered = (data ?? []).filter((c: { specialty_tags: string[] }) =>
-    c.specialty_tags?.includes('24H急診')
-  )
-
-  return NextResponse.json(filtered)
+  return NextResponse.json(data ?? [])
 }

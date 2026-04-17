@@ -1,8 +1,7 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { AlertTriangle, Car, Clock, Map, MapPin, PawPrint, Phone, Search, Siren, Star } from 'lucide-react'
+import { AlertTriangle, Car, Clock, Map, MapPin, PawPrint, Phone, Star } from 'lucide-react'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
+import UberButtonClient from './UberButtonClient'
 
 interface Clinic {
   id: string
@@ -19,36 +18,6 @@ interface Clinic {
 
 const WEEKDAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
 
-// Geocode 地址後開啟 Uber（帶座標）
-const geoCache: Record<string, { lat: number; lng: number }> = {}
-
-async function openUber(clinic: Clinic, btnEl: HTMLAnchorElement) {
-  const fullAddress = '台北市' + clinic.district + clinic.address
-  btnEl.textContent = '定位中...'
-  btnEl.style.opacity = '0.7'
-  try {
-    let coords = geoCache[clinic.id]
-    if (!coords) {
-      const res = await fetch(`/api/geocode?address=${encodeURIComponent(fullAddress)}`)
-      const data = await res.json()
-      if (data.lat && data.lng) {
-        coords = data
-        geoCache[clinic.id] = coords
-      }
-    }
-    if (coords) {
-      window.location.href = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[latitude]=${coords.lat}&dropoff[longitude]=${coords.lng}&dropoff[nickname]=${encodeURIComponent(clinic.name)}&dropoff[formatted_address]=${encodeURIComponent(fullAddress)}`
-    } else {
-      window.location.href = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(fullAddress)}&dropoff[nickname]=${encodeURIComponent(clinic.name)}`
-    }
-  } catch {
-    window.location.href = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(fullAddress)}&dropoff[nickname]=${encodeURIComponent(clinic.name)}`
-  } finally {
-    btnEl.textContent = 'Uber 叫車前往'
-    btnEl.style.opacity = '1'
-  }
-}
-
 function getTodayHours(hours: string[] | null): string | null {
   if (!hours?.length) return null
   const today = WEEKDAYS[new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Taipei' })).getDay()]
@@ -58,39 +27,36 @@ function getTodayHours(hours: string[] | null): string | null {
   return idx >= 0 ? entry.slice(idx + 2) : null
 }
 
-// 與 clinic detail 頁相同規則：評論數 > 2000 且評分 >= 4.0
 function hasReviewWarning(c: Clinic): boolean {
   return (c.review_count ?? 0) > 2000 && (c.rating ?? 0) >= 4.0
 }
 
-export default function EmergencyPage() {
-  const [clinics, setClinics] = useState<Clinic[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+async function fetchEmergencyClinics(): Promise<Clinic[]> {
+  const { data } = await supabase
+    .from('clinics')
+    .select('id, name, district, address, phone, rating, review_count, specialty_tags, opening_hours, is_24h')
+    .contains('specialty_tags', ['24H急診'])
+    .order('rating', { ascending: false })
 
-  useEffect(() => {
-    fetch('/api/emergency-clinics')
-      .then(r => r.json())
-      .then(data => {
-        if (data.error) { setError(data.error); setLoading(false); return }
-        // 有警示語的排最後，同層按評分排
-        const sorted = [...data].sort((a: Clinic, b: Clinic) => {
-          const aWarn = hasReviewWarning(a) ? 1 : 0
-          const bWarn = hasReviewWarning(b) ? 1 : 0
-          if (aWarn !== bWarn) return aWarn - bWarn
-          return (b.rating ?? 0) - (a.rating ?? 0)
-        })
-        setClinics(sorted)
-        setLoading(false)
-      })
-      .catch(e => { setError(e.message); setLoading(false) })
-  }, [])
+  const clinics = (data ?? []) as Clinic[]
+  return clinics.sort((a, b) => {
+    const aWarn = hasReviewWarning(a) ? 1 : 0
+    const bWarn = hasReviewWarning(b) ? 1 : 0
+    if (aWarn !== bWarn) return aWarn - bWarn
+    return (b.rating ?? 0) - (a.rating ?? 0)
+  })
+}
+
+export default async function EmergencyPage() {
+  const clinics = await fetchEmergencyClinics()
 
   return (
     <main className="min-h-screen bg-brand">
       <div className="bg-ink sticky top-0 z-10 shadow-md">
         <div className="max-w-4xl mx-auto px-4 py-3">
-          <Link href="/" className="text-mist/50 hover:text-snow text-sm"><PawPrint size={14} className="inline mr-1" />首頁</Link>
+          <Link href="/" className="text-mist/50 hover:text-snow text-sm">
+            <PawPrint size={14} className="inline mr-1" />首頁
+          </Link>
         </div>
       </div>
 
@@ -101,7 +67,7 @@ export default function EmergencyPage() {
           <h1 className="text-2xl sm:text-3xl font-bold text-snow mb-3">台北市 24H 急診動物醫院</h1>
           <p className="text-mist/70 text-sm mb-2">遇到寵物緊急狀況時請直接撥打電話確認。</p>
           <p className="text-xs font-semibold" style={{ color: '#f9bc60' }}>
-            {loading ? '載入中...' : `共 ${clinics.length} 間全天候急診院所`}
+            共 {clinics.length} 間全天候急診院所
           </p>
         </div>
       </div>
@@ -113,86 +79,70 @@ export default function EmergencyPage() {
           <p className="text-xs text-mist/70">急診服務可能因醫師排班而有所調整，建議出發前先致電確認。</p>
         </div>
 
-        {loading && <div className="text-center py-16 text-mist/50">載入中...</div>}
-        {error && <div className="text-center py-8 text-red-400">錯誤：{error}</div>}
+        <div className="flex flex-col gap-4">
+          {clinics.map(c => {
+            const hours = getTodayHours(c.opening_hours)
+            const warn = hasReviewWarning(c)
+            const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(c.district + c.address)}&travelmode=driving`
 
-        {!loading && !error && (
-          <div className="flex flex-col gap-4">
-            {clinics.map(c => {
-              const hours = getTodayHours(c.opening_hours)
-              const warn = hasReviewWarning(c)
-              const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(c.district + c.address)}&travelmode=driving`
-              return (
-                <div key={c.id} className="bg-sand rounded-xl p-5 shadow-sm">
-                  {/* 警示語 */}
-                  {warn && (
-                    <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg mb-3"
-                      style={{ background: 'rgba(249,188,96,0.1)', color: '#f9bc60', border: '1px solid rgba(249,188,96,0.2)' }}>
-                      <AlertTriangle size={14} />
-                      <span>此診所評論數量較多，建議參考多方資訊後再決定就診</span>
+            return (
+              <div key={c.id} className="bg-sand rounded-xl p-5 shadow-sm">
+                {warn && (
+                  <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg mb-3"
+                    style={{ background: 'rgba(249,188,96,0.1)', color: '#f9bc60', border: '1px solid rgba(249,188,96,0.2)' }}>
+                    <AlertTriangle size={14} />
+                    <span>此診所評論數量較多，建議參考多方資訊後再決定就診</span>
+                  </div>
+                )}
+                <div className="flex items-start justify-between gap-3 mb-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Link href={`/clinic/${c.id}`} className="font-bold text-base text-ink hover:underline">{c.name}</Link>
+                    <span className="px-2 py-0.5 rounded-full text-xs font-bold"
+                      style={{ background: '#e16162', color: '#fff' }}>24H急診</span>
+                  </div>
+                  {c.rating != null && (
+                    <div className="flex flex-col items-end shrink-0">
+                      <span className="text-sm font-bold" style={{ color: '#f9bc60' }}>
+                        <Star size={13} className="inline mr-0.5 fill-gold text-gold" />{c.rating}
+                      </span>
+                      {c.review_count != null && (
+                        <span className="text-xs" style={{ color: 'rgba(249,188,96,0.5)' }}>
+                          {c.review_count.toLocaleString()} 則
+                        </span>
+                      )}
                     </div>
                   )}
-
-                  {/* 名稱 + 評分 + 評論數 */}
-                  <div className="flex items-start justify-between gap-3 mb-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Link href={`/clinic/${c.id}`} className="font-bold text-base text-ink hover:underline">{c.name}</Link>
-                      <span className="px-2 py-0.5 rounded-full text-xs font-bold"
-                        style={{ background: '#e16162', color: '#fff' }}>24H急診</span>
-                    </div>
-                    {c.rating != null && (
-                      <div className="flex flex-col items-end shrink-0">
-                        <span className="text-sm font-bold" style={{ color: '#f9bc60' }}><Star size={13} className="inline mr-0.5 fill-gold text-gold" />{c.rating}</span>
-                        {c.review_count != null && (
-                          <span className="text-xs" style={{ color: 'rgba(249,188,96,0.5)' }}>
-                            {c.review_count.toLocaleString()} 則
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 地址 */}
-                  <p className="text-xs mb-1" style={{ color: 'rgba(0,30,29,0.5)' }}>
-                    <MapPin size={13} className="inline mr-0.5" />{c.district}・{c.address}
+                </div>
+                <p className="text-xs mb-1" style={{ color: 'rgba(0,30,29,0.5)' }}>
+                  <MapPin size={13} className="inline mr-0.5" />{c.district}・{c.address}
+                </p>
+                {hours && (
+                  <p className="text-xs mb-3 font-medium"
+                    style={{ color: hours === '休息' ? '#e16162' : '#16a34a' }}>
+                    <Clock size={13} className="inline mr-0.5" />今日 {hours}
                   </p>
-
-                  {/* 今日營業時間 */}
-                  {hours && (
-                    <p className="text-xs mb-3 font-medium"
-                      style={{ color: hours === '休息' ? '#e16162' : '#16a34a' }}>
-                      <Clock size={13} className="inline mr-0.5" />今日 {hours}
-                    </p>
-                  )}
-
-                  {/* 電話 + 導航 */}
-                  <div className="flex gap-2 mb-2">
-                    <a href={`tel:${c.phone}`}
-                      className="flex-1 py-3 rounded-xl text-center font-bold text-sm"
-                      style={{ background: 'linear-gradient(135deg, #e16162 0%, #c0392b 100%)', color: 'white' }}>
-                      <><Phone size={16} className="inline-block mr-1.5" />立即撥打</>
-                    </a>
-                    <a href={navUrl} target="_blank" rel="noopener noreferrer"
-                      className="flex-1 py-3 rounded-xl text-center font-bold text-sm"
-                      style={{ background: '#2980b9', color: 'white' }}>
-                      <><Map size={16} className="inline-block mr-1.5" />導航前往</>
-                    </a>
-                  </div>
-
-                  {/* Uber - 只在手機版顯示，點擊先 geocode 再帶座標開 Uber */}
-                  <a
-                    href="#"
-                    className="md:hidden block py-2.5 rounded-xl text-center font-semibold text-sm"
-                    style={{ background: '#1a1a1a', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
-                    onClick={(e) => { e.preventDefault(); openUber(c, e.currentTarget as HTMLAnchorElement) }}
-                  >
-                    <><Car size={16} className="inline-block mr-1.5" />Uber 叫車前往</>
+                )}
+                <div className="flex gap-2 mb-2">
+                  <a href={`tel:${c.phone}`}
+                    className="flex-1 py-3 rounded-xl text-center font-bold text-sm flex items-center justify-center gap-1.5"
+                    style={{ background: 'linear-gradient(135deg, #e16162 0%, #c0392b 100%)', color: 'white' }}>
+                    <Phone size={16} />立即撥打
+                  </a>
+                  <a href={navUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex-1 py-3 rounded-xl text-center font-bold text-sm flex items-center justify-center gap-1.5"
+                    style={{ background: '#2980b9', color: 'white' }}>
+                    <Map size={16} />導航前往
                   </a>
                 </div>
-              )
-            })}
-          </div>
-        )}
+                <UberButtonClient
+                  clinicName={c.name}
+                  district={c.district}
+                  address={c.address}
+                />
+              </div>
+            )
+          })}
+        </div>
       </div>
     </main>
   )
