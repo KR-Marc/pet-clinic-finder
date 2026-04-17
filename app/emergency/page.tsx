@@ -24,7 +24,7 @@ export default function EmergencyPage() {
   useEffect(() => {
     supabase.from('clinics')
       .select('id,name,district,address,phone,rating,specialty_tags,lat,lng')
-      .overlaps('specialty_tags', ['24H急診'])
+      .contains('specialty_tags', ['24H急診'])
       .order('rating', { ascending: false })
       .then(({ data }) => { setClinics((data ?? []) as Clinic[]); setLoading(false) })
 
