@@ -240,7 +240,7 @@ export default async function SearchPage({
 
   const queryTerms = q.split(',').map((t) => t.trim()).filter(Boolean)
   const subtitle = queryTerms.length === 0
-    ? (source === 'nearby' ? '<MapPin size={14} className="inline mr-1" /> 附近的診所' : '瀏覽所有診所')
+    ? (source === 'nearby' ? <><MapPin size={14} className="inline mr-1" />附近的診所</> : '瀏覽所有診所')
     : queryTerms.length === 1
       ? `「${queryTerms[0]}」`
       : `「${queryTerms.join('」+「')}」複合搜尋`
