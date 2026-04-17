@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { AlertTriangle, ClipboardList, Clock, Globe, Map, MapPin, PawPrint, Phone, Siren, Star } from 'lucide-react'
+import UberButton from './UberButton'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -367,40 +368,65 @@ export default async function ClinicPage({
         </div>
 
         {/* ── Action buttons ────────────────────────────────────────────────── */}
-        <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
-          <a
-            href={`tel:${clinic.phone}`}
-            className="shrink-0 min-w-[120px] py-3 rounded-xl text-center font-semibold text-sm transition-opacity hover:opacity-90"
-            style={{ background: '#f9bc60', color: '#001e1d' }}
-          >
-            <><Phone size={16} className="inline-block mr-1.5" /><span className="hidden sm:inline">立即撥打</span></>
-          </a>
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 min-w-[160px] py-3 rounded-xl text-center font-medium text-sm transition-colors hover:text-snow border border-mist/30 bg-ink text-mist"
-          >
-            <><Map size={16} className="inline-block mr-1.5" /><span className="hidden sm:inline">Google Maps 導航</span></>
-          </a>
-          {clinic.website && (
+        <div className="flex flex-col gap-2 mb-8">
+          {/* 第一排：電話、導航、官網 */}
+          <div className="flex gap-2">
             <a
-              href={clinic.website}
+              href={`tel:${clinic.phone}`}
+              className="flex-1 py-3 rounded-xl text-center font-semibold text-sm transition-opacity hover:opacity-90 flex items-center justify-center gap-1.5"
+              style={{ background: '#f9bc60', color: '#001e1d' }}
+            >
+              <Phone size={18} />
+              <span className="hidden sm:inline">立即撥打</span>
+            </a>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 min-w-[120px] py-3 rounded-xl text-center font-medium text-sm transition-colors hover:opacity-80 border border-mist/30 bg-ink text-mist"
+              className="flex-1 py-3 rounded-xl text-center font-medium text-sm transition-colors hover:text-snow border border-mist/30 bg-ink text-mist flex items-center justify-center gap-1.5"
             >
-              <Globe size={15} className="inline mr-1.5" /><span className="hidden sm:inline">官網預約</span>
+              <Map size={18} />
+              <span className="hidden sm:inline">Google Maps 導航</span>
             </a>
-          )}
-          <ShareButton name={clinic.name} />
-          <FavoriteButton clinic={{
-            id: clinic.id,
-            name: clinic.name,
-            district: clinic.district,
-            rating: clinic.rating,
-            specialty_tags: clinic.specialty_tags,
-          }} />
+            {clinic.website ? (
+              <a
+                href={clinic.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 py-3 rounded-xl text-center font-medium text-sm transition-colors hover:opacity-80 border border-mist/30 bg-ink text-mist flex items-center justify-center gap-1.5"
+              >
+                <Globe size={18} />
+                <span className="hidden sm:inline">官網預約</span>
+              </a>
+            ) : (
+              <div className="flex-1 py-3 rounded-xl text-center font-medium text-sm border border-mist/10 bg-ink text-mist/30 flex items-center justify-center gap-1.5 cursor-not-allowed">
+                <Globe size={18} />
+                <span className="hidden sm:inline">官網預約</span>
+              </div>
+            )}
+          </div>
+
+          {/* 第二排：分享、收藏 */}
+          <div className="flex gap-2">
+            <ShareButton name={clinic.name} className="flex-1" />
+            <FavoriteButton
+              clinic={{
+                id: clinic.id,
+                name: clinic.name,
+                district: clinic.district,
+                rating: clinic.rating,
+                specialty_tags: clinic.specialty_tags,
+              }}
+              className="flex-1"
+            />
+          </div>
+
+          {/* 第三排：Uber 叫車（md 以下顯示） */}
+          <UberButton
+            clinicName={clinic.name}
+            district={clinic.district}
+            address={clinic.address}
+          />
         </div>
 
         {/* ── Similar clinics ───────────────────────────────────────────────── */}

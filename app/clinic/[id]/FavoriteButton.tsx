@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Heart } from 'lucide-react'
 import { useFavorites, type FavoriteClinic } from '@/hooks/useFavorites'
 
-export default function FavoriteButton({ clinic }: { clinic: FavoriteClinic }) {
+export default function FavoriteButton({ clinic, className = '' }: { clinic: FavoriteClinic; className?: string }) {
   const { toggle, isFavorite } = useFavorites()
   const [mounted, setMounted] = useState(false)
 
@@ -18,7 +18,7 @@ export default function FavoriteButton({ clinic }: { clinic: FavoriteClinic }) {
     <button
       onClick={() => toggle(clinic)}
       aria-label={saved ? '取消收藏' : '加入收藏'}
-      className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all border"
+      className={`flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-medium transition-all border ${className}`}
       style={
         saved
           ? { background: 'rgba(249,188,96,0.15)', borderColor: '#f9bc60', color: '#f9bc60' }
