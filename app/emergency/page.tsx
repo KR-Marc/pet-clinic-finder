@@ -89,7 +89,7 @@ export default async function EmergencyPage() {
               <div key={c.id} className="bg-sand rounded-xl p-5 shadow-sm">
                 {warn && (
                   <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg mb-3"
-                    style={{ background: 'rgba(249,188,96,0.1)', color: '#f9bc60', border: '1px solid rgba(249,188,96,0.2)' }}>
+                    style={{ background: 'rgba(249,188,96,0.18)', color: '#7a5a00', border: '1px solid rgba(249,188,96,0.4)' }}>
                     <AlertTriangle size={14} />
                     <span>此診所評論數量較多，建議參考多方資訊後再決定就診</span>
                   </div>
@@ -106,7 +106,7 @@ export default async function EmergencyPage() {
                         <Star size={13} className="inline mr-0.5 fill-gold text-gold" />{c.rating}
                       </span>
                       {c.review_count != null && (
-                        <span className="text-xs" style={{ color: 'rgba(249,188,96,0.5)' }}>
+                        <span className="text-xs" style={{ color: 'rgba(0,30,29,0.45)' }}>
                           {c.review_count.toLocaleString()} 則
                         </span>
                       )}

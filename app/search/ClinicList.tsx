@@ -397,7 +397,7 @@ export default function ClinicList({ clinics, queryTerms = [], source = '' }: { 
                               <Star size={13} className="inline mr-0.5 fill-gold text-gold" />{clinic.rating}
                             </span>
                             {clinic.review_count != null && (
-                              <span className="text-xs whitespace-nowrap" style={{ color: 'rgba(249,188,96,0.5)' }}>
+                              <span className="text-xs whitespace-nowrap" style={{ color: 'rgba(0,30,29,0.45)' }}>
                                 {clinic.review_count.toLocaleString()} 則
                               </span>
                             )}

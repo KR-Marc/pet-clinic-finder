@@ -461,10 +461,11 @@ export default function HomePage() {
             >
               {/* Icon circle */}
               <div
-                className="w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-colors duration-200 group-hover:bg-white/10"
+                className="w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-colors duration-200 relative"
                 style={{ backgroundColor: spec.iconBg }}
               >
-                <span className="text-2xl leading-none">
+                <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
+                <span className="text-2xl leading-none relative z-10">
                 {spec.icon === 'tooth' ? <Stethoscope size={28} /> :
                  spec.icon === 'eye' ? <Eye size={28} /> :
                  spec.icon === 'heart' ? <Heart size={28} /> :
