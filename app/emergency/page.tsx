@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import type { Metadata } from 'next'
-import PhoneLink from './PhoneLink'
+import ClinicList from './ClinicList'
 
 export const metadata: Metadata = {
   title: '台北寵物24H急診動物醫院 | 寵物專科診所搜尋',
@@ -16,20 +16,10 @@ export const metadata: Metadata = {
   },
 }
 
-interface Clinic {
-  id: string
-  name: string
-  district: string
-  address: string
-  phone: string
-  rating: number | null
-  specialty_tags: string[]
-}
-
 export default async function EmergencyPage() {
   const { data: clinics } = await supabase
     .from('clinics')
-    .select('id, name, district, address, phone, rating, specialty_tags')
+    .select('id, name, district, address, phone, rating, specialty_tags, lat, lng')
     .eq('is_24h', true)
     .order('rating', { ascending: false })
 
@@ -79,53 +69,9 @@ export default async function EmergencyPage() {
         </div>
       </div>
 
-      {/* 診所列表 */}
+      {/* 診所列表（客戶端依距離重排） */}
       <div className="max-w-4xl mx-auto px-4 pb-12">
-        <div className="flex flex-col gap-4">
-          {(clinics as Clinic[])?.map((clinic) => (
-            <Link
-              key={clinic.id}
-              href={`/clinic/${clinic.id}`}
-              className="bg-sand rounded-xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 block"
-            >
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="font-bold text-base text-ink">{clinic.name}</h2>
-                  <span
-                    className="px-2 py-0.5 rounded-full text-xs font-bold"
-                    style={{ background: '#e16162', color: '#fff' }}
-                  >
-                    24H急診
-                  </span>
-                </div>
-                {clinic.rating != null && (
-                  <span className="text-sm font-bold shrink-0" style={{ color: '#f9bc60' }}>
-                    ⭐ {clinic.rating}
-                  </span>
-                )}
-              </div>
-
-              <p className="text-xs mb-1" style={{ color: 'rgba(0,30,29,0.5)' }}>
-                📍 {clinic.district}・{clinic.address}
-              </p>
-
-              <PhoneLink phone={clinic.phone} />
-
-              {clinic.specialty_tags?.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {clinic.specialty_tags.slice(0, 5).map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-0.5 rounded-full text-xs font-medium bg-brand text-snow"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </Link>
-          ))}
-        </div>
+        <ClinicList clinics={(clinics ?? []) as any} />
       </div>
     </main>
   )
