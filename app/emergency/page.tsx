@@ -150,9 +150,9 @@ export default function EmergencyPage() {
                     </a>
                   </div>
 
-                  {/* Uber */}
+                  {/* Uber - 只在手機版顯示（md:hidden），桌面版 uber:// scheme 無效 */}
                   <a href={uberUrl}
-                    className="block py-2.5 rounded-xl text-center font-semibold text-sm"
+                    className="md:hidden block py-2.5 rounded-xl text-center font-semibold text-sm"
                     style={{ background: '#1a1a1a', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}>
                     🚗 Uber 叫車前往
                   </a>
