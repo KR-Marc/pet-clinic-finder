@@ -5,7 +5,7 @@ export async function GET() {
   // 用 rpc 呼叫原始 SQL，避免 JS client 陣列查詢問題
   const { data, error } = await supabase
     .from('clinics')
-    .select('id, name, district, address, phone, rating, specialty_tags, opening_hours, is_24h')
+    .select('id, name, district, address, phone, rating, review_count, specialty_tags, opening_hours, is_24h')
     .order('rating', { ascending: false })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
