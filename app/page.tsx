@@ -85,6 +85,16 @@ export default function HomePage() {
     } catch {}
   }, [])
 
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (inputRef.current && !inputRef.current.parentElement?.contains(e.target as Node)) {
+        setShowHistory(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
   const saveToHistory = (q: string) => {
     const trimmed = q.trim()
     if (!trimmed) return
@@ -214,7 +224,6 @@ export default function HomePage() {
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                   onFocus={() => setShowHistory(true)}
-                  onBlur={() => setTimeout(() => setShowHistory(false), 150)}
                   placeholder="描述你的寵物症狀，例如：口臭、掉毛、一直抓"
                   className="w-full bg-ink border border-mist/30 rounded-xl px-4 py-3.5 text-base text-snow placeholder:text-mist/40 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent shadow-sm"
                 />
