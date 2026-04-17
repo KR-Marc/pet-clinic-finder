@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { MapPin, Phone, Star } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Metadata } from 'next'
@@ -73,7 +74,7 @@ export default async function ComparePage({
                   >
                     {clinic.name}
                   </Link>
-                  <p className="text-xs text-mist/50 mt-1">📍 {clinic.district}</p>
+                  <p className="text-xs text-mist/50 mt-1"><MapPin size={13} className="inline mr-0.5" /> {clinic.district}</p>
                 </th>
               ))}
             </tr>
@@ -85,7 +86,7 @@ export default async function ComparePage({
               {clinics.map((clinic) => (
                 <td key={clinic.id} className="px-4 py-4 align-top">
                   {clinic.rating != null ? (
-                    <span className="text-sm font-bold" style={{ color: '#f9bc60' }}>⭐ {clinic.rating}</span>
+                    <span className="text-sm font-bold" style={{ color: '#f9bc60' }}><Star size={13} className="inline mr-0.5 fill-gold text-gold" /> {clinic.rating}</span>
                   ) : (
                     <span className="text-xs text-mist/30">—</span>
                   )}
@@ -195,7 +196,7 @@ export default async function ComparePage({
                       className="block text-center py-2 rounded-xl text-xs font-semibold hover:opacity-90 transition-opacity"
                       style={{ background: '#f9bc60', color: '#001e1d' }}
                     >
-                      📞 立即撥打
+                      <><Phone size={16} className="inline-block mr-1.5" />立即撥打</>
                     </a>
                     <Link
                       href={`/clinic/${clinic.id}`}

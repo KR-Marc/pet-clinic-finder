@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { MapPin, Siren } from 'lucide-react'
 import { Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import ClinicList, { type Clinic } from './ClinicList'
@@ -239,7 +240,7 @@ export default async function SearchPage({
 
   const queryTerms = q.split(',').map((t) => t.trim()).filter(Boolean)
   const subtitle = queryTerms.length === 0
-    ? (source === 'nearby' ? '📍 附近的診所' : '瀏覽所有診所')
+    ? (source === 'nearby' ? '<MapPin size={14} className="inline mr-1" /> 附近的診所' : '瀏覽所有診所')
     : queryTerms.length === 1
       ? `「${queryTerms[0]}」`
       : `「${queryTerms.join('」+「')}」複合搜尋`
@@ -258,7 +259,7 @@ export default async function SearchPage({
           <span className="text-mist/30 shrink-0">|</span>
           <span className="text-snow text-sm font-medium truncate">{subtitle}</span>
           <Link href="/emergency" className="text-xs font-bold transition-colors shrink-0 hover:opacity-80 ml-auto" style={{ color: '#e16162' }}>
-            🚨 急診
+            <Siren size={14} className="inline mr-1" /> 急診
           </Link>
         </div>
       </div>

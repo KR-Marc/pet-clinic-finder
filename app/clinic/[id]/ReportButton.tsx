@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Check, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 const REASONS = ['電話有誤', '地址有誤', '已停業', '營業時間有誤', '缺少專科資料', '其他']

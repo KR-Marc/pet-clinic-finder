@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Heart, MapPin, PawPrint, Siren, Star } from 'lucide-react'
 import Link from 'next/link'
 import { useFavorites, type FavoriteClinic } from '@/hooks/useFavorites'
 
@@ -15,13 +16,13 @@ export default function FavoritesPage() {
       <div className="bg-ink sticky top-0 z-10 shadow-md">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="text-mist/50 hover:text-snow text-sm transition-colors shrink-0">
-            🐾 首頁
+            <PawPrint size={16} className="inline" /> 首頁
           </Link>
           <span className="text-mist/30 shrink-0">|</span>
           <span className="text-snow text-sm font-medium">我的收藏</span>
           <span className="text-mist/30 shrink-0 ml-auto">|</span>
           <Link href="/emergency" className="text-xs font-bold transition-colors shrink-0 hover:opacity-80" style={{ color: '#e16162' }}>
-            🚨 急診
+            <Siren size={14} className="inline mr-1" />急診
           </Link>
         </div>
       </div>
@@ -36,7 +37,7 @@ export default function FavoritesPage() {
 
         {!mounted ? null : favorites.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-4xl mb-4">🤍</p>
+            <p className="text-4xl mb-4"><Heart size={16} className="inline" /></p>
             <p className="text-lg font-medium text-snow mb-2">尚無收藏診所</p>
             <p className="text-sm text-mist/60 mb-6">在診所詳細頁點擊「收藏」即可加入</p>
             <Link
@@ -61,7 +62,7 @@ export default function FavoritesPage() {
                   <div className="flex items-center gap-2 shrink-0">
                     {clinic.rating != null && (
                       <span className="text-xs font-bold" style={{ color: '#f9bc60' }}>
-                        ⭐ {clinic.rating}
+                        <Star size={13} className="inline mr-0.5 fill-gold text-gold" /> {clinic.rating}
                       </span>
                     )}
                     <button
@@ -73,7 +74,7 @@ export default function FavoritesPage() {
                   </div>
                 </div>
                 <p className="text-xs mb-2" style={{ color: 'rgba(0,30,29,0.5)' }}>
-                  📍 {clinic.district}
+                  <MapPin size={13} className="inline mr-0.5" /> {clinic.district}
                 </p>
                 {clinic.specialty_tags.length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-3">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Heart } from 'lucide-react'
 import { useFavorites, type FavoriteClinic } from '@/hooks/useFavorites'
 
 export default function FavoriteButton({ clinic }: { clinic: FavoriteClinic }) {

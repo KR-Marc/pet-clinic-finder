@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Activity, AlertTriangle, Bone, Building2, Droplets, Leaf, Search, Stethoscope } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 interface ExplainerData {
@@ -154,7 +155,7 @@ export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms
 
       {error && (
         <div className="flex items-center gap-2">
-          <span>🔍</span>
+          <span><Search size={14} className="inline mr-1" /></span>
           <p className="text-sm" style={{ color: 'rgba(171,209,198,0.6)' }}>
             AI 分析暫時無法使用，請直接參考下方診所列表，或稍後重新整理頁面再試。
           </p>
@@ -257,7 +258,7 @@ export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms
                   ))}
                 </div>
                 <p className="text-xs" style={{ color: 'rgba(171,209,198,0.35)' }}>
-                  ⚠️ 保養品為輔助參考，無法取代獸醫診斷
+                  <AlertTriangle size={14} className="inline mr-1" /> 保養品為輔助參考，無法取代獸醫診斷
                 </p>
               </div>
             )

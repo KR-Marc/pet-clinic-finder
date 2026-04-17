@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { AlertTriangle, Car, Clock, Map, MapPin, PawPrint, Phone, Search, Siren, Star } from 'lucide-react'
 import Link from 'next/link'
 
 interface Clinic {
@@ -23,7 +24,7 @@ const geoCache: Record<string, { lat: number; lng: number }> = {}
 
 async function openUber(clinic: Clinic, btnEl: HTMLAnchorElement) {
   const fullAddress = '台北市' + clinic.district + clinic.address
-  btnEl.textContent = '🔍 定位中...'
+  btnEl.textContent = '定位中...'
   btnEl.style.opacity = '0.7'
   try {
     let coords = geoCache[clinic.id]
@@ -43,7 +44,7 @@ async function openUber(clinic: Clinic, btnEl: HTMLAnchorElement) {
   } catch {
     window.location.href = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(fullAddress)}&dropoff[nickname]=${encodeURIComponent(clinic.name)}`
   } finally {
-    btnEl.textContent = '🚗 Uber 叫車前往'
+    btnEl.textContent = 'Uber 叫車前往'
     btnEl.style.opacity = '1'
   }
 }
@@ -89,7 +90,7 @@ export default function EmergencyPage() {
     <main className="min-h-screen bg-brand">
       <div className="bg-ink sticky top-0 z-10 shadow-md">
         <div className="max-w-4xl mx-auto px-4 py-3">
-          <Link href="/" className="text-mist/50 hover:text-snow text-sm">🐾 首頁</Link>
+          <Link href="/" className="text-mist/50 hover:text-snow text-sm"><PawPrint size={14} className="inline mr-1" />首頁</Link>
         </div>
       </div>
 
@@ -127,7 +128,7 @@ export default function EmergencyPage() {
                   {warn && (
                     <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg mb-3"
                       style={{ background: 'rgba(249,188,96,0.1)', color: '#f9bc60', border: '1px solid rgba(249,188,96,0.2)' }}>
-                      <span>⚠️</span>
+                      <AlertTriangle size={14} />
                       <span>此診所評論數量較多，建議參考多方資訊後再決定就診</span>
                     </div>
                   )}
@@ -141,7 +142,7 @@ export default function EmergencyPage() {
                     </div>
                     {c.rating != null && (
                       <div className="flex flex-col items-end shrink-0">
-                        <span className="text-sm font-bold" style={{ color: '#f9bc60' }}>⭐ {c.rating}</span>
+                        <span className="text-sm font-bold" style={{ color: '#f9bc60' }}><Star size={13} className="inline mr-0.5 fill-gold text-gold" />{c.rating}</span>
                         {c.review_count != null && (
                           <span className="text-xs" style={{ color: 'rgba(249,188,96,0.5)' }}>
                             {c.review_count.toLocaleString()} 則
@@ -153,14 +154,14 @@ export default function EmergencyPage() {
 
                   {/* 地址 */}
                   <p className="text-xs mb-1" style={{ color: 'rgba(0,30,29,0.5)' }}>
-                    📍 {c.district}・{c.address}
+                    <MapPin size={13} className="inline mr-0.5" />{c.district}・{c.address}
                   </p>
 
                   {/* 今日營業時間 */}
                   {hours && (
                     <p className="text-xs mb-3 font-medium"
                       style={{ color: hours === '休息' ? '#e16162' : '#16a34a' }}>
-                      🕐 今日 {hours}
+                      <Clock size={13} className="inline mr-0.5" />今日 {hours}
                     </p>
                   )}
 
@@ -169,12 +170,12 @@ export default function EmergencyPage() {
                     <a href={`tel:${c.phone}`}
                       className="flex-1 py-3 rounded-xl text-center font-bold text-sm"
                       style={{ background: '#27ae60', color: 'white' }}>
-                      📞 立即撥打
+                      <><Phone size={16} className="inline-block mr-1.5" />立即撥打</>
                     </a>
                     <a href={navUrl} target="_blank" rel="noopener noreferrer"
                       className="flex-1 py-3 rounded-xl text-center font-bold text-sm"
                       style={{ background: '#2980b9', color: 'white' }}>
-                      🗺️ 導航前往
+                      <><Map size={16} className="inline-block mr-1.5" />導航前往</>
                     </a>
                   </div>
 
@@ -185,7 +186,7 @@ export default function EmergencyPage() {
                     style={{ background: '#1a1a1a', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
                     onClick={(e) => { e.preventDefault(); openUber(c, e.currentTarget as HTMLAnchorElement) }}
                   >
-                    🚗 Uber 叫車前往
+                    <><Car size={16} className="inline-block mr-1.5" />Uber 叫車前往</>
                   </a>
                 </div>
               )

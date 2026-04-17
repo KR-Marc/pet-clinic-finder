@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { MapPin, Siren } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -186,7 +187,7 @@ export default async function DistrictPage({
           </Link>
           <span className="text-mist/30 shrink-0">|</span>
           <span className="text-snow text-sm font-medium truncate">
-            📍 {decoded} 診所
+            <MapPin size={14} className="inline mr-1" /> {decoded} 診所
           </span>
           <span className="text-mist/30 shrink-0 hidden sm:inline">|</span>
           <Link
@@ -194,7 +195,7 @@ export default async function DistrictPage({
             className="text-xs font-bold transition-colors shrink-0 hover:opacity-80 hidden sm:inline"
             style={{ color: '#e16162' }}
           >
-            🚨 急診
+            <Siren size={14} className="inline mr-1" /> 急診
           </Link>
         </div>
       </div>

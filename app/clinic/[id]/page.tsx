@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { AlertTriangle, ClipboardList, Clock, Globe, Map, MapPin, PawPrint, Phone, Siren, Star } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -164,7 +165,7 @@ export default async function ClinicPage({
           <BackButton />
           <span className="text-mist/30 shrink-0">|</span>
           <Link href="/" className="text-mist/50 hover:text-snow text-sm transition-colors shrink-0">
-            🐾 首頁
+            <PawPrint size={14} className="inline mr-1" />首頁
           </Link>
           <span className="text-mist/30 shrink-0">|</span>
           <Link href="/emergency" className="text-xs font-bold transition-colors shrink-0 hover:opacity-80" style={{ color: '#e16162' }}>
@@ -186,7 +187,7 @@ export default async function ClinicPage({
             <span className="text-sm font-semibold text-mist">{clinic.district}</span>
             {clinic.rating != null && (
               <span className="text-sm font-bold" style={{ color: '#f9bc60' }}>
-                ⭐ {clinic.rating}
+                <Star size={14} className="inline mr-1 fill-gold text-gold" />{clinic.rating}
                 {clinic.review_count != null && (
                   <span className="text-xs font-normal ml-1" style={{ color: 'rgba(249,188,96,0.6)' }}>
                     （{clinic.review_count.toLocaleString()} 則評論）
@@ -231,7 +232,7 @@ export default async function ClinicPage({
 
           {showReviewWarning && (
             <div className="mt-3 flex items-center gap-2 text-xs px-3 py-2 rounded-lg" style={{ background: 'rgba(249,188,96,0.1)', color: '#f9bc60', border: '1px solid rgba(249,188,96,0.2)' }}>
-              <span>⚠️</span>
+              <AlertTriangle size={14} />
               <span>此診所評論數量較多，建議參考多方資訊後再決定就診</span>
             </div>
           )}
@@ -254,7 +255,7 @@ export default async function ClinicPage({
               rel="noopener noreferrer"
               className="flex items-start gap-3 mb-5 group"
             >
-              <span className="text-xl shrink-0 mt-0.5">📍</span>
+              <MapPin size={18} className="shrink-0 mt-0.5 text-mist/60" />
               <div>
                 <p className="text-xs font-medium mb-0.5" style={{ color: 'rgba(0,30,29,0.4)' }}>地址</p>
                 <p className="text-sm text-ink group-hover:text-brand transition-colors leading-relaxed">
@@ -265,7 +266,7 @@ export default async function ClinicPage({
 
             {/* Phone */}
             <a href={`tel:${clinic.phone}`} className="flex items-start gap-3 mb-5 group">
-              <span className="text-xl shrink-0 mt-0.5">📞</span>
+              <Phone size={18} className="shrink-0 mt-0.5 text-mist/60" />
               <div>
                 <p className="text-xs font-medium mb-0.5" style={{ color: 'rgba(0,30,29,0.4)' }}>電話</p>
                 <p className="text-sm font-semibold text-brand group-hover:opacity-70 transition-opacity">
@@ -282,7 +283,7 @@ export default async function ClinicPage({
                 rel="noopener noreferrer"
                 className="flex items-start gap-3 mb-5 group"
               >
-                <span className="text-xl shrink-0 mt-0.5">🌐</span>
+                <Globe size={18} className="shrink-0 mt-0.5 text-mist/60" />
                 <div className="min-w-0">
                   <p className="text-xs font-medium mb-0.5" style={{ color: 'rgba(0,30,29,0.4)' }}>網站</p>
                   <p className="text-sm font-medium text-brand group-hover:opacity-70 transition-opacity truncate">
@@ -294,7 +295,7 @@ export default async function ClinicPage({
 
             {/* Opening hours table */}
             <div className="flex items-start gap-3">
-              <span className="text-xl shrink-0 mt-0.5">🕐</span>
+              <Clock size={18} className="shrink-0 mt-0.5 text-mist/60" />
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium mb-2" style={{ color: 'rgba(0,30,29,0.4)' }}>
                   營業時間
@@ -345,7 +346,7 @@ export default async function ClinicPage({
             {/* Description */}
             {clinic.description && (
               <div className="flex items-start gap-3 mt-5 pt-5 border-t border-ink/10">
-                <span className="text-xl shrink-0 mt-0.5">📋</span>
+                <ClipboardList size={18} className="shrink-0 mt-0.5 text-mist/60" />
                 <div>
                   <p className="text-xs font-medium mb-1" style={{ color: 'rgba(0,30,29,0.4)' }}>介紹</p>
                   <p className="text-sm text-ink leading-relaxed">{clinic.description}</p>
@@ -379,7 +380,7 @@ export default async function ClinicPage({
             className="flex-1 py-3 rounded-xl text-center font-semibold text-sm transition-opacity hover:opacity-90"
             style={{ background: '#f9bc60', color: '#001e1d' }}
           >
-            📞 立即撥打
+            <><Phone size={16} className="inline-block mr-1.5" />立即撥打</>
           </a>
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
@@ -387,7 +388,7 @@ export default async function ClinicPage({
             rel="noopener noreferrer"
             className="flex-1 py-3 rounded-xl text-center font-medium text-sm transition-colors hover:text-snow border border-mist/30 bg-ink text-mist"
           >
-            🗺️ Google Maps 導航
+            <><Map size={16} className="inline-block mr-1.5" />Google Maps 導航</>
           </a>
           {clinic.website && (
             <a
@@ -396,7 +397,7 @@ export default async function ClinicPage({
               rel="noopener noreferrer"
               className="flex-1 py-3 rounded-xl text-center font-medium text-sm transition-colors hover:opacity-80 border border-mist/30 bg-ink text-mist"
             >
-              🌐 官網預約
+              <Globe size={15} className="inline mr-1.5" />官網預約
             </a>
           )}
           <ShareButton name={clinic.name} />

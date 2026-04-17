@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Activity, Bone, Brain, Building2, Clock, Droplets, Eye, Heart, Leaf, MapPin, PawPrint, Phone, Ribbon, Scissors, Search, Siren, Star, Stethoscope } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -35,18 +36,18 @@ const FEATURES = [
 ]
 
 const SPECIALTIES = [
-  { icon: '🦷', name: '牙科',    desc: '口臭、掉牙、牙齦紅腫',     q: '牙科',    iconBg: '#fef3c7' }, // amber-100
-  { icon: '👁️', name: '眼科',    desc: '眼屎多、眼睛紅、白內障',   q: '眼科',    iconBg: '#dbeafe' }, // blue-100
-  { icon: '❤️', name: '心臟科',  desc: '咳嗽、容易喘、心雜音',     q: '心臟科',  iconBg: '#fee2e2' }, // red-100
-  { icon: '🦴', name: '骨科',    desc: '跛行、骨折、不肯走路',     q: '骨科',    iconBg: '#f3f4f6' }, // gray-100
-  { icon: '🎗️', name: '腫瘤科',  desc: '腫塊、癌症、化療',         q: '腫瘤科',  iconBg: '#ffedd5' }, // orange-100
-  { icon: '🌿', name: '皮膚科',  desc: '一直抓、掉毛、皮膚紅疹',   q: '皮膚科',  iconBg: '#dcfce7' }, // green-100
-  { icon: '🧠', name: '神經科',  desc: '抽搐、癲癇、走路歪',       q: '抽搐',    iconBg: '#ede9fe' }, // violet-100
-  { icon: '🚨', name: '24H急診', desc: '昏倒、呼吸困難、緊急',     q: '半夜急診', iconBg: '#ffe4e6' }, // rose-100
-  { icon: '🔪', name: '外科',    desc: '腫塊切除、結紮、外傷縫合', q: '外科',    iconBg: '#ccfbf1' }, // teal-100
-  { icon: '🌿', name: '中獸醫',  desc: '針灸、中藥、慢性病調理',   q: '中獸醫',  iconBg: '#e0f2fe' }, // sky-100
-  { icon: '💧', name: '泌尿科',  desc: '血尿、頻尿、尿結石、膀胱炎', q: '泌尿科',  iconBg: '#f3e8ff' }, // purple-100
-  { icon: '🏃', name: '復健',    desc: '術後恢復、關節退化、水療', q: '復健',    iconBg: '#fef9c3' }, // yellow-100
+  { icon: 'tooth', name: '牙科',    desc: '口臭、掉牙、牙齦紅腫',     q: '牙科',    iconBg: '#fef3c7' }, // amber-100
+  { icon: 'eye', name: '眼科',    desc: '眼屎多、眼睛紅、白內障',   q: '眼科',    iconBg: '#dbeafe' }, // blue-100
+  { icon: 'heart', name: '心臟科',  desc: '咳嗽、容易喘、心雜音',     q: '心臟科',  iconBg: '#fee2e2' }, // red-100
+  { icon: 'bone', name: '骨科',    desc: '跛行、骨折、不肯走路',     q: '骨科',    iconBg: '#f3f4f6' }, // gray-100
+  { icon: 'ribbon', name: '腫瘤科',  desc: '腫塊、癌症、化療',         q: '腫瘤科',  iconBg: '#ffedd5' }, // orange-100
+  { icon: 'leaf', name: '皮膚科',  desc: '一直抓、掉毛、皮膚紅疹',   q: '皮膚科',  iconBg: '#dcfce7' }, // green-100
+  { icon: 'brain', name: '神經科',  desc: '抽搐、癲癇、走路歪',       q: '抽搐',    iconBg: '#ede9fe' }, // violet-100
+  { icon: 'siren', name: '24H急診', desc: '昏倒、呼吸困難、緊急',     q: '半夜急診', iconBg: '#ffe4e6' }, // rose-100
+  { icon: 'scissors', name: '外科',    desc: '腫塊切除、結紮、外傷縫合', q: '外科',    iconBg: '#ccfbf1' }, // teal-100
+  { icon: 'leaf2', name: '中獸醫',  desc: '針灸、中藥、慢性病調理',   q: '中獸醫',  iconBg: '#e0f2fe' }, // sky-100
+  { icon: 'droplets', name: '泌尿科',  desc: '血尿、頻尿、尿結石、膀胱炎', q: '泌尿科',  iconBg: '#f3e8ff' }, // purple-100
+  { icon: 'activity', name: '復健',    desc: '術後恢復、關節退化、水療', q: '復健',    iconBg: '#fef9c3' }, // yellow-100
 ]
 
 // ── Geolocation helper ────────────────────────────────────────────────────────
@@ -129,7 +130,7 @@ export default function HomePage() {
       <nav className="bg-ink sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5 shrink-0">
-            <span className="text-lg">🐾</span>
+            <PawPrint size={18} className="text-gold" />
             <span className="text-snow font-bold text-sm sm:text-base tracking-tight leading-tight">
               <span className="hidden xs:inline">寵物專科診所搜尋</span>
               <span className="xs:hidden">寵物診所搜尋</span>
@@ -230,7 +231,7 @@ export default function HomePage() {
                       : 'text-mist border-mist/40 hover:border-gold hover:text-gold'
                 }`}
               >
-                <span>📍</span>
+                <MapPin size={14} />
                 <span className="hidden sm:inline">
                   {geoState === 'loading' ? '定位中...' : geoState === 'error' ? '無法定位' : '附近診所'}
                 </span>
@@ -277,7 +278,7 @@ export default function HomePage() {
                     <p className="font-bold text-ink text-sm">敦品動物醫院</p>
                     <p className="text-ink/50 text-xs mt-0.5">📍 大安區　敦化南路一段</p>
                   </div>
-                  <span className="text-xs font-semibold text-gold whitespace-nowrap">⭐ 4.8</span>
+                  <span className="text-xs font-semibold text-gold whitespace-nowrap"><Star size={12} className="inline mr-0.5 text-gold fill-gold" />4.8</span>
                 </div>
                 <p className="text-brand text-xs font-medium mb-2">🕐 今日 10:00 – 21:00</p>
                 <div className="flex gap-1.5">
@@ -294,7 +295,7 @@ export default function HomePage() {
                     <p className="font-bold text-ink text-sm">路米動物醫院</p>
                     <p className="text-ink/50 text-xs mt-0.5">📍 中山區　民權西路</p>
                   </div>
-                  <span className="text-xs font-semibold text-gold whitespace-nowrap">⭐ 4.2</span>
+                  <span className="text-xs font-semibold text-gold whitespace-nowrap"><Star size={12} className="inline mr-0.5 text-gold fill-gold" />4.2</span>
                 </div>
                 <p className="text-brand text-xs font-medium mb-2">🕐 今日 09:00 – 20:00</p>
                 <div className="flex gap-1.5 flex-wrap">
@@ -331,7 +332,7 @@ export default function HomePage() {
             className="flex items-center gap-4 bg-sand rounded-2xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group"
           >
             <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: '#dcfce7' }}>
-              <span className="text-2xl">🩺</span>
+              <Stethoscope size={22} className="text-brand" />
             </div>
             <div>
               <p className="font-bold text-ink group-hover:text-brand transition-colors">症狀對照表</p>
@@ -345,7 +346,7 @@ export default function HomePage() {
             style={{ background: 'rgba(225,97,98,0.08)', borderColor: 'rgba(225,97,98,0.2)' }}
           >
             <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(225,97,98,0.15)' }}>
-              <span className="text-2xl">🚨</span>
+              <Siren size={22} style={{ color: '#e16162' }} />
             </div>
             <div>
               <p className="font-bold text-snow group-hover:opacity-80 transition-opacity">24H 急診動物醫院</p>
@@ -374,7 +375,7 @@ export default function HomePage() {
               >
                 {i + 1}
               </span>
-              <span className="text-4xl mb-4 block relative z-10">{f.icon}</span>
+              <div className="mb-4">{f.icon === 'search' ? <Search size={36} className="text-brand" /> : f.icon === 'phone' ? <Phone size={36} className="text-brand" /> : <Star size={36} className="text-brand" />}</div>
               <h3 className="font-semibold text-lg mb-2 relative z-10" style={{ color: '#001e1d' }}>
                 {f.title}
               </h3>
@@ -405,7 +406,20 @@ export default function HomePage() {
                 className="w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-colors duration-200 group-hover:bg-white/10"
                 style={{ backgroundColor: spec.iconBg }}
               >
-                <span className="text-3xl leading-none">{spec.icon}</span>
+                <span className="text-2xl leading-none">
+                {spec.icon === 'tooth' ? <Stethoscope size={28} /> :
+                 spec.icon === 'eye' ? <Eye size={28} /> :
+                 spec.icon === 'heart' ? <Heart size={28} /> :
+                 spec.icon === 'bone' ? <Bone size={28} /> :
+                 spec.icon === 'ribbon' ? <Ribbon size={28} /> :
+                 spec.icon === 'leaf' || spec.icon === 'leaf2' ? <Leaf size={28} /> :
+                 spec.icon === 'brain' ? <Brain size={28} /> :
+                 spec.icon === 'scissors' ? <Scissors size={28} /> :
+                 spec.icon === 'droplets' ? <Droplets size={28} /> :
+                 spec.icon === 'activity' ? <Activity size={28} /> :
+                 spec.icon === 'siren' ? <Siren size={28} /> :
+                 <Stethoscope size={28} />}
+              </span>
               </div>
               <h3 className="font-semibold text-lg text-ink group-hover:text-snow mb-1 transition-colors duration-200">
                 {spec.name}
@@ -446,7 +460,7 @@ export default function HomePage() {
             {/* Left */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xl">🐾</span>
+                <PawPrint size={20} className="text-gold" />
                 <span className="text-snow font-bold">寵物專科診所搜尋</span>
               </div>
               <p className="text-mist/60 text-sm">台北市最完整的動物醫院專科查詢平台</p>

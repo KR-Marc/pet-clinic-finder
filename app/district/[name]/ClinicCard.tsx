@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { MapPin, Star } from 'lucide-react'
 
 interface Clinic {
   id: string
@@ -29,13 +30,13 @@ export default function ClinicCard({ clinic }: { clinic: Clinic }) {
           )}
           {clinic.rating != null && (
             <span className="text-xs font-bold" style={{ color: '#f9bc60' }}>
-              ⭐ {clinic.rating}
+              <Star size={13} className="inline mr-0.5 fill-gold text-gold" /> {clinic.rating}
             </span>
           )}
         </div>
       </div>
       <p className="text-xs mb-2 truncate" style={{ color: 'rgba(0,30,29,0.5)' }}>
-        📍 {clinic.address}
+        <MapPin size={13} className="inline mr-0.5" /> {clinic.address}
       </p>
       {clinic.specialty_tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
@@ -54,11 +55,11 @@ export default function ClinicCard({ clinic }: { clinic: Clinic }) {
       <div className="flex items-center justify-between">
         <span className="text-xs" style={{ color: 'rgba(0,30,29,0.45)' }}>
           {clinic.pet_types.includes('dog') && clinic.pet_types.includes('cat')
-            ? '🐶🐱 犬貓皆可'
+            ? '<PawPrint size={13} className="inline mr-0.5" /><PawPrint size={13} className="inline mr-0.5" /> 犬貓皆可'
             : clinic.pet_types.includes('dog')
-            ? '🐶 犬科'
+            ? '<PawPrint size={13} className="inline mr-0.5" /> 犬科'
             : clinic.pet_types.includes('cat')
-            ? '🐱 貓科'
+            ? '<PawPrint size={13} className="inline mr-0.5" /> 貓科'
             : ''}
         </span>
         <span className="text-xs font-semibold" style={{ color: '#f9bc60' }}>

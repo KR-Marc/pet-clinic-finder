@@ -1,6 +1,7 @@
 'use client'
 
 import { useUserLocation, calcDistance, formatDistance } from '@/hooks/useUserLocation'
+import { MapPin } from 'lucide-react'
 
 export default function DistanceBadge({
   lat,
@@ -17,7 +18,7 @@ export default function DistanceBadge({
 
   return (
     <span className="text-xs" style={{ color: 'rgba(171,209,198,0.6)' }}>
-      📍 距你約 {formatDistance(dist)}
+      <MapPin size={12} className="inline mr-0.5" /> 距你約 {formatDistance(dist)}
     </span>
   )
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Activity, AlertTriangle, Bone, Brain, Droplets, Eye, Heart, Leaf, PawPrint, Ribbon, Siren, Stethoscope } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -262,16 +263,16 @@ export default function GuidePage() {
               {'food' in g && g.food && (
                 <div className="mb-4 pt-3 border-t border-ink/8">
                   <p className="text-xs font-semibold mb-1" style={{ color: 'rgba(0,30,29,0.4)' }}>🍽️ 獸醫處方飼料參考</p>
-                  <p className="text-xs mb-2" style={{ color: 'rgba(0,30,29,0.35)' }}>⚠️ 需憑獸醫師指示購買，請勿自行使用</p>
+                  <p className="text-xs mb-2" style={{ color: 'rgba(0,30,29,0.35)' }}><AlertTriangle size={14} className="inline mr-1" /> 需憑獸醫師指示購買，請勿自行使用</p>
                   {(g.food as { royal?: string[]; hills?: string[] }).royal && (g.food as { royal: string[] }).royal.length > 0 && (
                     <div className="mb-1">
-                      <span className="text-xs font-medium mr-1" style={{ color: 'rgba(0,30,29,0.5)' }}>🔵 皇家：</span>
+                      <span className="text-xs font-medium mr-1" style={{ color: 'rgba(0,30,29,0.5)' }}><span className="inline-flex items-center gap-1"><Droplets size={12} />皇家</span>：</span>
                       <span className="text-xs" style={{ color: 'rgba(0,30,29,0.65)' }}>{(g.food as { royal: string[] }).royal.join('、')}</span>
                     </div>
                   )}
                   {(g.food as { hills?: string[] }).hills && (g.food as { hills: string[] }).hills.length > 0 && (
                     <div>
-                      <span className="text-xs font-medium mr-1" style={{ color: 'rgba(0,30,29,0.5)' }}>🟢 希爾思：</span>
+                      <span className="text-xs font-medium mr-1" style={{ color: 'rgba(0,30,29,0.5)' }}><span className="inline-flex items-center gap-1"><Leaf size={12} />希爾思</span>：</span>
                       <span className="text-xs" style={{ color: 'rgba(0,30,29,0.65)' }}>{(g.food as { hills: string[] }).hills.join('、')}</span>
                     </div>
                   )}
