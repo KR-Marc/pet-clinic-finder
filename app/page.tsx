@@ -55,23 +55,15 @@ const SPECIALTIES = [
 type GeoState = 'idle' | 'loading' | 'error'
 
 async function reverseGeocodeDistrict(lat: number, lng: number): Promise<string | null> {
-  const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&language=zh-TW&key=${key}`
-  const res = await fetch(url)
-  if (!res.ok) return null
-  const data = await res.json()
-  if (data.status !== 'OK' || !data.results?.length) return null
-  for (const result of data.results) {
-    for (const component of result.address_components as { long_name: string; types: string[] }[]) {
-      if (
-        component.types.includes('administrative_area_level_3') ||
-        component.types.includes('sublocality_level_1')
-      ) {
-        if (component.long_name.endsWith('區')) return component.long_name
-      }
-    }
+  try {
+    // 透過 server-side API route 避免 API key referrer 限制
+    const res = await fetch(`/api/reverse-geocode?lat=${lat}&lng=${lng}`)
+    if (!res.ok) return null
+    const data = await res.json()
+    return data.district ?? null
+  } catch {
+    return null
   }
-  return null
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
