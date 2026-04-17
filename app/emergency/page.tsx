@@ -94,7 +94,7 @@ export default function EmergencyPage() {
         </div>
       </div>
 
-      <div className="bg-ink border-b border-mist/10">
+      <div className="border-b border-mist/10" style={{ background: 'linear-gradient(180deg, #1a0000 0%, #001e1d 100%)' }}>
         <div className="max-w-4xl mx-auto px-4 py-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-4"
             style={{ background: '#e16162', color: '#fff' }}>🚨 緊急資訊</div>
@@ -169,7 +169,7 @@ export default function EmergencyPage() {
                   <div className="flex gap-2 mb-2">
                     <a href={`tel:${c.phone}`}
                       className="flex-1 py-3 rounded-xl text-center font-bold text-sm"
-                      style={{ background: '#27ae60', color: 'white' }}>
+                      style={{ background: 'linear-gradient(135deg, #e16162 0%, #c0392b 100%)', color: 'white' }}>
                       <><Phone size={16} className="inline-block mr-1.5" />立即撥打</>
                     </a>
                     <a href={navUrl} target="_blank" rel="noopener noreferrer"

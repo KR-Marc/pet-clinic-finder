@@ -109,7 +109,7 @@ export default function FavoritesPage() {
                     )}
                     <button
                       onClick={() => toggle(clinic)}
-                      className="text-xs text-mist/40 hover:text-coral transition-colors"
+                      className="text-xs text-mist/40 hover:text-rose-400 transition-colors"
                     >
                       移除
                     </button>

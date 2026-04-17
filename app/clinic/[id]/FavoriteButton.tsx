@@ -21,7 +21,7 @@ export default function FavoriteButton({ clinic, className = '' }: { clinic: Fav
       className={`flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-sm font-medium transition-all border ${className}`}
       style={
         saved
-          ? { background: 'rgba(249,188,96,0.15)', borderColor: '#f9bc60', color: '#f9bc60' }
+          ? { background: 'rgba(244,63,94,0.12)', borderColor: '#F43F5E', color: '#F43F5E' }
           : { background: 'transparent', borderColor: 'rgba(171,209,198,0.3)', color: 'rgba(171,209,198,0.6)' }
       }
     >
