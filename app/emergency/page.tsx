@@ -20,7 +20,7 @@ export default async function EmergencyPage() {
   const { data: clinics } = await supabase
     .from('clinics')
     .select('id, name, district, address, phone, rating, specialty_tags, lat, lng')
-    .eq('is_24h', true)
+    .overlaps('specialty_tags', ['24H急診'])
     .order('rating', { ascending: false })
 
   return (
