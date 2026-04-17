@@ -373,7 +373,7 @@ export default async function ClinicPage({
             className="shrink-0 min-w-[120px] py-3 rounded-xl text-center font-semibold text-sm transition-opacity hover:opacity-90"
             style={{ background: '#f9bc60', color: '#001e1d' }}
           >
-            <><Phone size={16} className="inline-block mr-1.5" />立即撥打</>
+            <><Phone size={16} className="inline-block mr-1.5" /><span className="hidden sm:inline">立即撥打</span></>
           </a>
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
