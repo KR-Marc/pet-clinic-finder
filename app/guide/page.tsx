@@ -24,6 +24,7 @@ const GUIDES = [
     when_to_visit: '口臭超過 2 週、牙齦出血、拒絕進食、流口水異常增多',
     cost: '洗牙約 3,000–6,000 元，拔牙視狀況另計',
     q: '牙科',
+    breeds: { cat: ['波斯貓', '異國短毛貓', '布偶貓（扁臉易積牙垢）'], dog: ['玩具貴賓', '約克夏', '吉娃娃', '臘腸犬（小型犬牙周病高風險）'] },
   },
   {
     specialty: '眼科',
@@ -34,6 +35,7 @@ const GUIDES = [
     when_to_visit: '眼睛持續紅腫、分泌物增多、眼球混濁、不斷用爪子抓眼睛',
     cost: '眼科初診約 500–1,500 元，手術費用依病症差異較大',
     q: '眼科',
+    breeds: { cat: ['波斯貓', '喜馬拉雅貓', '異國短毛貓（淚腺問題）'], dog: ['北京犬', '西施犬', '鬥牛犬', '巴哥犬（眼球外突易受傷）'] },
   },
   {
     specialty: '心臟科',
@@ -44,6 +46,7 @@ const GUIDES = [
     when_to_visit: '持續咳嗽、運動後喘不停、突然暈倒、腹部異常膨大',
     cost: '心臟超音波約 2,000–4,000 元，長期用藥每月約 1,000–3,000 元',
     q: '心臟科',
+    breeds: { cat: ['緬因貓', '布偶貓', '英國短毛貓（肥厚性心肌病）'], dog: ['騎士查理王獵犬', '博美犬', '玩具貴賓', '臘腸犬（二尖瓣疾病）'] },
   },
   {
     specialty: '骨科',
@@ -54,6 +57,7 @@ const GUIDES = [
     when_to_visit: '突然跛行、無法承重、關節明顯腫脹、行走姿勢異常',
     cost: '骨科手術約 15,000–60,000 元，復健療程每次約 1,500–3,000 元',
     q: '骨科',
+    breeds: { cat: ['緬因貓', '蘇格蘭摺耳貓（關節病變高風險）'], dog: ['拉布拉多', '黃金獵犬', '德國牧羊犬', '臘腸犬（椎間盤疾病）'] },
   },
   {
     specialty: '腫瘤科',
@@ -64,6 +68,7 @@ const GUIDES = [
     when_to_visit: '發現新腫塊、腫塊快速增大、體重急速下降、持續出血',
     cost: '切片檢查約 3,000–8,000 元，化療療程每次約 5,000–15,000 元',
     q: '腫瘤科',
+    breeds: { cat: ['暹羅貓', '東方短毛貓（淋巴瘤）', '未絕育母貓（乳腺腫瘤）'], dog: ['黃金獵犬', '拳師犬', '羅威那犬', '波士頓梗（肥大細胞瘤）'] },
   },
   {
     specialty: '皮膚科',
@@ -74,6 +79,7 @@ const GUIDES = [
     when_to_visit: '持續搔抓超過 1 週、皮膚出現紅腫或潰瘍、大量掉毛',
     cost: '皮膚科初診含刮毛檢查約 800–2,000 元，藥浴療程每次約 500–1,500 元',
     q: '皮膚科',
+    breeds: { cat: ['緬甸貓', '孟加拉貓', '斯芬克斯貓（無毛貓皮膚易感染）'], dog: ['西高地白梗', '法國鬥牛犬', '沙皮犬', '拉布拉多（異位性皮膚炎）'] },
   },
   {
     specialty: '神經外科',
@@ -84,6 +90,7 @@ const GUIDES = [
     when_to_visit: '首次抽搐發作、持續抽搐超過 5 分鐘、突然無法站立或行走',
     cost: 'MRI 檢查約 15,000–25,000 元，脊椎手術約 40,000–100,000 元',
     q: '抽搐',
+    breeds: { cat: ['布偶貓', '波斯貓（前庭疾病）'], dog: ['臘腸犬', '柯基', '米格魯', '博美犬（椎間盤突出高風險）'] },
   },
   {
     specialty: '泌尿科',
@@ -94,6 +101,7 @@ const GUIDES = [
     when_to_visit: '超過 12 小時無法排尿、血尿、排尿時嚎叫、頻繁進出廁所',
     cost: '尿液檢查約 500–1,000 元，結石手術約 15,000–40,000 元',
     q: '泌尿科',
+    breeds: { cat: ['公貓通用（尿道細易阻塞）', '波斯貓', '喜馬拉雅貓（草酸鈣結石）'], dog: ['迷你雪納瑞', '比熊犬', '約克夏（結石高風險）'] },
   },
   {
     specialty: '腎臟科',
@@ -104,6 +112,7 @@ const GUIDES = [
     when_to_visit: '突然大量飲水、尿量異常增多或減少、嘔吐合併食慾不振',
     cost: '血液腎功能檢查約 800–1,500 元，皮下輸液每次約 300–600 元',
     q: '腎臟科',
+    breeds: { cat: ['波斯貓', '英國短毛貓', '阿比西尼亞貓（慢性腎臟病高風險）'], dog: ['英國古代牧羊犬', '薩摩耶犬', '西伯利亞哈士奇（遺傳性腎病）'] },
   },
   {
     specialty: '外科',
@@ -214,6 +223,28 @@ export default function GuidePage() {
                 <p className="text-sm" style={{ color: 'rgba(0,30,29,0.6)' }}>{g.cost}</p>
               </div>
 
+              {/* 易感品種 */}
+              {'breeds' in g && g.breeds && (
+                <div className="mb-4 pt-3 border-t border-ink/8">
+                  <p className="text-xs font-semibold mb-2" style={{ color: 'rgba(0,30,29,0.4)' }}>🐾 易感品種</p>
+                  {(g.breeds as { cat?: string[]; dog?: string[] }).cat && (
+                    <div className="mb-1.5">
+                      <span className="text-xs font-medium mr-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}>🐱 貓：</span>
+                      <span className="text-xs" style={{ color: 'rgba(0,30,29,0.65)' }}>
+                        {(g.breeds as { cat: string[] }).cat.join('、')}
+                      </span>
+                    </div>
+                  )}
+                  {(g.breeds as { cat?: string[]; dog?: string[] }).dog && (
+                    <div>
+                      <span className="text-xs font-medium mr-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}>🐶 狗：</span>
+                      <span className="text-xs" style={{ color: 'rgba(0,30,29,0.65)' }}>
+                        {(g.breeds as { dog: string[] }).dog.join('、')}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
               <Link
                 href={`/search?q=${encodeURIComponent(g.q)}`}
                 className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold transition-opacity hover:opacity-80"
