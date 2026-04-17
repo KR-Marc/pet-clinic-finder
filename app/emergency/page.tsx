@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
 
 interface Clinic {
   id: string; name: string; district: string; address: string
@@ -22,11 +21,10 @@ export default function EmergencyPage() {
   const [pos, setPos] = useState<{lat:number;lng:number}|null>(null)
 
   useEffect(() => {
-    supabase.from('clinics')
-      .select('id,name,district,address,phone,rating,specialty_tags,lat,lng')
-      .like('specialty_tags::text', '%24H急診%')
-      .order('rating', { ascending: false })
-      .then(({ data }) => { setClinics((data ?? []) as Clinic[]); setLoading(false) })
+    fetch('/api/emergency-clinics')
+      .then(r => r.json())
+      .then(data => { setClinics((data ?? []) as Clinic[]); setLoading(false) })
+      .catch(() => setLoading(false))
 
     navigator.geolocation?.getCurrentPosition(
       p => setPos({ lat: p.coords.latitude, lng: p.coords.longitude }),
