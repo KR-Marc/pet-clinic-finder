@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Activity, Bone, Brain, Building2, Clock, Droplets, Eye, Heart, Leaf, MapPin, PawPrint, Phone, Ribbon, Scissors, Search, Siren, Star, Stethoscope } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -74,6 +74,30 @@ export default function HomePage() {
   const [pet, setPet] = useState('')
   const [clinicCount, setClinicCount] = useState<number | null>(null)
   const [geoState, setGeoState] = useState<GeoState>('idle')
+  const [searchHistory, setSearchHistory] = useState<string[]>([])
+  const [showHistory, setShowHistory] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('searchHistory')
+      if (stored) setSearchHistory(JSON.parse(stored))
+    } catch {}
+  }, [])
+
+  const saveToHistory = (q: string) => {
+    const trimmed = q.trim()
+    if (!trimmed) return
+    const updated = [trimmed, ...searchHistory.filter(h => h !== trimmed)].slice(0, 8)
+    setSearchHistory(updated)
+    try { localStorage.setItem('searchHistory', JSON.stringify(updated)) } catch {}
+  }
+
+  const removeFromHistory = (item: string) => {
+    const updated = searchHistory.filter(h => h !== item)
+    setSearchHistory(updated)
+    try { localStorage.setItem('searchHistory', JSON.stringify(updated)) } catch {}
+  }
 
   useEffect(() => {
     supabase
@@ -85,6 +109,8 @@ export default function HomePage() {
   const handleSubmit = (q: string = query) => {
     const trimmed = q.trim()
     if (!trimmed) return
+    saveToHistory(trimmed)
+    setShowHistory(false)
     const params = new URLSearchParams({ q: trimmed })
     if (pet) params.set('pet', pet)
     router.push(`/search?${params.toString()}`)
@@ -129,21 +155,21 @@ export default function HomePage() {
             </span>
           </div>
           <div className="flex items-center gap-1 sm:gap-3">
-            <button onClick={handleBrowseAll} className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5">
+            <button onClick={handleBrowseAll} className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1">
+              <Building2 size={16} className="sm:hidden" />
               <span className="hidden sm:inline">瀏覽診所</span>
-              <span className="sm:hidden">🏥</span>
             </button>
-            <Link href="/guide" className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5">
+            <Link href="/guide" className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1">
+              <Stethoscope size={16} className="sm:hidden" />
               <span className="hidden sm:inline">🩺 症狀對照</span>
-              <span className="sm:hidden">🩺</span>
             </Link>
-            <Link href="/emergency" className="text-xs sm:text-sm font-bold transition-colors hover:opacity-80 px-2 py-1.5 rounded-lg hover:bg-white/5" style={{ color: '#e16162' }}>
+            <Link href="/emergency" className="text-xs sm:text-sm font-bold transition-colors hover:opacity-80 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1" style={{ color: '#e16162' }}>
+              <Siren size={16} className="sm:hidden" />
               <span className="hidden sm:inline">🚨 急診</span>
-              <span className="sm:hidden">🚨</span>
             </Link>
-            <Link href="/favorites" className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5">
+            <Link href="/favorites" className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1">
+              <Heart size={16} className="sm:hidden" />
               <span className="hidden sm:inline">🤍 收藏</span>
-              <span className="sm:hidden">🤍</span>
             </Link>
           </div>
         </div>
@@ -180,14 +206,38 @@ export default function HomePage() {
 
             {/* Search box */}
             <div className="flex gap-2 mb-4">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                placeholder="描述你的寵物症狀，例如：口臭、掉毛、一直抓"
-                className="flex-1 bg-ink border border-mist/30 rounded-xl px-4 py-3.5 text-base text-snow placeholder:text-mist/40 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent shadow-sm"
-              />
+              <div className="relative flex-1">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                  onFocus={() => setShowHistory(true)}
+                  onBlur={() => setTimeout(() => setShowHistory(false), 150)}
+                  placeholder="描述你的寵物症狀，例如：口臭、掉毛、一直抓"
+                  className="w-full bg-ink border border-mist/30 rounded-xl px-4 py-3.5 text-base text-snow placeholder:text-mist/40 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent shadow-sm"
+                />
+                {showHistory && searchHistory.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-ink border border-mist/20 rounded-xl shadow-xl z-50 overflow-hidden">
+                    <p className="text-xs text-mist/40 px-4 pt-3 pb-1 font-medium uppercase tracking-wide">最近搜尋</p>
+                    {searchHistory.map((item) => (
+                      <div
+                        key={item}
+                        className="flex items-center gap-2 px-4 py-2.5 hover:bg-white/5 cursor-pointer group"
+                        onMouseDown={() => { setQuery(item); handleSubmit(item) }}
+                      >
+                        <Search size={13} className="text-mist/30 shrink-0" />
+                        <span className="flex-1 text-sm text-mist">{item}</span>
+                        <button
+                          onMouseDown={(e) => { e.stopPropagation(); removeFromHistory(item) }}
+                          className="text-mist/20 hover:text-mist/60 transition-colors opacity-0 group-hover:opacity-100 text-xs px-1"
+                        >✕</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 <button
                 onClick={() => handleSubmit()}
                 className="bg-gold hover:opacity-90 active:opacity-80 text-ink px-6 py-3.5 rounded-xl font-bold text-base transition-opacity shadow-sm whitespace-nowrap"
