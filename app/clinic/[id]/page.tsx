@@ -236,6 +236,16 @@ export default async function ClinicPage({
         </div>
       </div>
 
+      {/* ── 今日休息警示橫幅 */}
+      {todayHours !== null && !isOpenToday && (
+        <div className="bg-ink border-b-2 border-coral">
+          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-2">
+            <span className="text-lg">🔴</span>
+            <p className="text-sm font-semibold text-snow">今日休息</p>
+            <p className="text-xs text-mist/60 ml-1">建議來電確認或改天再前往</p>
+          </div>
+        </div>
+      )}
       {/* ── Main content ───────────────────────────────────────────────────── */}
       <div className="max-w-4xl mx-auto px-4 py-6">
 

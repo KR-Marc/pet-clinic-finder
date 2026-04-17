@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ScrollToTop from "./components/ScrollToTop";
+import BottomTabBar from "./components/BottomTabBar";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -28,7 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}<ScrollToTop /></body>
+      <body className="min-h-full flex flex-col">{children}<ScrollToTop /><BottomTabBar /></body>
     </html>
   );
 }

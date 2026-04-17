@@ -1,9 +1,62 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Heart, MapPin, PawPrint, Siren, Star } from 'lucide-react'
+import { Clock, Heart, MapPin, PawPrint, Siren, Star } from 'lucide-react'
 import Link from 'next/link'
 import { useFavorites, type FavoriteClinic } from '@/hooks/useFavorites'
+
+function EmptyFavoritesWithRecent() {
+  const [recent, setRecent] = useState<{ id: string; name: string; district: string; rating: number | null; specialty_tags: string[] }[]>([])
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('recentlyViewed')
+      if (stored) setRecent(JSON.parse(stored).slice(0, 3))
+    } catch {}
+  }, [])
+  return (
+    <div className="py-12">
+      <div className="text-center mb-10">
+        <Heart size={32} className="mx-auto mb-3 text-mist/30" />
+        <p className="text-lg font-medium text-snow mb-2">尚無收藏診所</p>
+        <p className="text-sm text-mist/60 mb-6">在診所詳細頁點擊「收藏」即可加入</p>
+        <Link href="/" className="inline-block px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity" style={{ background: '#f9bc60', color: '#001e1d' }}>
+          開始搜尋診所
+        </Link>
+      </div>
+      {recent.length > 0 && (
+        <div>
+          <p className="text-xs text-mist/40 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+            <Clock size={12} />最近瀏覽
+          </p>
+          <div className="flex flex-col gap-3">
+            {recent.map((c) => (
+              <Link key={c.id} href={`/clinic/${c.id}`} className="bg-sand rounded-xl p-4 hover:opacity-90 transition-opacity block">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <p className="font-semibold text-ink text-sm">{c.name}</p>
+                  {c.rating != null && (
+                    <span className="text-xs font-bold shrink-0" style={{ color: '#f9bc60' }}>
+                      <Star size={11} className="inline mr-0.5 fill-gold text-gold" />{c.rating}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs mb-2" style={{ color: 'rgba(0,30,29,0.5)' }}>
+                  <MapPin size={11} className="inline mr-0.5" />{c.district}
+                </p>
+                {c.specialty_tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {c.specialty_tags.slice(0, 3).map((tag) => (
+                      <span key={tag} className="px-2 py-0.5 rounded-full text-xs bg-brand text-snow">{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function FavoritesPage() {
   const { favorites, toggle } = useFavorites()
@@ -36,18 +89,7 @@ export default function FavoritesPage() {
         </div>
 
         {!mounted ? null : favorites.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-4xl mb-4"><Heart size={16} className="inline" /></p>
-            <p className="text-lg font-medium text-snow mb-2">尚無收藏診所</p>
-            <p className="text-sm text-mist/60 mb-6">在診所詳細頁點擊「收藏」即可加入</p>
-            <Link
-              href="/"
-              className="inline-block px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity"
-              style={{ background: '#f9bc60', color: '#001e1d' }}
-            >
-              開始搜尋診所
-            </Link>
-          </div>
+          <EmptyFavoritesWithRecent />
         ) : (
           <div className="flex flex-col gap-4">
             {favorites.map((clinic: FavoriteClinic) => (

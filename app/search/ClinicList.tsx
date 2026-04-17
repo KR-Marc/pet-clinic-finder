@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { AlertTriangle, CheckSquare, Clock, MapPin, Phone, Search, Square, Star, X } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import PetFilter from './PetFilter'
 import DistrictFilter from './DistrictFilter'
 import OpenFilter from './OpenFilter'
@@ -60,9 +60,19 @@ function isOpenToday(clinic: Clinic): boolean {
 
 // ── Sorting ───────────────────────────────────────────────────────────────────
 
-type SortOption = 'default' | 'rating' | 'open_first'
+type SortOption = 'default' | 'rating' | 'open_first' | 'distance'
 
-function sortClinics(clinics: Clinic[], sort: SortOption): Clinic[] {
+function getDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLng = (lng2 - lng1) * Math.PI / 180
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng/2) * Math.sin(dLng/2)
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+}
+
+function sortClinics(clinics: Clinic[], sort: SortOption, userLat?: number, userLng?: number): Clinic[] {
   if (sort === 'rating') {
     return [...clinics].sort((a, b) => {
       if (a.rating == null && b.rating == null) return 0
@@ -74,6 +84,13 @@ function sortClinics(clinics: Clinic[], sort: SortOption): Clinic[] {
   if (sort === 'open_first') {
     return [...clinics].sort((a, b) => {
       return (isOpenToday(a) ? 0 : 1) - (isOpenToday(b) ? 0 : 1)
+    })
+  }
+  if (sort === 'distance' && userLat != null && userLng != null) {
+    return [...clinics].sort((a, b) => {
+      const dA = (a.lat != null && a.lng != null) ? getDistanceKm(userLat, userLng, a.lat, a.lng) : 999
+      const dB = (b.lat != null && b.lng != null) ? getDistanceKm(userLat, userLng, b.lat, b.lng) : 999
+      return dA - dB
     })
   }
   return clinics
@@ -110,6 +127,17 @@ export default function ClinicList({ clinics, queryTerms = [], source = '' }: { 
   const [compareList, setCompareList] = useState<Clinic[]>([])
   const [aiFallbackClinics, setAiFallbackClinics] = useState<Clinic[]>([])
   const [logged, setLogged] = useState(false)
+  const [userLat, setUserLat] = useState<number | undefined>(undefined)
+  const [userLng, setUserLng] = useState<number | undefined>(undefined)
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => { setUserLat(pos.coords.latitude); setUserLng(pos.coords.longitude) },
+        () => {}
+      )
+    }
+  }, [])
 
   const logSearch = (count: number, isAi: boolean) => {
     if (logged || queryTerms.length === 0) return
@@ -127,7 +155,7 @@ export default function ClinicList({ clinics, queryTerms = [], source = '' }: { 
     return result
   }, [clinics, openOnly, activeTag])
 
-  const sorted = useMemo(() => sortClinics(filtered, sort), [filtered, sort])
+  const sorted = useMemo(() => sortClinics(filtered, sort, userLat, userLng), [filtered, sort, userLat, userLng])
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
   const page = Math.min(currentPage, totalPages)
@@ -178,6 +206,7 @@ export default function ClinicList({ clinics, queryTerms = [], source = '' }: { 
         <option value="default">預設排序</option>
         <option value="rating">評分最高</option>
         <option value="open_first">今日營業優先</option>
+        <option value="distance">距離最近</option>
       </select>
       <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-mist/60 text-xs">▾</span>
     </div>
