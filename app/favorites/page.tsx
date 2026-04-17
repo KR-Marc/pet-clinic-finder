@@ -14,11 +14,15 @@ export default function FavoritesPage() {
       {/* Nav */}
       <div className="bg-ink sticky top-0 z-10 shadow-md">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link href="/" className="text-mist/50 hover:text-snow text-sm transition-colors">
+          <Link href="/" className="text-mist/50 hover:text-snow text-sm transition-colors shrink-0">
             🐾 首頁
           </Link>
-          <span className="text-mist/30">|</span>
+          <span className="text-mist/30 shrink-0">|</span>
           <span className="text-snow text-sm font-medium">我的收藏</span>
+          <span className="text-mist/30 shrink-0 ml-auto">|</span>
+          <Link href="/emergency" className="text-xs font-bold transition-colors shrink-0 hover:opacity-80" style={{ color: '#e16162' }}>
+            🚨 急診
+          </Link>
         </div>
       </div>
 

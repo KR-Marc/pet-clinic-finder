@@ -257,6 +257,9 @@ export default async function SearchPage({
           </Link>
           <span className="text-mist/30 shrink-0">|</span>
           <span className="text-snow text-sm font-medium truncate">{subtitle}</span>
+          <Link href="/emergency" className="text-xs font-bold transition-colors shrink-0 hover:opacity-80 ml-auto" style={{ color: '#e16162' }}>
+            🚨 急診
+          </Link>
         </div>
       </div>
 
