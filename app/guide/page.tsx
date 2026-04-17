@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Activity, AlertTriangle, Bone, Brain, Droplets, Eye, Heart, Leaf, PawPrint, Ribbon, Scissors, Siren, Stethoscope } from 'lucide-react'
+import { Activity, AlertTriangle, Bone, Brain, Cat, Dog, Droplets, Eye, Heart, Leaf, PawPrint, Ribbon, Scissors, Siren, Stethoscope } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -173,11 +173,11 @@ export default function GuidePage() {
       <div className="bg-ink sticky top-0 z-10 shadow-md">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="text-mist/50 hover:text-snow text-sm transition-colors shrink-0">
-            🐾 首頁
+            <PawPrint size={14} className="inline mr-1" />首頁
           </Link>
           <span className="text-mist/30 shrink-0">|</span>
           <Link href="/emergency" className="text-xs font-bold transition-colors shrink-0 hover:opacity-80" style={{ color: '#e16162' }}>
-            🚨 急診
+            <Siren size={14} className="inline mr-1" />急診
           </Link>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function GuidePage() {
       <div className="bg-ink border-b border-mist/10">
         <div className="max-w-4xl mx-auto px-4 py-10">
           <h1 className="text-2xl sm:text-3xl font-bold text-snow mb-3">
-            🩺 寵物症狀對照表
+             寵物症狀對照表
           </h1>
           <p className="text-mist/70 text-sm leading-relaxed">
             不知道該掛哪科？對照症狀，找到最適合的專科動物醫院。
@@ -253,10 +253,10 @@ export default function GuidePage() {
               {/* 易感品種 */}
               {'breeds' in g && g.breeds && (
                 <div className="mb-4 pt-3 border-t border-ink/8">
-                  <p className="text-xs font-semibold mb-2" style={{ color: 'rgba(0,30,29,0.4)' }}>🐾 易感品種</p>
+                  <p className="text-xs font-semibold mb-2" style={{ color: 'rgba(0,30,29,0.4)' }}><PawPrint size={12} className="inline mr-1" />易感品種</p>
                   {(g.breeds as { cat?: string[]; dog?: string[] }).cat && (
                     <div className="mb-1.5">
-                      <span className="text-xs font-medium mr-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}>🐱 貓：</span>
+                      <span className="text-xs font-medium mr-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}><Cat size={12} className="inline mr-1" />貓：</span>
                       <span className="text-xs" style={{ color: 'rgba(0,30,29,0.65)' }}>
                         {(g.breeds as { cat: string[] }).cat.join('、')}
                       </span>
@@ -264,7 +264,7 @@ export default function GuidePage() {
                   )}
                   {(g.breeds as { cat?: string[]; dog?: string[] }).dog && (
                     <div>
-                      <span className="text-xs font-medium mr-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}>🐶 狗：</span>
+                      <span className="text-xs font-medium mr-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}><Dog size={12} className="inline mr-1" />狗：</span>
                       <span className="text-xs" style={{ color: 'rgba(0,30,29,0.65)' }}>
                         {(g.breeds as { dog: string[] }).dog.join('、')}
                       </span>
