@@ -353,12 +353,12 @@ export default async function ClinicPage({
           </div>
 
           {/* RIGHT — map */}
-          <div className="lg:col-span-2 rounded-xl overflow-hidden relative" style={{ minHeight: '350px' }}>
+          <div className="lg:col-span-2 rounded-xl overflow-hidden relative" style={{ minHeight: '250px', height: '250px' }}>
             <iframe
               title={`${clinic.name} 地圖位置`}
               width="100%"
               height="100%"
-              style={{ border: 0, display: 'block', minHeight: '350px' }}
+              style={{ border: 0, display: 'block', minHeight: '250px', height: '100%', position: 'absolute', top: 0, left: 0 }}
               loading="lazy"
               allowFullScreen
               referrerPolicy="no-referrer-when-downgrade"
