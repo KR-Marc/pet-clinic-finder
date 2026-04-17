@@ -25,7 +25,7 @@ export default function FavoriteButton({ clinic }: { clinic: FavoriteClinic }) {
           : { background: 'transparent', borderColor: 'rgba(171,209,198,0.3)', color: 'rgba(171,209,198,0.6)' }
       }
     >
-      {saved ? '❤️ 已收藏' : '🤍 收藏'}
+      {saved ? <><Heart size={14} className="inline fill-current" /><span className="hidden sm:inline ml-1">已收藏</span></> : <><Heart size={14} className="inline" /><span className="hidden sm:inline ml-1">收藏</span></>}
     </button>
   )
 }

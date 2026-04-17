@@ -381,7 +381,7 @@ export default async function ClinicPage({
             rel="noopener noreferrer"
             className="shrink-0 min-w-[160px] py-3 rounded-xl text-center font-medium text-sm transition-colors hover:text-snow border border-mist/30 bg-ink text-mist"
           >
-            <><Map size={16} className="inline-block mr-1.5" />Google Maps 導航</>
+            <><Map size={16} className="inline-block mr-1.5" /><span className="hidden sm:inline">Google Maps 導航</span></>
           </a>
           {clinic.website && (
             <a
@@ -390,7 +390,7 @@ export default async function ClinicPage({
               rel="noopener noreferrer"
               className="shrink-0 min-w-[120px] py-3 rounded-xl text-center font-medium text-sm transition-colors hover:opacity-80 border border-mist/30 bg-ink text-mist"
             >
-              <Globe size={15} className="inline mr-1.5" />官網預約
+              <Globe size={15} className="inline mr-1.5" /><span className="hidden sm:inline">官網預約</span>
             </a>
           )}
           <ShareButton name={clinic.name} />

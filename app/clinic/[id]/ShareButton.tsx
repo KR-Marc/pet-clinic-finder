@@ -20,7 +20,7 @@ export default function ShareButton({ name }: { name: string }) {
       className="px-4 py-3 rounded-xl font-medium text-sm transition-colors hover:text-snow border border-mist/30 bg-ink text-mist"
       aria-label="分享此診所"
     >
-      🔗 分享
+      🔗 <span className="hidden sm:inline">分享</span>
     </button>
   )
 }
