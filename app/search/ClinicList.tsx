@@ -301,11 +301,11 @@ export default function ClinicList({ clinics, queryTerms = [], source = '' }: { 
                   const hasHours = todayHours !== null
                   return (
                     <div key={clinic.id} className="bg-sand rounded-xl p-5 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-l-4"
-                      style={{ borderLeftColor: isOpenToday(clinic) ? '#4ade80' : '#e16162' }}
+                      style={{ borderLeftColor: isOpenToday(clinic) ? '#2d9e6b' : '#c0665e' }}
                     >
                       <div className="flex items-start justify-between gap-2 mb-1.5">
                         <h2 className="text-lg font-semibold leading-snug flex items-center gap-1.5" style={{ color: '#001e1d' }}>
-                          <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: isOpenToday(clinic) ? '#4ade80' : '#e16162' }} />
+                          <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: isOpenToday(clinic) ? '#2d9e6b' : '#c0665e' }} />
                           {clinic.name}
                         </h2>
                         {clinic.rating != null && (
@@ -379,14 +379,14 @@ export default function ClinicList({ clinics, queryTerms = [], source = '' }: { 
                   <div
                     key={clinic.id}
                     className="bg-sand rounded-xl p-5 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-l-4"
-                    style={{ borderLeftColor: isOpenToday(clinic) ? '#4ade80' : '#e16162' }}
+                    style={{ borderLeftColor: isOpenToday(clinic) ? '#2d9e6b' : '#c0665e' }}
                   >
                     {/* ROW 1 — Name + rating + badges */}
                     <div className="flex items-start justify-between gap-2 mb-1.5">
                       <h2 className="text-lg font-semibold leading-snug flex items-center gap-1.5" style={{ color: '#001e1d' }}>
                         <span
                           className="w-2 h-2 rounded-full shrink-0 mt-0.5"
-                          style={{ background: isOpenToday(clinic) ? '#4ade80' : '#e16162' }}
+                          style={{ background: isOpenToday(clinic) ? '#2d9e6b' : '#c0665e' }}
                         />
                         {clinic.name}
                       </h2>
