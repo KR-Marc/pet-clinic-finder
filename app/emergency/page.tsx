@@ -91,7 +91,7 @@ export default function EmergencyPage() {
               const hours = getTodayHours(c.opening_hours)
               const warn = hasReviewWarning(c)
               const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(c.district + c.address)}&travelmode=driving`
-              const uberUrl = `uber://?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent('台北市' + c.district + c.address)}&dropoff[nickname]=${encodeURIComponent(c.name)}`
+              const uberUrl = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent('台北市' + c.district + c.address)}&dropoff[nickname]=${encodeURIComponent(c.name)}`
 
               return (
                 <div key={c.id} className="bg-sand rounded-xl p-5 shadow-sm">
