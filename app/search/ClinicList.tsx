@@ -300,7 +300,9 @@ export default function ClinicList({ clinics, queryTerms = [], source = '' }: { 
                   const isClosed = todayHours === '休息'
                   const hasHours = todayHours !== null
                   return (
-                    <div key={clinic.id} className="bg-sand rounded-xl p-5 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                    <div key={clinic.id} className="bg-sand rounded-xl p-5 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-l-4"
+                      style={{ borderLeftColor: isOpenToday(clinic) ? '#4ade80' : '#e16162' }}
+                    >
                       <div className="flex items-start justify-between gap-2 mb-1.5">
                         <h2 className="text-lg font-semibold leading-snug flex items-center gap-1.5" style={{ color: '#001e1d' }}>
                           <span className="w-2 h-2 rounded-full shrink-0 mt-0.5" style={{ background: isOpenToday(clinic) ? '#4ade80' : '#e16162' }} />
@@ -310,7 +312,7 @@ export default function ClinicList({ clinics, queryTerms = [], source = '' }: { 
                           <span className="text-sm font-bold whitespace-nowrap" style={{ color: '#f9bc60' }}><Star size={13} className="inline mr-0.5 fill-gold text-gold" />{clinic.rating}</span>
                         )}
                       </div>
-                      <p className="text-sm mb-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}><MapPin size={13} className="inline mr-0.5" />{clinic.district} {clinic.address}</p>
+                      <p className="text-sm mb-1.5" style={{ color: 'rgba(0,30,29,0.62)' }}><MapPin size={13} className="inline mr-0.5" />{clinic.district} {clinic.address}</p>
                       <p className="text-xs font-medium mb-3" style={{ color: !hasHours ? 'rgba(0,30,29,0.3)' : isClosed ? '#e16162' : '#16a34a' }}>
                         {!hasHours ? <><Clock size={13} className="inline mr-0.5" />營業時間未提供</> : isClosed ? <><Clock size={13} className="inline mr-0.5" />今日 休息</> : <><Clock size={13} className="inline mr-0.5" />{`今日 ${todayHours}`}</>}
                       </p>
@@ -376,7 +378,8 @@ export default function ClinicList({ clinics, queryTerms = [], source = '' }: { 
                 return (
                   <div
                     key={clinic.id}
-                    className="bg-sand rounded-xl p-5 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                    className="bg-sand rounded-xl p-5 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 border-l-4"
+                    style={{ borderLeftColor: isOpenToday(clinic) ? '#4ade80' : '#e16162' }}
                   >
                     {/* ROW 1 — Name + rating + badges */}
                     <div className="flex items-start justify-between gap-2 mb-1.5">
@@ -414,7 +417,7 @@ export default function ClinicList({ clinics, queryTerms = [], source = '' }: { 
                     </div>
 
                     {/* ROW 2 — Location */}
-                    <p className="text-sm mb-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}>
+                    <p className="text-sm mb-1.5" style={{ color: 'rgba(0,30,29,0.62)' }}>
                       <MapPin size={13} className="inline mr-0.5" />{clinic.district}
                       {clinic.address &&
                         clinic.address !== clinic.district &&

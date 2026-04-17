@@ -384,7 +384,7 @@ export default async function ClinicPage({
             <a
               href={`tel:${clinic.phone}`}
               className="flex-1 py-3 rounded-xl text-center font-semibold text-sm transition-opacity hover:opacity-90 flex items-center justify-center gap-1.5"
-              style={{ background: '#f9bc60', color: '#001e1d' }}
+              style={{ background: 'linear-gradient(135deg, #f9bc60 0%, #e8a94d 100%)', color: '#001e1d' }}
             >
               <Phone size={18} />
               <span className="hidden sm:inline">立即撥打</span>
@@ -486,7 +486,7 @@ export default async function ClinicPage({
             <Link
               href="/search"
               className="inline-block px-5 py-2 rounded-full text-sm font-semibold transition-opacity hover:opacity-80"
-              style={{ background: '#f9bc60', color: '#001e1d' }}
+              style={{ background: 'linear-gradient(135deg, #f9bc60 0%, #e8a94d 100%)', color: '#001e1d' }}
             >
               搜尋全台北診所 →
             </Link>

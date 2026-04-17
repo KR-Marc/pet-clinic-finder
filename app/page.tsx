@@ -174,8 +174,14 @@ export default function HomePage() {
               <span className="hidden sm:inline">🩺 症狀對照</span>
             </Link>
             <Link href="/emergency" className="text-xs sm:text-sm font-bold transition-colors hover:opacity-80 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1" style={{ color: '#e16162' }}>
-              <Siren size={16} className="sm:hidden" />
-              <span className="hidden sm:inline">🚨 急診</span>
+              <span className="sm:hidden relative flex items-center justify-center">
+                <Siren size={16} />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-coral animate-pulse-dot" />
+              </span>
+              <span className="hidden sm:inline flex items-center gap-1">
+                <span className="inline-block w-2 h-2 rounded-full bg-coral animate-pulse-dot mr-1" />
+                急診
+              </span>
             </Link>
             <Link href="/favorites" className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1">
               <Heart size={16} className="sm:hidden" />
@@ -249,7 +255,8 @@ export default function HomePage() {
               </div>
 <button
                 onClick={() => handleSubmit()}
-                className="bg-gold hover:opacity-90 active:opacity-80 text-ink px-6 py-3.5 rounded-xl font-bold text-base transition-opacity shadow-sm whitespace-nowrap"
+                className="hover:opacity-90 active:opacity-80 text-ink px-6 py-3.5 rounded-xl font-bold text-base transition-opacity shadow-sm whitespace-nowrap"
+                style={{ background: 'linear-gradient(135deg, #f9bc60 0%, #e8a94d 100%)' }}
               >
                 搜尋
               </button>
@@ -409,7 +416,7 @@ export default function HomePage() {
       </section>
 
       {/* ── How it works — #2 ───────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-16 lg:py-20">
+      <section className="max-w-7xl mx-auto px-6 py-16 lg:py-20 rounded-2xl" style={{ background: 'rgba(0,84,80,0.3)' }}>
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-snow mb-3">如何使用</h2>
           <p className="text-mist">三個步驟，快速找到最適合的專科醫院</p>
