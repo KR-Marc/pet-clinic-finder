@@ -141,10 +141,6 @@ export default async function ClinicPage({
   const isOpenToday = todayHours !== null && todayHours !== '休息'
 
   const mapQuery = encodeURIComponent(`${clinic.name} ${clinic.address} 台北`)
-  // 附近同專科地圖查詢：用第一個專科tag + 行政區
-  const nearbyMapQuery = clinic.specialty_tags.length > 0
-    ? encodeURIComponent(`台北市${clinic.district}${clinic.specialty_tags[0]}動物醫院`)
-    : encodeURIComponent(`台北市${clinic.district}動物醫院`)
 
   // 簡單異常偵測：評論數超過 1000 且評分高於 4.8 顯示提示
   const showReviewWarning = (clinic.review_count ?? 0) > 2000 && (clinic.rating ?? 0) >= 4.0
@@ -357,27 +353,24 @@ export default async function ClinicPage({
 
           {/* RIGHT — map */}
           <div className="lg:col-span-2 rounded-xl overflow-hidden relative" style={{ minHeight: '350px' }}>
-            <div className="absolute top-2 left-2 z-10 px-2 py-1 rounded text-xs font-medium" style={{background:'rgba(0,30,29,0.7)',color:'#abd1c6'}}>
-              📍 附近{clinic.specialty_tags[0] ?? ''}診所
-            </div>
             <iframe
-              title={`${clinic.name} 附近同專科診所地圖`}
+              title={`${clinic.name} 地圖位置`}
               width="100%"
               height="100%"
               style={{ border: 0, display: 'block', minHeight: '350px' }}
               loading="lazy"
               allowFullScreen
               referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/search?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${nearbyMapQuery}`}
+              src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${mapQuery}`}
             />
           </div>
         </div>
 
         {/* ── Action buttons ────────────────────────────────────────────────── */}
-        <div className="flex gap-3 mb-8">
+        <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
           <a
             href={`tel:${clinic.phone}`}
-            className="flex-1 py-3 rounded-xl text-center font-semibold text-sm transition-opacity hover:opacity-90"
+            className="shrink-0 min-w-[120px] py-3 rounded-xl text-center font-semibold text-sm transition-opacity hover:opacity-90"
             style={{ background: '#f9bc60', color: '#001e1d' }}
           >
             <><Phone size={16} className="inline-block mr-1.5" />立即撥打</>
@@ -386,7 +379,7 @@ export default async function ClinicPage({
             href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 py-3 rounded-xl text-center font-medium text-sm transition-colors hover:text-snow border border-mist/30 bg-ink text-mist"
+            className="shrink-0 min-w-[160px] py-3 rounded-xl text-center font-medium text-sm transition-colors hover:text-snow border border-mist/30 bg-ink text-mist"
           >
             <><Map size={16} className="inline-block mr-1.5" />Google Maps 導航</>
           </a>
@@ -395,7 +388,7 @@ export default async function ClinicPage({
               href={clinic.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 py-3 rounded-xl text-center font-medium text-sm transition-colors hover:opacity-80 border border-mist/30 bg-ink text-mist"
+              className="shrink-0 min-w-[120px] py-3 rounded-xl text-center font-medium text-sm transition-colors hover:opacity-80 border border-mist/30 bg-ink text-mist"
             >
               <Globe size={15} className="inline mr-1.5" />官網預約
             </a>
