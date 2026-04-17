@@ -17,21 +17,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ district: null, status: data.status })
     }
 
-    // debug 模式：回傳所有 address_components
     if (debug) {
-      const allComponents = data.results[0]?.address_components ?? []
-      return NextResponse.json({ components: allComponents })
+      return NextResponse.json({ components: data.results[0]?.address_components ?? [] })
     }
 
-    // 嘗試各種 type 找出行政區
+    // 台灣的行政區「區」在 administrative_area_level_2
     for (const result of data.results) {
       for (const component of result.address_components as { long_name: string; types: string[] }[]) {
-        const types = component.types
         if (
-          types.includes('administrative_area_level_3') ||
-          types.includes('sublocality_level_1') ||
-          types.includes('sublocality') ||
-          types.includes('political')
+          component.types.includes('administrative_area_level_2') ||
+          component.types.includes('administrative_area_level_3') ||
+          component.types.includes('sublocality_level_1')
         ) {
           if (component.long_name.endsWith('區')) {
             return NextResponse.json({ district: component.long_name })
