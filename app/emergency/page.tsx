@@ -18,6 +18,36 @@ interface Clinic {
 
 const WEEKDAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
 
+// Geocode 地址後開啟 Uber（帶座標）
+const geoCache: Record<string, { lat: number; lng: number }> = {}
+
+async function openUber(clinic: Clinic, btnEl: HTMLAnchorElement) {
+  const fullAddress = '台北市' + clinic.district + clinic.address
+  btnEl.textContent = '🔍 定位中...'
+  btnEl.style.opacity = '0.7'
+  try {
+    let coords = geoCache[clinic.id]
+    if (!coords) {
+      const res = await fetch(`/api/geocode?address=${encodeURIComponent(fullAddress)}`)
+      const data = await res.json()
+      if (data.lat && data.lng) {
+        coords = data
+        geoCache[clinic.id] = coords
+      }
+    }
+    if (coords) {
+      window.location.href = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[latitude]=${coords.lat}&dropoff[longitude]=${coords.lng}&dropoff[nickname]=${encodeURIComponent(clinic.name)}&dropoff[formatted_address]=${encodeURIComponent(fullAddress)}`
+    } else {
+      window.location.href = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(fullAddress)}&dropoff[nickname]=${encodeURIComponent(clinic.name)}`
+    }
+  } catch {
+    window.location.href = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(fullAddress)}&dropoff[nickname]=${encodeURIComponent(clinic.name)}`
+  } finally {
+    btnEl.textContent = '🚗 Uber 叫車前往'
+    btnEl.style.opacity = '1'
+  }
+}
+
 function getTodayHours(hours: string[] | null): string | null {
   if (!hours?.length) return null
   const today = WEEKDAYS[new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Taipei' })).getDay()]
@@ -91,8 +121,6 @@ export default function EmergencyPage() {
               const hours = getTodayHours(c.opening_hours)
               const warn = hasReviewWarning(c)
               const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(c.district + c.address)}&travelmode=driving`
-              const uberUrl = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent('台北市' + c.district + c.address)}&dropoff[nickname]=${encodeURIComponent(c.name)}`
-
               return (
                 <div key={c.id} className="bg-sand rounded-xl p-5 shadow-sm">
                   {/* 警示語 */}
@@ -150,10 +178,13 @@ export default function EmergencyPage() {
                     </a>
                   </div>
 
-                  {/* Uber - 只在手機版顯示（md:hidden），桌面版 uber:// scheme 無效 */}
-                  <a href={uberUrl}
+                  {/* Uber - 只在手機版顯示，點擊先 geocode 再帶座標開 Uber */}
+                  <a
+                    href="#"
                     className="md:hidden block py-2.5 rounded-xl text-center font-semibold text-sm"
-                    style={{ background: '#1a1a1a', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    style={{ background: '#1a1a1a', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                    onClick={(e) => { e.preventDefault(); openUber(c, e.currentTarget as HTMLAnchorElement) }}
+                  >
                     🚗 Uber 叫車前往
                   </a>
                 </div>
