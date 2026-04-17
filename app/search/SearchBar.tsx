@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { Cat, Dog } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 
 const PET_OPTIONS = [
   { label: '全部', value: '' },
-  { label: '🐱 貓', value: 'cat' },
-  { label: '🐶 狗', value: 'dog' },
+  { label: '貓', value: 'cat' },
+  { label: '狗', value: 'dog' },
 ]
 
 export default function SearchBar({
@@ -121,7 +122,7 @@ export default function SearchBar({
                 : 'bg-transparent text-mist border-mist/40 hover:border-gold hover:text-gold'
             }`}
           >
-            {opt.label}
+            {opt.value === 'cat' ? <><Cat size={13} className="inline mr-1" />貓</> : opt.value === 'dog' ? <><Dog size={13} className="inline mr-1" />狗</> : opt.label}
           </button>
         ))}
       </div>

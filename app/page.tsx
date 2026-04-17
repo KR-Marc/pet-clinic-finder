@@ -13,8 +13,8 @@ const QUICK_TAGS = ['嘔吐', '拉肚子', '抽搐', '血尿', '血便', '呼吸
 
 const PET_OPTIONS = [
   { label: '全部', value: '' },
-  { label: '🐱 貓', value: 'cat' },
-  { label: '🐶 狗', value: 'dog' },
+  { label: '貓', value: 'cat' },
+  { label: '狗', value: 'dog' },
 ]
 
 const FEATURES = [
