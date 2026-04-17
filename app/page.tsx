@@ -460,7 +460,7 @@ export default function HomePage() {
           </div>
           <div className="border-t border-mist/10 pt-6">
             <p className="text-mist/40 text-xs text-center">
-              © 2025 寵物專科診所搜尋　·　資料僅供參考，實際資訊請以診所公告為準
+              © 2026 寵物專科診所搜尋　·　資料僅供參考，實際資訊請以診所公告為準
             </p>
           </div>
         </div>
