@@ -449,7 +449,7 @@ export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clin
                         style={
                           compareList.some((c) => c.id === clinic.id)
                             ? { color: '#f9bc60' }
-                            : { color: 'rgba(171,209,198,0.4)' }
+                            : { color: 'rgba(171,209,198,0.7)' }
                         }
                       >
                         {compareList.some((c) => c.id === clinic.id) ? <><CheckSquare size={13} className="inline mr-1" />比較中</> : <><Square size={13} className="inline mr-1" />加入比較</>}
