@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Activity, AlertTriangle, Bone, Brain, Droplets, Eye, Heart, Leaf, PawPrint, Ribbon, Siren, Stethoscope } from 'lucide-react'
+import { Activity, AlertTriangle, Bone, Brain, Droplets, Eye, Heart, Leaf, PawPrint, Ribbon, Scissors, Siren, Stethoscope } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const GUIDES = [
   {
     specialty: '牙科',
-    icon: '🦷',
+    icon: 'tooth',
     description: '寵物牙齒問題常被忽略，口臭是最常見的早期訊號。建議每年定期洗牙檢查。',
     symptoms: ['口臭', '流口水', '牙齦紅腫', '掉牙', '不肯吃東西', '嘴巴有味道'],
     diseases: ['牙周病', '牙結石', '牙齦炎', '口腔腫瘤'],
@@ -30,7 +30,7 @@ const GUIDES = [
   },
   {
     specialty: '眼科',
-    icon: '👁️',
+    icon: 'eye',
     description: '眼部問題若未及時處理可能影響視力，發現異常應盡早就診。',
     symptoms: ['眼屎多', '眼睛紅', '白內障', '眼睛混濁', '一直眨眼', '眼睛腫'],
     diseases: ['白內障', '青光眼', '角膜潰瘍', '乾眼症'],
@@ -41,7 +41,7 @@ const GUIDES = [
   },
   {
     specialty: '心臟科',
-    icon: '❤️',
+    icon: 'heart',
     description: '心臟病在老年犬貓中很常見，定期心臟超音波可早期發現。',
     symptoms: ['咳嗽', '容易喘', '心雜音', '運動不耐', '昏厥', '肚子變大'],
     diseases: ['二尖瓣疾病', '擴張型心肌病', '心包積液', '先天性心臟病'],
@@ -53,7 +53,7 @@ const GUIDES = [
   },
   {
     specialty: '骨科',
-    icon: '🦴',
+    icon: 'bone',
     description: '骨關節問題影響生活品質，及早診斷可避免病情惡化。',
     symptoms: ['跛行', '骨折', '不肯走路', '關節腫大', '爬樓梯困難', '腳腳無力'],
     diseases: ['十字韌帶斷裂', '髖關節發育不良', '椎間盤疾病', '骨折'],
@@ -65,7 +65,7 @@ const GUIDES = [
   },
   {
     specialty: '腫瘤科',
-    icon: '🎗️',
+    icon: 'ribbon',
     description: '腫塊不一定是惡性，但發現後應盡快請獸醫評估。早期治療效果最好。',
     symptoms: ['腫塊', '腫瘤快速增大', '體重下降', '食慾廢絕', '異常出血'],
     diseases: ['肥大細胞瘤', '淋巴瘤', '乳腺腫瘤', '骨肉瘤'],
@@ -77,7 +77,7 @@ const GUIDES = [
   },
   {
     specialty: '皮膚科',
-    icon: '🌿',
+    icon: 'leaf',
     description: '皮膚問題原因多樣，可能是過敏、感染或荷爾蒙異常，需專科鑑別診斷。',
     symptoms: ['一直抓', '掉毛', '皮膚紅疹', '皮屑多', '皮膚有異味', '反覆舔腳'],
     diseases: ['異位性皮膚炎', '真菌感染', '食物過敏', '疥癬'],
@@ -89,7 +89,7 @@ const GUIDES = [
   },
   {
     specialty: '神經外科',
-    icon: '🧠',
+    icon: 'brain',
     description: '神經症狀需緊急評估，延誤治療可能造成永久損傷。',
     symptoms: ['抽搐', '癲癇', '走路歪斜', '突然癱瘓', '頭部傾斜', '眼球震顫'],
     diseases: ['椎間盤突出', '癲癇', '腦瘤', '前庭疾病'],
@@ -100,7 +100,7 @@ const GUIDES = [
   },
   {
     specialty: '泌尿科',
-    icon: '💧',
+    icon: 'droplets',
     description: '泌尿道問題在貓咪中非常常見，公貓尤其容易發生尿道阻塞需緊急處理。',
     symptoms: ['血尿', '頻尿', '尿結石', '膀胱炎', '排尿困難', '一直舔下體'],
     diseases: ['膀胱炎', '尿道結石', '腎盂腎炎', '尿道阻塞'],
@@ -112,7 +112,7 @@ const GUIDES = [
   },
   {
     specialty: '腎臟科',
-    icon: '🫘',
+    icon: 'droplets',
     description: '腎臟疾病是老年貓咪最常見的死因之一，早期篩檢非常重要。',
     symptoms: ['多喝水', '多尿', '食慾下降', '嘔吐', '體重減輕', '口臭有尿味'],
     diseases: ['慢性腎臟病', '急性腎損傷', '腎盂腎炎', '多囊腎'],
@@ -124,7 +124,7 @@ const GUIDES = [
   },
   {
     specialty: '外科',
-    icon: '🔬',
+    icon: 'scissors',
     description: '外科手術涵蓋範圍廣，從結紮到複雜的腹腔手術都屬外科範疇。',
     symptoms: ['腫塊切除', '結紮', '外傷縫合', '腸阻塞', '腹部異常', '吞入異物'],
     diseases: ['腸梗阻', '胃扭轉', '疝氣', '腹膜炎'],
@@ -135,7 +135,7 @@ const GUIDES = [
   },
   {
     specialty: '復健',
-    icon: '🏃',
+    icon: 'activity',
     description: '術後復健可加速恢復，水療和物理治療對關節退化的老年寵物特別有幫助。',
     symptoms: ['術後恢復', '關節退化', '水療', '肌肉萎縮', '行動不便', '老年照護'],
     diseases: ['術後復健', '關節炎', '椎間盤術後', '中風後復健'],
@@ -146,7 +146,7 @@ const GUIDES = [
   },
   {
     specialty: '中獸醫',
-    icon: '🌱',
+    icon: 'leaf',
     description: '中獸醫結合針灸、中藥等療法，適合慢性病調理和術後輔助治療。',
     symptoms: ['針灸', '中藥', '慢性病調理', '食慾不振', '免疫調節', '老年保健'],
     diseases: ['慢性疼痛', '免疫系統疾病', '腫瘤輔助治療', '老年退化'],
@@ -156,7 +156,7 @@ const GUIDES = [
   },
   {
     specialty: '24H急診',
-    icon: '🚨',
+    icon: 'siren',
     description: '深夜或假日緊急狀況不用慌，台北市有多家 24 小時急診動物醫院。',
     symptoms: ['昏倒', '呼吸困難', '大量出血', '中毒', '骨折', '意識不清'],
     diseases: ['外傷', '中毒', '休克', '急性器官衰竭'],
@@ -200,7 +200,20 @@ export default function GuidePage() {
           {GUIDES.map((g) => (
             <div key={g.specialty} className="bg-sand rounded-xl p-5">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-2xl">{g.icon}</span>
+                <span className="text-ink/70">
+                  {g.icon === 'tooth' ? <Stethoscope size={24} /> :
+                   g.icon === 'eye' ? <Eye size={24} /> :
+                   g.icon === 'heart' ? <Heart size={24} /> :
+                   g.icon === 'bone' ? <Bone size={24} /> :
+                   g.icon === 'ribbon' ? <Ribbon size={24} /> :
+                   g.icon === 'leaf' ? <Leaf size={24} /> :
+                   g.icon === 'brain' ? <Brain size={24} /> :
+                   g.icon === 'scissors' ? <Scissors size={24} /> :
+                   g.icon === 'droplets' ? <Droplets size={24} /> :
+                   g.icon === 'activity' ? <Activity size={24} /> :
+                   g.icon === 'siren' ? <Siren size={24} /> :
+                   <Stethoscope size={24} />}
+                </span>
                 <h2 className="font-bold text-lg text-ink">{g.specialty}</h2>
               </div>
               <p className="text-xs leading-relaxed mb-3" style={{ color: 'rgba(0,30,29,0.6)' }}>
