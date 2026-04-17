@@ -279,7 +279,7 @@ export default async function SearchPage({
             <div className="h-4 w-32 bg-ink rounded animate-pulse" />
           </div>
         }>
-          <ClinicList clinics={clinics} queryTerms={queryTerms} />
+          <ClinicList clinics={clinics} queryTerms={queryTerms} source={source} />
         </Suspense>
       </div>
     </main>

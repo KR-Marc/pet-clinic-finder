@@ -98,14 +98,14 @@ const selectClass =
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function ClinicList({ clinics, queryTerms = [] }: { clinics: Clinic[]; queryTerms?: string[] }) {
+export default function ClinicList({ clinics, queryTerms = [], source = '' }: { clinics: Clinic[]; queryTerms?: string[]; source?: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const openOnly = searchParams.get('open') === 'true'
+  const openOnly = searchParams.get('open') === 'true' || (source === 'nearby' && searchParams.get('open') !== 'false')
   const district = searchParams.get('district') ?? ''
   const currentPage = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
-  const [sort, setSort] = useState<SortOption>('rating')
+  const [sort, setSort] = useState<SortOption>(source === 'nearby' ? 'open_first' : 'rating')
   const [activeTag, setActiveTag] = useState<string>('')
   const [compareList, setCompareList] = useState<Clinic[]>([])
   const [aiFallbackClinics, setAiFallbackClinics] = useState<Clinic[]>([])
