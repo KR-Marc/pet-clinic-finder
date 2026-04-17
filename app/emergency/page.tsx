@@ -24,7 +24,7 @@ export default function EmergencyPage() {
   useEffect(() => {
     supabase.from('clinics')
       .select('id,name,district,address,phone,rating,specialty_tags,lat,lng')
-      .filter('specialty_tags', 'cs', '{"24H急診"}')
+      .like('specialty_tags::text', '%24H急診%')
       .order('rating', { ascending: false })
       .then(({ data }) => { setClinics((data ?? []) as Clinic[]); setLoading(false) })
 
