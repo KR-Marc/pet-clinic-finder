@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(req: NextRequest) {
   const lat = req.nextUrl.searchParams.get('lat')
   const lng = req.nextUrl.searchParams.get('lng')
+  const debug = req.nextUrl.searchParams.get('debug') === '1'
   if (!lat || !lng) return NextResponse.json({ error: 'missing lat/lng' }, { status: 400 })
 
   const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
@@ -11,14 +12,26 @@ export async function GET(req: NextRequest) {
   try {
     const res = await fetch(url)
     const data = await res.json()
+
     if (data.status !== 'OK' || !data.results?.length) {
       return NextResponse.json({ district: null, status: data.status })
     }
+
+    // debug 模式：回傳所有 address_components
+    if (debug) {
+      const allComponents = data.results[0]?.address_components ?? []
+      return NextResponse.json({ components: allComponents })
+    }
+
+    // 嘗試各種 type 找出行政區
     for (const result of data.results) {
       for (const component of result.address_components as { long_name: string; types: string[] }[]) {
+        const types = component.types
         if (
-          component.types.includes('administrative_area_level_3') ||
-          component.types.includes('sublocality_level_1')
+          types.includes('administrative_area_level_3') ||
+          types.includes('sublocality_level_1') ||
+          types.includes('sublocality') ||
+          types.includes('political')
         ) {
           if (component.long_name.endsWith('區')) {
             return NextResponse.json({ district: component.long_name })
@@ -26,6 +39,7 @@ export async function GET(req: NextRequest) {
         }
       }
     }
+
     return NextResponse.json({ district: null })
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 })
