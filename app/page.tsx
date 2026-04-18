@@ -169,9 +169,9 @@ export default function HomePage() {
         position: 'relative', overflow: 'hidden',
       }}>
         <div style={{
-          position: 'absolute', right: -100, top: -80, width: 380, height: 380,
+          position: 'absolute', right: -60, top: -40, width: 320, height: 320,
           borderRadius: '50%', background: 'var(--color-clay-hero-accent)',
-          filter: 'blur(50px)', opacity: 0.55, pointerEvents: 'none',
+          filter: 'blur(60px)', opacity: 0.55, pointerEvents: 'none',
         }} />
         <div style={{ position: 'relative', maxWidth: 960, margin: '0 auto' }}>
           {/* Badge */}
@@ -280,7 +280,7 @@ export default function HomePage() {
               onClick={handleNearby}
               disabled={geoState === 'loading'}
               style={{
-                marginLeft: 'auto', padding: '7px 13px', borderRadius: 999,
+                padding: '7px 13px', borderRadius: 999,
                 fontSize: 12.5, fontWeight: 500,
                 background: 'var(--color-clay-chip-bg)',
                 color: geoState === 'error'
@@ -303,9 +303,19 @@ export default function HomePage() {
               fontSize: 11, color: 'var(--color-clay-text-mute)',
               marginBottom: 10, fontWeight: 700, letterSpacing: 1,
             }}>熱門症狀搜尋</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', maxWidth: 720 }}>
+            <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
               {QUICK_TAGS.map(s => (
-                <Chip key={s} onClick={() => { setQuery(s); handleSubmit(s) }}>{s}</Chip>
+                <button
+                  key={s}
+                  onClick={() => { setQuery(s); handleSubmit(s) }}
+                  style={{
+                    padding: '5px 11px', borderRadius: 8, fontSize: 12,
+                    background: 'var(--color-clay-chip-bg)',
+                    color: 'var(--color-clay-chip-text)',
+                    border: '1px solid var(--color-clay-chip-border)',
+                    cursor: 'pointer', fontFamily: 'inherit',
+                  }}
+                >{s}</button>
               ))}
             </div>
           </div>
