@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Metadata } from 'next'
 import { ClayNav, ClayFooter } from '@/app/components/clay'
+import MobileTopBar from '@/app/components/clay/MobileTopBar'
 
 export const metadata: Metadata = {
   title: '診所比較 | 台北寵物專科診所搜尋',
@@ -74,7 +75,10 @@ export default async function ComparePage({
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--color-clay-bg)', color: 'var(--color-clay-text)' }}>
-      <ClayNav />
+      <div className="hide-on-mobile">
+        <ClayNav />
+      </div>
+      <MobileTopBar title="診所比較" backHref="/search" />
 
       {/* Hero */}
       <div style={{

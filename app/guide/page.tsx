@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Activity, AlertTriangle, Bone, Brain, Cat, Dog, Droplets, Eye, Heart, Leaf, PawPrint, Ribbon, Scissors, Siren, Stethoscope } from 'lucide-react'
 import type { Metadata } from 'next'
 import { ClayNav, ClayFooter } from '@/app/components/clay'
+import MobileTopBar from '@/app/components/clay/MobileTopBar'
 
 export const metadata: Metadata = {
   title: '寵物症狀對照表 | 台北寵物專科診所搜尋',
@@ -198,7 +199,10 @@ function getIcon(name: string, size = 22) {
 export default function GuidePage() {
   return (
     <main style={{ minHeight: '100vh', background: 'var(--color-clay-bg)', color: 'var(--color-clay-text)' }}>
-      <ClayNav current="guide" />
+      <div className="hide-on-mobile">
+        <ClayNav current="guide" />
+      </div>
+      <MobileTopBar title="症狀對照" backHref="/" />
 
       {/* Hero */}
       <div style={{

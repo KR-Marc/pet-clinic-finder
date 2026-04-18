@@ -5,6 +5,7 @@ import { Clock, Heart, MapPin, Star, Trash2, ArrowLeftRight } from 'lucide-react
 import Link from 'next/link'
 import { useFavorites, type FavoriteClinic } from '@/hooks/useFavorites'
 import { ClayNav, ClayFooter } from '@/app/components/clay'
+import MobileTopBar from '@/app/components/clay/MobileTopBar'
 
 function EmptyFavoritesWithRecent() {
   const [recent, setRecent] = useState<{ id: string; name: string; district: string; rating: number | null; specialty_tags: string[] }[]>([])
@@ -149,7 +150,10 @@ export default function FavoritesPage() {
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--color-clay-bg)', color: 'var(--color-clay-text)' }}>
-      <ClayNav current="favorites" />
+      <div className="hide-on-mobile">
+        <ClayNav current="favorites" />
+      </div>
+      <MobileTopBar title="我的收藏" backHref="/" />
 
       {/* Hero */}
       <div style={{

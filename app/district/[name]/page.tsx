@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { ClayNav, ClayFooter } from '@/app/components/clay'
+import MobileTopBar from '@/app/components/clay/MobileTopBar'
 import DistrictMap from './DistrictMap'
 import ClinicCard from './ClinicCard'
 
@@ -177,7 +178,10 @@ export default async function DistrictPage({
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--color-clay-bg)', color: 'var(--color-clay-text)' }}>
-      <ClayNav />
+      <div className="hide-on-mobile">
+        <ClayNav />
+      </div>
+      <MobileTopBar title={`${decoded}的診所`} backHref="/" />
 
       {/* Hero */}
       <div style={{
