@@ -190,7 +190,7 @@ export default function HomePage() {
 
           {/* Headline */}
           <h1 className="h5-hero-h1" style={{
-            fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800,
+            fontSize: 'clamp(36px, 5vw, 52px)', fontWeight: 800,
             letterSpacing: -1.5, lineHeight: 1.1,
             color: 'var(--color-clay-text)', marginBottom: 14, marginTop: 0,
           }}>
