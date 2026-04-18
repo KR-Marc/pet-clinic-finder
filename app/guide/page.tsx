@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Activity, AlertTriangle, Bone, Brain, Cat, Dog, Droplets, Eye, Heart, Leaf, PawPrint, Ribbon, Scissors, Siren, Stethoscope } from 'lucide-react'
 import type { Metadata } from 'next'
+import { ClayNav, ClayFooter } from '@/app/components/clay'
 
 export const metadata: Metadata = {
   title: '寵物症狀對照表 | 台北寵物專科診所搜尋',
@@ -166,154 +167,260 @@ const GUIDES = [
   },
 ]
 
+function getIcon(name: string, size = 22) {
+  switch (name) {
+    case 'tooth': return <Stethoscope size={size} />
+    case 'eye': return <Eye size={size} />
+    case 'heart': return <Heart size={size} />
+    case 'bone': return <Bone size={size} />
+    case 'ribbon': return <Ribbon size={size} />
+    case 'leaf': return <Leaf size={size} />
+    case 'brain': return <Brain size={size} />
+    case 'scissors': return <Scissors size={size} />
+    case 'droplets': return <Droplets size={size} />
+    case 'activity': return <Activity size={size} />
+    case 'siren': return <Siren size={size} />
+    default: return <Stethoscope size={size} />
+  }
+}
+
 export default function GuidePage() {
   return (
-    <main className="min-h-screen bg-brand">
-      {/* Nav */}
-      <div className="bg-ink sticky top-0 z-10 shadow-md">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link href="/" className="text-mist/50 hover:text-snow text-sm transition-colors shrink-0">
-            <PawPrint size={14} className="inline mr-1" />首頁
-          </Link>
-          <span className="text-mist/30 shrink-0">|</span>
-          <Link href="/emergency" className="text-xs font-bold transition-colors shrink-0 hover:opacity-80" style={{ color: '#e16162' }}>
-            <Siren size={14} className="inline mr-1" />急診
-          </Link>
-        </div>
-      </div>
+    <main style={{ minHeight: '100vh', background: 'var(--color-clay-bg)', color: 'var(--color-clay-text)' }}>
+      <ClayNav current="guide" />
 
       {/* Hero */}
-      <div className="bg-ink border-b border-mist/10">
-        <div className="max-w-4xl mx-auto px-4 py-10">
-          <h1 className="text-2xl sm:text-3xl font-bold text-snow mb-3">
-             寵物症狀對照表
+      <div style={{
+        background: 'var(--color-clay-hero)',
+        borderBottom: '1px solid var(--color-clay-border)',
+        padding: '56px 24px 44px',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', right: -100, top: -80, width: 380, height: 380,
+          borderRadius: '50%', background: 'var(--color-clay-hero-accent)',
+          filter: 'blur(50px)', opacity: 0.55, pointerEvents: 'none',
+        }} />
+        <div style={{ position: 'relative', maxWidth: 960, margin: '0 auto' }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, color: 'var(--color-clay-sage)',
+            background: 'var(--color-clay-sage-soft)',
+            padding: '6px 12px', borderRadius: 999, fontWeight: 700, marginBottom: 18,
+          }}>
+            <Stethoscope size={13} /> 症狀對照指南
+          </div>
+          <h1 style={{
+            fontSize: 36, fontWeight: 800, letterSpacing: -1,
+            lineHeight: 1.15, color: 'var(--color-clay-text)', margin: 0, marginBottom: 12,
+          }}>
+            不知道掛哪科？<br />
+            <span style={{ color: 'var(--color-clay-primary)' }}>對照症狀</span>找到專科
           </h1>
-          <p className="text-mist/70 text-sm leading-relaxed">
-            不知道該掛哪科？對照症狀，找到最適合的專科動物醫院。
+          <p style={{
+            fontSize: 15, color: 'var(--color-clay-text-soft)',
+            margin: 0, maxWidth: 560, lineHeight: 1.7,
+          }}>
+            13 個常見專科 × 症狀、疾病、就診時機、費用、易感品種、處方飼料一次看懂。
           </p>
         </div>
       </div>
 
       {/* Guide cards */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '36px 24px 24px', width: '100%' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+          gap: 16,
+        }}>
           {GUIDES.map((g) => (
-            <div key={g.specialty} className="bg-sand rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-ink/70">
-                  {g.icon === 'tooth' ? <Stethoscope size={24} /> :
-                   g.icon === 'eye' ? <Eye size={24} /> :
-                   g.icon === 'heart' ? <Heart size={24} /> :
-                   g.icon === 'bone' ? <Bone size={24} /> :
-                   g.icon === 'ribbon' ? <Ribbon size={24} /> :
-                   g.icon === 'leaf' ? <Leaf size={24} /> :
-                   g.icon === 'brain' ? <Brain size={24} /> :
-                   g.icon === 'scissors' ? <Scissors size={24} /> :
-                   g.icon === 'droplets' ? <Droplets size={24} /> :
-                   g.icon === 'activity' ? <Activity size={24} /> :
-                   g.icon === 'siren' ? <Siren size={24} /> :
-                   <Stethoscope size={24} />}
+            <article key={g.specialty} style={{
+              background: 'var(--color-clay-surface)',
+              border: '1px solid var(--color-clay-border)',
+              borderRadius: 14,
+              padding: 20,
+              boxShadow: '0 1px 2px rgb(79 56 28 / 0.04)',
+              display: 'flex', flexDirection: 'column',
+            }}>
+              {/* Title row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <span style={{
+                  width: 8, height: 8, borderRadius: '50%',
+                  background: 'var(--color-clay-primary)', flexShrink: 0,
+                }} />
+                <span style={{ color: 'var(--color-clay-primary)', display: 'inline-flex', alignItems: 'center' }}>
+                  {getIcon(g.icon, 20)}
                 </span>
-                <h2 className="font-bold text-lg text-ink">{g.specialty}</h2>
+                <h2 style={{
+                  fontSize: 18, fontWeight: 800,
+                  color: 'var(--color-clay-text)', margin: 0,
+                }}>{g.specialty}</h2>
               </div>
-              <p className="text-xs leading-relaxed mb-3" style={{ color: 'rgba(0,30,29,0.6)' }}>
+
+              {/* Description */}
+              <p style={{
+                fontSize: 13, lineHeight: 1.7,
+                color: 'var(--color-clay-text-soft)',
+                margin: 0, marginBottom: 14,
+              }}>
                 {g.description}
               </p>
-              <div className="flex flex-wrap gap-1.5 mb-4">
+
+              {/* Symptom chips */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
                 {g.symptoms.map((s) => (
-                  <span
-                    key={s}
-                    className="px-2.5 py-1 rounded-full text-xs font-medium bg-brand text-snow"
-                  >
-                    {s}
-                  </span>
+                  <span key={s} style={{
+                    fontSize: 11.5, fontWeight: 600,
+                    padding: '4px 10px', borderRadius: 999,
+                    background: 'var(--color-clay-tag-bg)',
+                    color: 'var(--color-clay-tag-text)',
+                  }}>{s}</span>
                 ))}
               </div>
 
-              {/* 常見疾病 */}
-              <div className="mb-3">
-                <p className="text-xs font-semibold mb-1.5" style={{ color: 'rgba(0,30,29,0.4)' }}>常見疾病</p>
-                <p className="text-sm" style={{ color: 'rgba(0,30,29,0.6)' }}>
-                  {g.diseases.join('、')}
-                </p>
+              {/* Fact rows */}
+              <div style={{
+                display: 'flex', flexDirection: 'column', gap: 10,
+                paddingTop: 14, borderTop: '1px solid var(--color-clay-border)',
+              }}>
+                <FactRow label="常見疾病" value={g.diseases.join('、')} />
+                <FactRow label="何時就診" value={g.when_to_visit} />
+                <FactRow label="費用參考" value={g.cost} />
               </div>
 
-              {/* 就診時機 */}
-              <div className="mb-3">
-                <p className="text-xs font-semibold mb-1.5" style={{ color: 'rgba(0,30,29,0.4)' }}>何時就診</p>
-                <p className="text-sm" style={{ color: 'rgba(0,30,29,0.6)' }}>{g.when_to_visit}</p>
-              </div>
-
-              {/* 費用參考 */}
-              <div className="mb-4">
-                <p className="text-xs font-semibold mb-1.5" style={{ color: 'rgba(0,30,29,0.4)' }}>費用參考</p>
-                <p className="text-sm" style={{ color: 'rgba(0,30,29,0.6)' }}>{g.cost}</p>
-              </div>
-
-              {/* 易感品種 */}
+              {/* Breeds */}
               {'breeds' in g && g.breeds && (
-                <div className="mb-4 pt-3 border-t border-ink/8">
-                  <p className="text-xs font-semibold mb-2" style={{ color: 'rgba(0,30,29,0.4)' }}><PawPrint size={12} className="inline mr-1" />易感品種</p>
+                <div style={{
+                  marginTop: 14, paddingTop: 14,
+                  borderTop: '1px dashed var(--color-clay-border)',
+                }}>
+                  <div style={{
+                    fontSize: 11, fontWeight: 700, letterSpacing: 0.5,
+                    color: 'var(--color-clay-text-mute)', marginBottom: 8,
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                  }}>
+                    <PawPrint size={12} /> 易感品種
+                  </div>
                   {(g.breeds as { cat?: string[]; dog?: string[] }).cat && (
-                    <div className="mb-1.5">
-                      <span className="text-xs font-medium mr-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}><Cat size={12} className="inline mr-1" />貓：</span>
-                      <span className="text-xs" style={{ color: 'rgba(0,30,29,0.65)' }}>
-                        {(g.breeds as { cat: string[] }).cat.join('、')}
+                    <div style={{ fontSize: 12, color: 'var(--color-clay-text-soft)', lineHeight: 1.6, marginBottom: 4 }}>
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 3,
+                        fontWeight: 700, color: 'var(--color-clay-text)', marginRight: 6,
+                      }}>
+                        <Cat size={12} />貓
                       </span>
+                      {(g.breeds as { cat: string[] }).cat.join('、')}
                     </div>
                   )}
                   {(g.breeds as { cat?: string[]; dog?: string[] }).dog && (
-                    <div>
-                      <span className="text-xs font-medium mr-1.5" style={{ color: 'rgba(0,30,29,0.5)' }}><Dog size={12} className="inline mr-1" />狗：</span>
-                      <span className="text-xs" style={{ color: 'rgba(0,30,29,0.65)' }}>
-                        {(g.breeds as { dog: string[] }).dog.join('、')}
+                    <div style={{ fontSize: 12, color: 'var(--color-clay-text-soft)', lineHeight: 1.6 }}>
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 3,
+                        fontWeight: 700, color: 'var(--color-clay-text)', marginRight: 6,
+                      }}>
+                        <Dog size={12} />狗
                       </span>
+                      {(g.breeds as { dog: string[] }).dog.join('、')}
                     </div>
                   )}
                 </div>
               )}
-              {/* 獸醫處方飼料參考 */}
+
+              {/* Prescription food */}
               {'food' in g && g.food && (
-                <div className="mb-4 pt-3 border-t border-ink/8">
-                  <p className="text-xs font-semibold mb-1" style={{ color: 'rgba(0,30,29,0.4)' }}>🍽️ 獸醫處方飼料參考</p>
-                  <p className="text-xs mb-2" style={{ color: 'rgba(0,30,29,0.35)' }}><AlertTriangle size={14} className="inline mr-1" /> 需憑獸醫師指示購買，請勿自行使用</p>
-                  {(g.food as { royal?: string[]; hills?: string[] }).royal && (g.food as { royal: string[] }).royal.length > 0 && (
-                    <div className="mb-1">
-                      <span className="text-xs font-medium mr-1" style={{ color: 'rgba(0,30,29,0.5)' }}><span className="inline-flex items-center gap-1"><Droplets size={12} />皇家</span>：</span>
-                      <span className="text-xs" style={{ color: 'rgba(0,30,29,0.65)' }}>{(g.food as { royal: string[] }).royal.join('、')}</span>
+                <div style={{
+                  marginTop: 14, paddingTop: 14,
+                  borderTop: '1px dashed var(--color-clay-border)',
+                }}>
+                  <div style={{
+                    fontSize: 11, fontWeight: 700, letterSpacing: 0.5,
+                    color: 'var(--color-clay-text-mute)', marginBottom: 6,
+                  }}>
+                    🍽️ 獸醫處方飼料參考
+                  </div>
+                  <div style={{
+                    fontSize: 11, color: 'var(--color-clay-text-mute)',
+                    marginBottom: 8, display: 'inline-flex', alignItems: 'center', gap: 4,
+                  }}>
+                    <AlertTriangle size={12} /> 需憑獸醫師指示購買，請勿自行使用
+                  </div>
+                  {(g.food as { royal?: string[] }).royal && (g.food as { royal: string[] }).royal.length > 0 && (
+                    <div style={{ fontSize: 12, color: 'var(--color-clay-text-soft)', lineHeight: 1.6, marginBottom: 3 }}>
+                      <span style={{ fontWeight: 700, color: 'var(--color-clay-text)', marginRight: 6 }}>皇家</span>
+                      {(g.food as { royal: string[] }).royal.join('、')}
                     </div>
                   )}
                   {(g.food as { hills?: string[] }).hills && (g.food as { hills: string[] }).hills.length > 0 && (
-                    <div>
-                      <span className="text-xs font-medium mr-1" style={{ color: 'rgba(0,30,29,0.5)' }}><span className="inline-flex items-center gap-1"><Leaf size={12} />希爾思</span>：</span>
-                      <span className="text-xs" style={{ color: 'rgba(0,30,29,0.65)' }}>{(g.food as { hills: string[] }).hills.join('、')}</span>
+                    <div style={{ fontSize: 12, color: 'var(--color-clay-text-soft)', lineHeight: 1.6 }}>
+                      <span style={{ fontWeight: 700, color: 'var(--color-clay-text)', marginRight: 6 }}>希爾思</span>
+                      {(g.food as { hills: string[] }).hills.join('、')}
                     </div>
                   )}
                 </div>
               )}
-              <Link
-                href={`/search?q=${encodeURIComponent(g.q)}`}
-                className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold transition-opacity hover:opacity-80"
-                style={{ background: '#f9bc60', color: '#001e1d' }}
-              >
-                找{g.specialty}診所 →
-              </Link>
-            </div>
+
+              {/* CTA */}
+              <div style={{ marginTop: 'auto', paddingTop: 16 }}>
+                <Link
+                  href={`/search?q=${encodeURIComponent(g.q)}`}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    padding: '8px 16px', borderRadius: 999,
+                    background: 'var(--color-clay-primary)', color: '#fff',
+                    fontSize: 13, fontWeight: 700, textDecoration: 'none',
+                  }}
+                >
+                  找{g.specialty}診所 →
+                </Link>
+              </div>
+            </article>
           ))}
         </div>
       </div>
 
       {/* Footer CTA */}
-      <div className="max-w-4xl mx-auto px-4 pb-12 text-center">
-        <p className="text-sm text-mist/60 mb-3">找不到對應症狀？直接搜尋描述也可以</p>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '24px 24px 56px', textAlign: 'center' }}>
+        <p style={{
+          fontSize: 14, color: 'var(--color-clay-text-soft)',
+          marginBottom: 14, marginTop: 0,
+        }}>
+          找不到對應症狀？直接搜尋描述也可以
+        </p>
         <Link
           href="/"
-          className="inline-block px-6 py-2.5 rounded-full text-sm font-semibold transition-opacity hover:opacity-80"
-          style={{ background: '#f9bc60', color: '#001e1d' }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            padding: '12px 24px', borderRadius: 999,
+            background: 'var(--color-clay-primary)', color: '#fff',
+            fontSize: 14, fontWeight: 700, textDecoration: 'none',
+          }}
         >
           回首頁搜尋 →
         </Link>
       </div>
+
+      <ClayFooter />
     </main>
+  )
+}
+
+function FactRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div style={{
+        fontSize: 11, fontWeight: 700, letterSpacing: 0.5,
+        color: 'var(--color-clay-text-mute)',
+        marginBottom: 3, textTransform: 'uppercase',
+      }}>
+        {label}
+      </div>
+      <div style={{
+        fontSize: 13, lineHeight: 1.6,
+        color: 'var(--color-clay-text-soft)',
+      }}>
+        {value}
+      </div>
+    </div>
   )
 }
