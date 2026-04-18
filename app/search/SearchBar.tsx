@@ -1,9 +1,8 @@
 'use client'
-
 import { useState } from 'react'
 import { Cat, Dog } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Chip } from '@/app/components/clay'
 
 const PET_OPTIONS = [
   { label: '全部', value: '' },
@@ -12,16 +11,10 @@ const PET_OPTIONS = [
 ]
 
 export default function SearchBar({
-  initialQ,
-  initialPet,
-}: {
-  initialQ: string
-  initialPet: string
-}) {
+  initialQ, initialPet,
+}: { initialQ: string; initialPet: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
-
-  // 支援多症狀：initialQ 可能是逗號分隔的字串
   const [tags, setTags] = useState<string[]>(
     initialQ ? initialQ.split(',').map((t) => t.trim()).filter(Boolean) : []
   )
@@ -30,12 +23,10 @@ export default function SearchBar({
 
   const addTag = (val: string) => {
     const trimmed = val.trim()
-    if (!trimmed) return
-    if (tags.includes(trimmed)) return
+    if (!trimmed || tags.includes(trimmed)) return
     setTags((prev) => [...prev, trimmed])
     setInput('')
   }
-
   const removeTag = (tag: string) => setTags((prev) => prev.filter((t) => t !== tag))
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -61,24 +52,36 @@ export default function SearchBar({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      {/* Tag input box */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+      {/* Tag input bar */}
       <div
-        className="flex flex-wrap items-center gap-1.5 bg-ink border border-mist/30 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-gold focus-within:border-transparent cursor-text min-h-[40px]"
         onClick={() => document.getElementById('search-input')?.focus()}
+        style={{
+          background: 'var(--color-clay-surface)',
+          padding: 8, borderRadius: 12,
+          display: 'flex', gap: 8, alignItems: 'center',
+          boxShadow: '0 1px 3px rgb(79 56 28 / 0.06)',
+          border: '1px solid var(--color-clay-border)',
+          cursor: 'text', minHeight: 48, flexWrap: 'wrap',
+        }}
       >
         {tags.map((tag) => (
-          <span
-            key={tag}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gold text-ink"
-          >
+          <span key={tag} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            padding: '4px 10px', borderRadius: 999,
+            fontSize: 12, fontWeight: 600,
+            background: 'var(--color-clay-primary)',
+            color: '#fff',
+          }}>
             {tag}
             <button
               onClick={(e) => { e.stopPropagation(); removeTag(tag) }}
-              className="hover:opacity-60 transition-opacity leading-none"
-            >
-              ✕
-            </button>
+              style={{
+                border: 'none', background: 'transparent', color: '#fff',
+                cursor: 'pointer', padding: 0, fontSize: 14, lineHeight: 1,
+                opacity: 0.8,
+              }}
+            >✕</button>
           </span>
         ))}
         <input
@@ -87,43 +90,42 @@ export default function SearchBar({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={tags.length === 0 ? '描述症狀或搜尋診所名稱，按 Enter 新增多個症狀…' : '再新增症狀…'}
-          className="flex-1 min-w-[120px] bg-transparent text-sm text-snow placeholder:text-mist/40 focus:outline-none"
+          placeholder={tags.length === 0
+            ? '輸入症狀、診所名稱⋯'
+            : '再新增症狀⋯'}
+          style={{
+            flex: 1, minWidth: 120, padding: '8px 10px',
+            fontSize: 14, border: 'none', outline: 'none',
+            background: 'transparent', fontFamily: 'inherit',
+            color: 'var(--color-clay-text)',
+          }}
         />
-        <button
-          onClick={handleSubmit}
-          className="bg-gold hover:opacity-90 text-ink px-3 py-1 rounded-md font-bold text-sm transition-opacity whitespace-nowrap shrink-0"
-        >
-          搜尋
-        </button>
+        <button onClick={handleSubmit} style={{
+          padding: '10px 22px', borderRadius: 10, border: 'none',
+          background: 'var(--color-clay-primary)', color: '#fff',
+          fontSize: 14, fontWeight: 700, cursor: 'pointer',
+          fontFamily: 'inherit', whiteSpace: 'nowrap',
+        }}>搜尋</button>
       </div>
 
-      {/* 提示文字 */}
-      {tags.length === 0 && (
-        <p className="text-xs text-mist/40 px-1">
-          💡 可輸入多個症狀，例如：口臭 → Enter → 貓蘚 → 搜尋
-        </p>
-      )}
-      {tags.length > 0 && (
-        <p className="text-xs text-mist/40 px-1">
-          搜尋同時符合以上 {tags.length} 個症狀的診所
-        </p>
-      )}
+      {/* Hint */}
+      <p style={{
+        margin: 0, fontSize: 12,
+        color: 'var(--color-clay-text-mute)',
+      }}>
+        {tags.length === 0
+          ? '💡 可輸入多個症狀，例如：口臭 → Enter → 貓蘚 → 搜尋'
+          : `搜尋同時符合以上 ${tags.length} 個症狀的診所`}
+      </p>
 
       {/* Pet filter */}
-      <div className="flex gap-1.5">
+      <div style={{ display: 'flex', gap: 7 }}>
         {PET_OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            onClick={() => setPet(opt.value)}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all border ${
-              pet === opt.value
-                ? 'bg-gold text-ink border-gold'
-                : 'bg-transparent text-mist border-mist/40 hover:border-gold hover:text-gold'
-            }`}
-          >
-            {opt.value === 'cat' ? <><Cat size={13} className="inline mr-1" />貓</> : opt.value === 'dog' ? <><Dog size={13} className="inline mr-1" />狗</> : opt.label}
-          </button>
+          <Chip key={opt.value} active={pet === opt.value} onClick={() => setPet(opt.value)}>
+            {opt.value === 'cat' ? <><Cat size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />貓</>
+              : opt.value === 'dog' ? <><Dog size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />狗</>
+              : opt.label}
+          </Chip>
         ))}
       </div>
     </div>
