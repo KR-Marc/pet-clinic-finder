@@ -124,20 +124,20 @@ body {
     font-size: 13px !important;
   }
 
-  /* Detail page: hero CTA row → 3 equal-width grid */
+  /* Detail page: hero CTA row → 2-col grid on mobile */
   .h5-cta-3col {
     display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr !important;
-    gap: 6px !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
   }
   .h5-cta-3col > a,
   .h5-cta-3col > button {
     flex: unset !important;
     min-width: 0 !important;
-    padding: 10px 6px !important;
-    font-size: 12px !important;
+    padding: 12px 8px !important;
+    font-size: 13px !important;
+    justify-content: center !important;
   }
-  .h5-cta-3col > a > span,
   .h5-cta-3col > a .h5-cta-phone {
     display: none !important;
   }
@@ -156,10 +156,18 @@ body {
   /* Detail page: section padding tighten */
   .h5-section-tight { padding: 16px !important; }
 
-  /* Detail page: reorder columns on mobile (Map first) */
+  /* Detail page: reorder columns on mobile */
+  /* Right col goes first (contains map), left col goes after */
   .h5-detail-left { order: 2 !important; }
   .h5-detail-right { order: 1 !important; }
-  .h5-detail-right > .h5-map { order: -1 !important; }
+  /* Map first within right col */
+  .h5-detail-right > .h5-map { order: 1 !important; }
+  /* Quick actions second */
+  .h5-detail-right > .h5-quick-actions { order: 2 !important; }
+  /* Similar clinics LAST — after left col content */
+  .h5-detail-right > .h5-similar { order: 99 !important; }
+  /* Left col content in between */
+  .h5-detail-left > * { order: 3 !important; }
 
   /* Section heading shrink */
   .h5-section-title {
