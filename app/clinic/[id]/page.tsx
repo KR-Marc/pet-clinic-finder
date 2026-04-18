@@ -152,7 +152,7 @@ export default async function ClinicPage({
       <div className="hide-on-mobile">
         <ClayNav />
       </div>
-      <MobileTopBar title={clinic.name} />
+      <MobileTopBar title="診所詳情" backHref="/search" />
 
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '24px 24px 48px' }}>
         {/* Back link */}
