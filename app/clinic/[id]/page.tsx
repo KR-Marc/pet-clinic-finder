@@ -444,41 +444,42 @@ export default async function ClinicPage({
               </div>
             </section>
 
-            {/* Similar clinics */}
-            {similar && similar.length > 0 && (
-              <section style={sectionStyle}>
-                <h2 style={sectionTitleStyle}>同區域其他診所</h2>
-                {(similar as SimilarClinic[]).map((c, i) => (
-                  <Link key={c.id} href={`/clinic/${c.id}`} style={{
-                    display: 'block', padding: '11px 0',
-                    borderBottom: i < similar.length - 1
-                      ? '1px dashed var(--color-clay-border)'
-                      : 'none',
-                    textDecoration: 'none',
-                  }}>
-                    <div style={{
-                      fontSize: 13, fontWeight: 700,
-                      color: 'var(--color-clay-text)',
-                      marginBottom: 3,
-                    }}>{c.name}</div>
-                    <div style={{
-                      fontSize: 11, color: 'var(--color-clay-text-mute)',
-                      display: 'flex', alignItems: 'center', gap: 6,
-                    }}>
-                      <MapPin size={10} />{c.district}
-                      {c.rating != null && (
-                        <>
-                          <span>·</span>
-                          <Star size={10} fill="currentColor" /> {c.rating}
-                        </>
-                      )}
-                    </div>
-                  </Link>
-                ))}
-              </section>
-            )}
           </div>
         </div>
+
+        {/* Similar clinics — always at bottom */}
+        {similar && similar.length > 0 && (
+          <section style={{ ...sectionStyle, marginTop: 18 }}>
+            <h2 style={sectionTitleStyle}>同區域其他診所</h2>
+            {(similar as SimilarClinic[]).map((c, i) => (
+              <Link key={c.id} href={`/clinic/${c.id}`} style={{
+                display: 'block', padding: '11px 0',
+                borderBottom: i < similar.length - 1
+                  ? '1px dashed var(--color-clay-border)'
+                  : 'none',
+                textDecoration: 'none',
+              }}>
+                <div style={{
+                  fontSize: 13, fontWeight: 700,
+                  color: 'var(--color-clay-text)',
+                  marginBottom: 3,
+                }}>{c.name}</div>
+                <div style={{
+                  fontSize: 11, color: 'var(--color-clay-text-mute)',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}>
+                  <MapPin size={10} />{c.district}
+                  {c.rating != null && (
+                    <>
+                      <span>·</span>
+                      <Star size={10} fill="currentColor" /> {c.rating}
+                    </>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </section>
+        )}
 
         {/* Footer info */}
         <div style={{
