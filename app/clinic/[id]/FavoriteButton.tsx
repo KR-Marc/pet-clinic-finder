@@ -1,43 +1,23 @@
 'use client'
 import { Heart } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
-type FavoriteClinic = {
-  id: string; name: string; district: string
-  rating: number | null; specialty_tags: string[]
-}
+import { useFavorites, type FavoriteClinic } from '@/hooks/useFavorites'
 
 export default function FavoriteButton({
   clinic,
 }: { clinic: FavoriteClinic; className?: string }) {
-  const [saved, setSaved] = useState(false)
+  const { toggle, isFavorite } = useFavorites()
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    setMounted(true)
-    try {
-      const stored = JSON.parse(localStorage.getItem('favorites') || '[]')
-      setSaved(stored.some((c: { id: string }) => c.id === clinic.id))
-    } catch {}
-  }, [clinic.id])
-
-  const toggle = () => {
-    try {
-      const stored = JSON.parse(localStorage.getItem('favorites') || '[]')
-      const exists = stored.some((c: { id: string }) => c.id === clinic.id)
-      const next = exists
-        ? stored.filter((c: { id: string }) => c.id !== clinic.id)
-        : [...stored, clinic]
-      localStorage.setItem('favorites', JSON.stringify(next))
-      setSaved(!exists)
-    } catch {}
-  }
+  useEffect(() => { setMounted(true) }, [])
 
   if (!mounted) return null
 
+  const saved = isFavorite(clinic.id)
+
   return (
     <button
-      onClick={toggle}
+      onClick={() => toggle(clinic)}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
         padding: '8px 14px', borderRadius: 10,

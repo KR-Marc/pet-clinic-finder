@@ -16,7 +16,20 @@ export function useFavorites() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(KEY)
-      if (stored) setFavorites(JSON.parse(stored))
+      if (stored) {
+        setFavorites(JSON.parse(stored))
+      } else {
+        // One-time migration from old key 'favorites' → 'pet_favorites'
+        const legacy = localStorage.getItem('favorites')
+        if (legacy) {
+          const parsed = JSON.parse(legacy)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setFavorites(parsed)
+            localStorage.setItem(KEY, legacy)
+          }
+          localStorage.removeItem('favorites')
+        }
+      }
     } catch {}
   }, [])
 
