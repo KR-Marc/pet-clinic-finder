@@ -283,7 +283,7 @@ export default async function ClinicPage({
               textDecoration: 'none', flex: '1 1 auto',
               justifyContent: 'center', minWidth: 140,
             }}>
-              <Phone size={16} /><span className="h5-cta-phone">立即撥打 {clinic.phone}</span>
+              <Phone size={16} />撥打<span className="h5-cta-phone"> {clinic.phone}</span>
             </a>
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}

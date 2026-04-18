@@ -134,7 +134,7 @@ body {
   .h5-cta-3col > button {
     flex: unset !important;
     min-width: 0 !important;
-    padding: 12px 8px !important;
+    padding: 11px 8px !important;
     font-size: 13px !important;
     justify-content: center !important;
   }
