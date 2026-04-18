@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Clock, Heart, MapPin, PawPrint, Siren, Star } from 'lucide-react'
+import { Clock, Heart, MapPin, Star, Trash2, ArrowLeftRight } from 'lucide-react'
 import Link from 'next/link'
 import { useFavorites, type FavoriteClinic } from '@/hooks/useFavorites'
+import { ClayNav, ClayFooter } from '@/app/components/clay'
 
 function EmptyFavoritesWithRecent() {
   const [recent, setRecent] = useState<{ id: string; name: string; district: string; rating: number | null; specialty_tags: string[] }[]>([])
@@ -13,39 +14,122 @@ function EmptyFavoritesWithRecent() {
       if (stored) setRecent(JSON.parse(stored).slice(0, 3))
     } catch {}
   }, [])
+
   return (
-    <div className="py-12">
-      <div className="text-center mb-10">
-        <Heart size={32} className="mx-auto mb-3 text-mist/30" />
-        <p className="text-lg font-medium text-snow mb-2">尚無收藏診所</p>
-        <p className="text-sm text-mist/60 mb-6">在診所詳細頁點擊「收藏」即可加入</p>
-        <Link href="/" className="inline-block px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity" style={{ background: '#f9bc60', color: '#001e1d' }}>
-          開始搜尋診所
+    <div style={{ padding: '40px 0' }}>
+      {/* Empty illustration / message */}
+      <div style={{
+        textAlign: 'center',
+        background: 'var(--color-clay-surface)',
+        border: '1px dashed var(--color-clay-border)',
+        borderRadius: 14,
+        padding: '48px 24px',
+        marginBottom: recent.length > 0 ? 32 : 0,
+      }}>
+        <div style={{
+          width: 64, height: 64, borderRadius: '50%',
+          background: 'var(--color-clay-primary-soft)',
+          color: 'var(--color-clay-primary)',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          marginBottom: 16,
+        }}>
+          <Heart size={28} />
+        </div>
+        <p style={{
+          fontSize: 17, fontWeight: 700,
+          color: 'var(--color-clay-text)',
+          marginTop: 0, marginBottom: 6,
+        }}>
+          尚無收藏診所
+        </p>
+        <p style={{
+          fontSize: 14, color: 'var(--color-clay-text-soft)',
+          marginTop: 0, marginBottom: 20, lineHeight: 1.6,
+        }}>
+          在診所詳細頁點擊「♡ 收藏」即可加入這裡
+        </p>
+        <Link
+          href="/"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            padding: '11px 22px', borderRadius: 999,
+            background: 'var(--color-clay-primary)', color: '#fff',
+            fontSize: 14, fontWeight: 700, textDecoration: 'none',
+          }}
+        >
+          開始搜尋診所 →
         </Link>
       </div>
+
       {recent.length > 0 && (
         <div>
-          <p className="text-xs text-mist/40 uppercase tracking-wide mb-3 flex items-center gap-1.5">
-            <Clock size={12} />最近瀏覽
-          </p>
-          <div className="flex flex-col gap-3">
+          <div style={{
+            fontSize: 11, fontWeight: 700, letterSpacing: 1,
+            color: 'var(--color-clay-text-mute)',
+            marginBottom: 12, textTransform: 'uppercase',
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+          }}>
+            <Clock size={12} /> 最近瀏覽
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {recent.map((c) => (
-              <Link key={c.id} href={`/clinic/${c.id}`} className="bg-sand rounded-xl p-4 hover:opacity-90 transition-opacity block">
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <p className="font-semibold text-ink text-sm">{c.name}</p>
+              <Link
+                key={c.id}
+                href={`/clinic/${c.id}`}
+                style={{
+                  background: 'var(--color-clay-surface)',
+                  border: '1px solid var(--color-clay-border)',
+                  borderRadius: 14, padding: 16,
+                  textDecoration: 'none',
+                  display: 'block',
+                  boxShadow: '0 1px 2px rgb(79 56 28 / 0.04)',
+                }}
+              >
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between',
+                  alignItems: 'flex-start', gap: 8, marginBottom: 4,
+                }}>
+                  <div style={{
+                    fontSize: 15, fontWeight: 700,
+                    color: 'var(--color-clay-text)',
+                  }}>
+                    {c.name}
+                  </div>
                   {c.rating != null && (
-                    <span className="text-xs font-bold shrink-0" style={{ color: '#f9bc60' }}>
-                      <Star size={11} className="inline mr-0.5 fill-gold text-gold" />{c.rating}
+                    <span style={{
+                      flexShrink: 0,
+                      display: 'inline-flex', alignItems: 'center', gap: 3,
+                      fontSize: 11, fontWeight: 700,
+                      background: 'var(--color-clay-sage-soft)',
+                      color: 'var(--color-clay-sage)',
+                      padding: '3px 8px', borderRadius: 6,
+                    }}>
+                      <Star size={11} style={{ fill: 'currentColor' }} />
+                      {c.rating}
                     </span>
                   )}
                 </div>
-                <p className="text-xs mb-2" style={{ color: 'rgba(0,30,29,0.5)' }}>
-                  <MapPin size={11} className="inline mr-0.5" />{c.district}
-                </p>
+                <div style={{
+                  fontSize: 12, color: 'var(--color-clay-text-soft)',
+                  marginBottom: c.specialty_tags.length > 0 ? 8 : 0,
+                  display: 'inline-flex', alignItems: 'center', gap: 3,
+                }}>
+                  <MapPin size={11} /> {c.district}
+                </div>
                 {c.specialty_tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                     {c.specialty_tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="px-2 py-0.5 rounded-full text-xs bg-brand text-snow">{tag}</span>
+                      <span
+                        key={tag}
+                        style={{
+                          fontSize: 11, fontWeight: 600,
+                          padding: '3px 9px', borderRadius: 6,
+                          background: 'var(--color-clay-tag-bg)',
+                          color: 'var(--color-clay-tag-text)',
+                        }}
+                      >
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 )}
@@ -64,94 +148,201 @@ export default function FavoritesPage() {
   useEffect(() => { setMounted(true) }, [])
 
   return (
-    <main className="min-h-screen bg-brand">
-      {/* Nav */}
-      <div className="bg-ink sticky top-0 z-10 shadow-md">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link href="/" className="text-mist/50 hover:text-snow text-sm transition-colors shrink-0">
-            <PawPrint size={16} className="inline" /> 首頁
-          </Link>
-          <span className="text-mist/30 shrink-0">|</span>
-          <span className="text-snow text-sm font-medium">我的收藏</span>
-          <span className="text-mist/30 shrink-0 ml-auto">|</span>
-          <Link href="/emergency" className="text-xs font-bold transition-colors shrink-0 hover:opacity-80" style={{ color: '#e16162' }}>
-            <Siren size={14} className="inline mr-1" />急診
-          </Link>
+    <main style={{ minHeight: '100vh', background: 'var(--color-clay-bg)', color: 'var(--color-clay-text)' }}>
+      <ClayNav current="favorites" />
+
+      {/* Hero */}
+      <div style={{
+        background: 'var(--color-clay-hero)',
+        borderBottom: '1px solid var(--color-clay-border)',
+        padding: '48px 24px 36px',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', right: -100, top: -80, width: 380, height: 380,
+          borderRadius: '50%', background: 'var(--color-clay-hero-accent)',
+          filter: 'blur(50px)', opacity: 0.55, pointerEvents: 'none',
+        }} />
+        <div style={{ position: 'relative', maxWidth: 760, margin: '0 auto' }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, color: 'var(--color-clay-primary)',
+            background: 'var(--color-clay-primary-soft)',
+            padding: '6px 12px', borderRadius: 999, fontWeight: 700, marginBottom: 16,
+          }}>
+            <Heart size={13} style={{ fill: 'currentColor' }} /> 我的收藏
+          </div>
+          <h1 style={{
+            fontSize: 32, fontWeight: 800, letterSpacing: -1,
+            lineHeight: 1.2, color: 'var(--color-clay-text)',
+            margin: 0, marginBottom: 8,
+            display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap',
+          }}>
+            <span>收藏的診所</span>
+            {mounted && favorites.length > 0 && (
+              <span style={{
+                fontSize: 16, fontWeight: 600,
+                color: 'var(--color-clay-text-mute)',
+              }}>
+                {favorites.length} 間
+              </span>
+            )}
+          </h1>
+          <p style={{
+            fontSize: 14, color: 'var(--color-clay-text-soft)',
+            margin: 0, lineHeight: 1.7,
+          }}>
+            把信任的診所收進來，緊急時刻一鍵就能找到。
+          </p>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold text-snow">我的收藏</h1>
-          {mounted && favorites.length > 0 && (
-            <span className="text-xs text-mist/50">{favorites.length} 間診所</span>
-          )}
-        </div>
-
-        {!mounted ? null : favorites.length === 0 ? (
+      {/* Body */}
+      <div style={{ maxWidth: 760, margin: '0 auto', padding: '8px 24px 56px', width: '100%' }}>
+        {!mounted ? (
+          <div style={{ padding: '60px 0', textAlign: 'center', color: 'var(--color-clay-text-mute)', fontSize: 14 }}>
+            載入中⋯
+          </div>
+        ) : favorites.length === 0 ? (
           <EmptyFavoritesWithRecent />
         ) : (
-          <div className="flex flex-col gap-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingTop: 24 }}>
             {favorites.map((clinic: FavoriteClinic) => (
-              <div key={clinic.id} className="bg-sand rounded-xl p-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
+              <article
+                key={clinic.id}
+                style={{
+                  background: 'var(--color-clay-surface)',
+                  border: '1px solid var(--color-clay-border)',
+                  borderRadius: 14,
+                  padding: 18,
+                  boxShadow: '0 1px 2px rgb(79 56 28 / 0.04)',
+                }}
+              >
+                {/* Header: name + rating */}
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between',
+                  alignItems: 'flex-start', gap: 10, marginBottom: 8,
+                }}>
                   <Link
                     href={`/clinic/${clinic.id}`}
-                    className="font-semibold text-ink hover:opacity-70 transition-opacity"
+                    style={{
+                      fontSize: 16, fontWeight: 800,
+                      color: 'var(--color-clay-text)',
+                      textDecoration: 'none', flex: 1,
+                    }}
                   >
                     {clinic.name}
                   </Link>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                     {clinic.rating != null && (
-                      <span className="text-xs font-bold" style={{ color: '#f9bc60' }}>
-                        <Star size={13} className="inline mr-0.5 fill-gold text-gold" /> {clinic.rating}
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 3,
+                        fontSize: 11, fontWeight: 700,
+                        background: 'var(--color-clay-sage-soft)',
+                        color: 'var(--color-clay-sage)',
+                        padding: '3px 8px', borderRadius: 6,
+                      }}>
+                        <Star size={11} style={{ fill: 'currentColor' }} />
+                        {clinic.rating}
                       </span>
                     )}
-                    <button
-                      onClick={() => toggle(clinic)}
-                      className="text-xs text-mist/40 hover:text-rose-400 transition-colors"
-                    >
-                      移除
-                    </button>
                   </div>
                 </div>
-                <p className="text-xs mb-2" style={{ color: 'rgba(0,30,29,0.5)' }}>
-                  <MapPin size={13} className="inline mr-0.5" /> {clinic.district}
-                </p>
+
+                {/* District */}
+                <div style={{
+                  fontSize: 12.5, color: 'var(--color-clay-text-soft)',
+                  marginBottom: clinic.specialty_tags.length > 0 ? 10 : 14,
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                }}>
+                  <MapPin size={12} /> {clinic.district}
+                </div>
+
+                {/* Tags */}
                 {clinic.specialty_tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-3">
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 14 }}>
                     {clinic.specialty_tags.slice(0, 4).map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 rounded-full text-xs font-medium bg-brand text-snow"
+                        style={{
+                          fontSize: 11, fontWeight: 600,
+                          padding: '3px 9px', borderRadius: 6,
+                          background: 'var(--color-clay-tag-bg)',
+                          color: 'var(--color-clay-tag-text)',
+                        }}
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
                 )}
-                <div className="flex items-center justify-between">
+
+                {/* Action row */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  paddingTop: 12,
+                  borderTop: '1px dashed var(--color-clay-border)',
+                  flexWrap: 'wrap',
+                }}>
                   <Link
                     href={`/clinic/${clinic.id}`}
-                    className="text-xs font-semibold hover:underline"
-                    style={{ color: '#f9bc60' }}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      padding: '7px 14px', borderRadius: 8,
+                      background: 'var(--color-clay-primary)', color: '#fff',
+                      fontSize: 13, fontWeight: 700, textDecoration: 'none',
+                    }}
                   >
                     查看詳情 →
                   </Link>
                   <Link
                     href="/search"
                     title="前往搜尋頁，從診所卡片勾選加入比較"
-                    className="text-xs font-medium px-2.5 py-1 rounded-full border transition-colors hover:text-snow"
-                    style={{ color: 'rgba(171,209,198,0.5)', borderColor: 'rgba(171,209,198,0.2)' }}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      padding: '7px 12px', borderRadius: 8,
+                      background: 'var(--color-clay-surface)',
+                      color: 'var(--color-clay-text-soft)',
+                      border: '1px solid var(--color-clay-border)',
+                      fontSize: 12.5, fontWeight: 600, textDecoration: 'none',
+                    }}
                   >
-                    ⇄ 比較
+                    <ArrowLeftRight size={12} /> 比較
                   </Link>
+                  <div style={{ flex: 1 }} />
+                  <button
+                    onClick={() => toggle(clinic)}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      padding: '7px 12px', borderRadius: 8,
+                      background: 'transparent',
+                      color: 'var(--color-clay-text-mute)',
+                      border: '1px solid var(--color-clay-border)',
+                      fontSize: 12.5, fontWeight: 600, cursor: 'pointer',
+                      fontFamily: 'inherit',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'var(--color-clay-danger-soft)'
+                      e.currentTarget.style.color = 'var(--color-clay-danger)'
+                      e.currentTarget.style.borderColor = 'var(--color-clay-danger-soft)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent'
+                      e.currentTarget.style.color = 'var(--color-clay-text-mute)'
+                      e.currentTarget.style.borderColor = 'var(--color-clay-border)'
+                    }}
+                  >
+                    <Trash2 size={12} /> 移除
+                  </button>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         )}
       </div>
+
+      <ClayFooter />
     </main>
   )
 }
