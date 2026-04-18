@@ -3,6 +3,7 @@ import { MapPin, Siren } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { ClayNav, ClayFooter } from '@/app/components/clay'
 import DistrictMap from './DistrictMap'
 import ClinicCard from './ClinicCard'
 
@@ -175,76 +176,103 @@ export default async function DistrictPage({
   const allTags = [...new Set(clinics.flatMap((c) => c.specialty_tags))].sort()
 
   return (
-    <main className="min-h-screen bg-brand">
-      {/* ── Nav ── */}
-      <div className="bg-ink sticky top-0 z-10 shadow-md">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link
-            href="/"
-            className="text-mist hover:text-snow text-sm font-medium whitespace-nowrap transition-colors shrink-0"
-          >
-            ← 回首頁
-          </Link>
-          <span className="text-mist/30 shrink-0">|</span>
-          <span className="text-snow text-sm font-medium truncate">
-            <MapPin size={14} className="inline mr-1" /> {decoded} 診所
-          </span>
-          <span className="text-mist/30 shrink-0 hidden sm:inline">|</span>
-          <Link
-            href="/emergency"
-            className="text-xs font-bold transition-colors shrink-0 hover:opacity-80 hidden sm:inline"
-            style={{ color: '#e16162' }}
-          >
-            <Siren size={14} className="inline mr-1" /> 急診
-          </Link>
-        </div>
-      </div>
+    <main style={{ minHeight: '100vh', background: 'var(--color-clay-bg)', color: 'var(--color-clay-text)' }}>
+      <ClayNav />
 
-      {/* ── Hero ── */}
-      <div className="bg-brand border-b border-mist/10">
-        <div className="max-w-4xl mx-auto px-4 py-8 sm:py-10">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span
-              className="px-3 py-1 rounded-full text-xs font-semibold"
-              style={{ background: 'rgba(249,188,96,0.15)', color: '#f9bc60', border: '1px solid rgba(249,188,96,0.25)' }}
-            >
-              台北市
+      {/* Hero */}
+      <div style={{
+        background: 'var(--color-clay-hero)',
+        borderBottom: '1px solid var(--color-clay-border)',
+        padding: '48px 24px 36px',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', right: -100, top: -80, width: 380, height: 380,
+          borderRadius: '50%', background: 'var(--color-clay-hero-accent)',
+          filter: 'blur(50px)', opacity: 0.55, pointerEvents: 'none',
+        }} />
+        <div style={{ position: 'relative', maxWidth: 960, margin: '0 auto' }}>
+          {/* Breadcrumb */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            fontSize: 13, marginBottom: 20,
+            color: 'var(--color-clay-text-soft)',
+          }}>
+            <Link href="/" style={{ color: 'var(--color-clay-primary)', textDecoration: 'none', fontWeight: 600 }}>
+              首頁
+            </Link>
+            <span style={{ color: 'var(--color-clay-text-mute)' }}>/</span>
+            <span>行政區</span>
+            <span style={{ color: 'var(--color-clay-text-mute)' }}>/</span>
+            <span style={{ fontWeight: 700, color: 'var(--color-clay-text)' }}>{decoded}</span>
+          </div>
+
+          {/* Badges */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              fontSize: 12, fontWeight: 700,
+              background: 'var(--color-clay-primary-soft)',
+              color: 'var(--color-clay-primary)',
+              padding: '5px 12px', borderRadius: 999,
+            }}>
+              <MapPin size={12} /> 台北市
             </span>
             {clinics24h.length > 0 && (
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-coral text-snow">
+              <span style={{
+                fontSize: 12, fontWeight: 700,
+                background: 'var(--color-clay-danger-soft)',
+                color: 'var(--color-clay-danger)',
+                padding: '5px 12px', borderRadius: 999,
+              }}>
                 {clinics24h.length} 家 24H 急診
               </span>
             )}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold text-snow mb-3 leading-snug">
+          <h1 style={{
+            fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 800,
+            letterSpacing: -0.8, margin: '0 0 10px',
+            color: 'var(--color-clay-text)',
+          }}>
             {decoded}寵物診所
           </h1>
-          <p className="text-sm text-mist/70 leading-relaxed max-w-2xl mb-5">
+          <p style={{
+            fontSize: 14, color: 'var(--color-clay-text-soft)',
+            margin: '0 0 20px', lineHeight: 1.7, maxWidth: 600,
+          }}>
             {info.description}
           </p>
 
-          <div className="flex flex-wrap gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-snow">{clinics.length}</span>
-              <span className="text-sm text-mist/60">家診所</span>
+          <div style={{ display: 'flex', gap: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--color-clay-text)' }}>{clinics.length}</span>
+              <span style={{ fontSize: 13, color: 'var(--color-clay-text-mute)' }}>家診所</span>
             </div>
             {allTags.length > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-snow">{allTags.length}</span>
-                <span className="text-sm text-mist/60">種專科</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--color-clay-text)' }}>{allTags.length}</span>
+                <span style={{ fontSize: 13, color: 'var(--color-clay-text-mute)' }}>種專科</span>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Main ── */}
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-8">
+      {/* Body */}
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '28px 24px 56px' }}>
 
-        {/* ── Map + Features ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-          <div className="lg:col-span-3 rounded-xl overflow-hidden" style={{ minHeight: '280px' }}>
+        {/* Map + Features */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: 20, marginBottom: 32,
+        }}>
+          <div style={{
+            borderRadius: 14, overflow: 'hidden',
+            border: '1px solid var(--color-clay-border)',
+            minHeight: 280,
+          }}>
             <DistrictMap
               districtName={decoded}
               lat={info.lat}
@@ -253,15 +281,32 @@ export default async function DistrictPage({
             />
           </div>
 
-          <div className="lg:col-span-2 space-y-4">
-            <div className="bg-sand rounded-xl p-5">
-              <h2 className="text-sm font-bold text-ink mb-3">🩺 本區常見就診原因</h2>
-              <div className="flex flex-wrap gap-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {/* Common symptoms */}
+            <div style={{
+              background: 'var(--color-clay-surface)',
+              border: '1px solid var(--color-clay-border)',
+              borderRadius: 14, padding: 20,
+            }}>
+              <h2 style={{
+                fontSize: 13, fontWeight: 700, margin: '0 0 12px',
+                color: 'var(--color-clay-text)',
+              }}>
+                🩺 本區常見就診原因
+              </h2>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
                 {info.commonSymptoms.map((s) => (
                   <Link
                     key={s}
                     href={`/search?q=${encodeURIComponent(s)}&district=${encodeURIComponent(decoded)}`}
-                    className="px-3 py-1.5 rounded-full text-xs font-medium bg-brand text-snow hover:bg-mist/20 transition-colors"
+                    style={{
+                      fontSize: 12, fontWeight: 600,
+                      padding: '5px 12px', borderRadius: 999,
+                      background: 'var(--color-clay-section)',
+                      color: 'var(--color-clay-text-soft)',
+                      textDecoration: 'none',
+                      border: '1px solid var(--color-clay-border)',
+                    }}
                   >
                     {s}
                   </Link>
@@ -269,12 +314,25 @@ export default async function DistrictPage({
               </div>
             </div>
 
-            <div className="bg-sand rounded-xl p-5">
-              <h2 className="text-sm font-bold text-ink mb-3">✨ 本區特色</h2>
-              <ul className="space-y-2">
+            {/* Features */}
+            <div style={{
+              background: 'var(--color-clay-surface)',
+              border: '1px solid var(--color-clay-border)',
+              borderRadius: 14, padding: 20,
+            }}>
+              <h2 style={{
+                fontSize: 13, fontWeight: 700, margin: '0 0 12px',
+                color: 'var(--color-clay-text)',
+              }}>
+                ✨ 本區特色
+              </h2>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {info.features.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm text-ink/80">
-                    <span style={{ color: '#f9bc60' }}>▸</span>
+                  <li key={f} style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    fontSize: 13, color: 'var(--color-clay-text-soft)',
+                  }}>
+                    <span style={{ color: 'var(--color-clay-primary)', fontWeight: 700 }}>▸</span>
                     {f}
                   </li>
                 ))}
@@ -283,24 +341,40 @@ export default async function DistrictPage({
 
             <Link
               href={`/search?district=${encodeURIComponent(decoded)}`}
-              className="block w-full py-3 rounded-xl text-center font-semibold text-sm transition-opacity hover:opacity-90"
-              style={{ background: '#f9bc60', color: '#001e1d' }}
+              style={{
+                display: 'block', textAlign: 'center',
+                padding: '13px 0', borderRadius: 12,
+                background: 'var(--color-clay-primary)', color: '#fff',
+                fontSize: 14, fontWeight: 700, textDecoration: 'none',
+              }}
             >
               搜尋{decoded}所有診所 →
             </Link>
           </div>
         </div>
 
-        {/* ── Specialty tags ── */}
+        {/* Specialty tags */}
         {allTags.length > 0 && (
-          <div>
-            <h2 className="text-base font-bold text-snow mb-3">本區診所專科科別</h2>
-            <div className="flex flex-wrap gap-2">
+          <div style={{ marginBottom: 32 }}>
+            <h2 style={{
+              fontSize: 15, fontWeight: 700, margin: '0 0 12px',
+              color: 'var(--color-clay-text)',
+            }}>
+              本區診所專科科別
+            </h2>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
               {allTags.map((tag) => (
                 <Link
                   key={tag}
                   href={`/search?q=${encodeURIComponent(tag)}&district=${encodeURIComponent(decoded)}`}
-                  className="px-3 py-1.5 rounded-full text-xs font-medium bg-ink text-mist hover:bg-mist/20 transition-colors border border-mist/10"
+                  style={{
+                    fontSize: 12, fontWeight: 600,
+                    padding: '5px 12px', borderRadius: 999,
+                    background: 'var(--color-clay-tag-bg)',
+                    color: 'var(--color-clay-tag-text)',
+                    textDecoration: 'none',
+                    border: '1px solid var(--color-clay-border)',
+                  }}
                 >
                   {tag}
                 </Link>
@@ -309,30 +383,46 @@ export default async function DistrictPage({
           </div>
         )}
 
-        {/* ── Clinic list ── */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold text-snow">
+        {/* Clinic list */}
+        <div style={{ marginBottom: 32 }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            marginBottom: 16,
+          }}>
+            <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0, color: 'var(--color-clay-text)' }}>
               {decoded}診所列表
-              <span className="ml-2 text-sm font-normal text-mist/50">
+              <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 400, color: 'var(--color-clay-text-mute)' }}>
                 （共 {clinics.length} 家）
               </span>
             </h2>
           </div>
 
           {clinics.length === 0 ? (
-            <div className="rounded-xl border border-mist/20 px-6 py-8 text-center">
-              <p className="text-sm text-mist/60 mb-4">此區域暫無診所資料</p>
+            <div style={{
+              border: '1px dashed var(--color-clay-border)',
+              borderRadius: 14, padding: '32px 24px',
+              textAlign: 'center',
+            }}>
+              <p style={{ fontSize: 14, color: 'var(--color-clay-text-mute)', margin: '0 0 16px' }}>
+                此區域暫無診所資料
+              </p>
               <Link
                 href="/search"
-                className="inline-block px-5 py-2 rounded-full text-sm font-semibold transition-opacity hover:opacity-80"
-                style={{ background: '#f9bc60', color: '#001e1d' }}
+                style={{
+                  display: 'inline-block', padding: '10px 22px', borderRadius: 999,
+                  background: 'var(--color-clay-primary)', color: '#fff',
+                  fontSize: 13, fontWeight: 700, textDecoration: 'none',
+                }}
               >
                 搜尋全台北診所 →
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: 14,
+            }}>
               {clinics.map((clinic) => (
                 <ClinicCard key={clinic.id} clinic={clinic} />
               ))}
@@ -340,17 +430,58 @@ export default async function DistrictPage({
           )}
         </div>
 
-        {/* ── Other districts ── */}
+        {/* Emergency link */}
+        <div style={{
+          background: 'var(--color-clay-danger-soft)',
+          border: '1px solid var(--color-clay-danger)',
+          borderRadius: 14, padding: '16px 20px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 12, flexWrap: 'wrap', marginBottom: 32,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Siren size={18} style={{ color: 'var(--color-clay-danger)', flexShrink: 0 }} />
+            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-clay-danger)' }}>
+              需要緊急看診？
+            </span>
+            <span style={{ fontSize: 13, color: 'var(--color-clay-text-soft)' }}>
+              查看台北市所有 24H 急診動物醫院
+            </span>
+          </div>
+          <Link
+            href="/emergency"
+            style={{
+              display: 'inline-block', padding: '9px 18px', borderRadius: 10,
+              background: 'var(--color-clay-danger)', color: '#fff',
+              fontSize: 13, fontWeight: 700, textDecoration: 'none', flexShrink: 0,
+            }}
+          >
+            前往急診頁面 →
+          </Link>
+        </div>
+
+        {/* Other districts */}
         <div>
-          <h2 className="text-base font-bold text-snow mb-4">其他行政區</h2>
-          <div className="flex flex-wrap gap-2">
+          <h2 style={{
+            fontSize: 15, fontWeight: 700, margin: '0 0 12px',
+            color: 'var(--color-clay-text)',
+          }}>
+            其他行政區
+          </h2>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
             {Object.keys(DISTRICTS)
               .filter((d) => d !== decoded)
               .map((d) => (
                 <Link
                   key={d}
                   href={`/district/${encodeURIComponent(d)}`}
-                  className="px-3 py-1.5 rounded-full text-sm font-medium bg-ink text-mist hover:bg-mist/20 transition-colors border border-mist/10"
+                  style={{
+                    fontSize: 13, fontWeight: 600,
+                    padding: '6px 14px', borderRadius: 999,
+                    background: 'var(--color-clay-surface)',
+                    color: 'var(--color-clay-text-soft)',
+                    textDecoration: 'none',
+                    border: '1px solid var(--color-clay-border)',
+                  }}
                 >
                   {d}
                 </Link>
@@ -359,6 +490,8 @@ export default async function DistrictPage({
         </div>
 
       </div>
+
+      <ClayFooter />
     </main>
   )
 }
