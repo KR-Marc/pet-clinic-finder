@@ -1,72 +1,74 @@
 'use client'
-
 import { useState, useEffect, useRef } from 'react'
-import { Activity, Bone, Brain, Building2, Clock, Droplets, Eye, Heart, Leaf, MapPin, PawPrint, Phone, Ribbon, Scissors, Search, Siren, Star, Stethoscope } from 'lucide-react'
+import {
+  MapPin, Search, Siren, Stethoscope, Clock, Star,
+  Eye, Heart, Bone, Ribbon, Leaf, Brain, Scissors,
+  Droplets, Activity,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import RecentlyViewedSection from './components/RecentlyViewedSection'
+import { ClayNav, ClayFooter, Chip, Tag } from './components/clay'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
-
 const QUICK_TAGS = ['嘔吐', '拉肚子', '抽搐', '血尿', '血便', '呼吸困難', '食慾不振', '咳嗽', '沒精神', '掉毛', '一直抓', '半夜急診']
-
 const PET_OPTIONS = [
   { label: '全部', value: '' },
   { label: '貓', value: 'cat' },
   { label: '狗', value: 'dog' },
 ]
 
-const FEATURES = [
-  {
-    icon: '🔍',
-    title: '描述症狀',
-    desc: '輸入你的寵物症狀，例如口臭、掉毛、一直抓',
-  },
-  {
-    icon: '🎯',
-    title: '找到專科',
-    desc: '系統自動比對最適合的專科動物醫院',
-  },
-  {
-    icon: '📞',
-    title: '立即聯繫',
-    desc: '直接撥打電話或查看地圖前往',
-  },
-]
-
 const SPECIALTIES = [
-  { icon: 'tooth', name: '牙科',    desc: '口臭、掉牙、牙齦紅腫',     q: '牙科',    iconBg: '#fef3c7' }, // amber-100
-  { icon: 'eye', name: '眼科',    desc: '眼屎多、眼睛紅、白內障',   q: '眼科',    iconBg: '#dbeafe' }, // blue-100
-  { icon: 'heart', name: '心臟科',  desc: '咳嗽、容易喘、心雜音',     q: '心臟科',  iconBg: '#fee2e2' }, // red-100
-  { icon: 'bone', name: '骨科',    desc: '跛行、骨折、不肯走路',     q: '骨科',    iconBg: '#f3f4f6' }, // gray-100
-  { icon: 'ribbon', name: '腫瘤科',  desc: '腫塊、癌症、化療',         q: '腫瘤科',  iconBg: '#ffedd5' }, // orange-100
-  { icon: 'leaf', name: '皮膚科',  desc: '一直抓、掉毛、皮膚紅疹',   q: '皮膚科',  iconBg: '#dcfce7' }, // green-100
-  { icon: 'brain', name: '神經科',  desc: '抽搐、癲癇、走路歪',       q: '抽搐',    iconBg: '#ede9fe' }, // violet-100
-  { icon: 'siren', name: '24H急診', desc: '昏倒、呼吸困難、緊急',     q: '半夜急診', iconBg: '#ffe4e6' }, // rose-100
-  { icon: 'scissors', name: '外科',    desc: '腫塊切除、結紮、外傷縫合', q: '外科',    iconBg: '#ccfbf1' }, // teal-100
-  { icon: 'leaf2', name: '中獸醫',  desc: '針灸、中藥、慢性病調理',   q: '中獸醫',  iconBg: '#e0f2fe' }, // sky-100
-  { icon: 'droplets', name: '泌尿科',  desc: '血尿、頻尿、尿結石、膀胱炎', q: '泌尿科',  iconBg: '#f3e8ff' }, // purple-100
-  { icon: 'activity', name: '復健',    desc: '術後恢復、關節退化、水療', q: '復健',    iconBg: '#fef9c3' }, // yellow-100
+  { icon: 'tooth', name: '牙科', desc: '口臭、掉牙、牙齦紅腫', q: '牙科' },
+  { icon: 'eye', name: '眼科', desc: '眼屎多、眼睛紅、白內障', q: '眼科' },
+  { icon: 'heart', name: '心臟科', desc: '咳嗽、容易喘、心雜音', q: '心臟科' },
+  { icon: 'bone', name: '骨科', desc: '跛行、骨折、不肯走路', q: '骨科' },
+  { icon: 'ribbon', name: '腫瘤科', desc: '腫塊、癌症、化療', q: '腫瘤科' },
+  { icon: 'leaf', name: '皮膚科', desc: '一直抓、掉毛、皮膚紅疹', q: '皮膚科' },
+  { icon: 'brain', name: '神經科', desc: '抽搐、癲癇、走路歪', q: '抽搐' },
+  { icon: 'siren', name: '24H急診', desc: '昏倒、呼吸困難、緊急', q: '半夜急診' },
+  { icon: 'scissors', name: '外科', desc: '腫塊切除、結紮、外傷縫合', q: '外科' },
+  { icon: 'leaf2', name: '中獸醫', desc: '針灸、中藥、慢性病調理', q: '中獸醫' },
+  { icon: 'droplets', name: '泌尿科', desc: '血尿、頻尿、尿結石、膀胱炎', q: '泌尿科' },
+  { icon: 'activity', name: '復健', desc: '術後恢復、關節退化、水療', q: '復健' },
 ]
 
-// ── Geolocation helper ────────────────────────────────────────────────────────
+const DISTRICTS = ['大安區','信義區','中山區','內湖區','士林區','文山區','松山區','中正區','萬華區','北投區','南港區','大同區']
+
+type ClinicPreview = {
+  id: string; name: string; district: string; rating: number | null
+  specialty_tags: string[]; is_24h: boolean
+}
 
 type GeoState = 'idle' | 'loading' | 'error'
 
 async function reverseGeocodeDistrict(lat: number, lng: number): Promise<string | null> {
   try {
-    // 透過 server-side API route 避免 API key referrer 限制
     const res = await fetch(`/api/reverse-geocode?lat=${lat}&lng=${lng}`)
     if (!res.ok) return null
     const data = await res.json()
     return data.district ?? null
-  } catch {
-    return null
-  }
+  } catch { return null }
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
+function SpecIcon({ name }: { name: string }) {
+  const size = 22
+  switch (name) {
+    case 'tooth': return <Stethoscope size={size} />
+    case 'eye': return <Eye size={size} />
+    case 'heart': return <Heart size={size} />
+    case 'bone': return <Bone size={size} />
+    case 'ribbon': return <Ribbon size={size} />
+    case 'leaf': case 'leaf2': return <Leaf size={size} />
+    case 'brain': return <Brain size={size} />
+    case 'scissors': return <Scissors size={size} />
+    case 'droplets': return <Droplets size={size} />
+    case 'activity': return <Activity size={size} />
+    case 'siren': return <Siren size={size} />
+    default: return <Stethoscope size={size} />
+  }
+}
 
 export default function HomePage() {
   const router = useRouter()
@@ -76,6 +78,7 @@ export default function HomePage() {
   const [geoState, setGeoState] = useState<GeoState>('idle')
   const [searchHistory, setSearchHistory] = useState<string[]>([])
   const [showHistory, setShowHistory] = useState(false)
+  const [previewClinics, setPreviewClinics] = useState<ClinicPreview[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -110,10 +113,19 @@ export default function HomePage() {
   }
 
   useEffect(() => {
+    supabase.from('clinics').select('id', { count: 'exact', head: true })
+      .then(({ count }) => { if (count != null) setClinicCount(count) })
+  }, [])
+
+  useEffect(() => {
     supabase
       .from('clinics')
-      .select('id', { count: 'exact', head: true })
-      .then(({ count }) => { if (count != null) setClinicCount(count) })
+      .select('id, name, district, rating, specialty_tags, is_24h')
+      .order('rating', { ascending: false, nullsFirst: false })
+      .limit(3)
+      .then(({ data }) => {
+        if (data) setPreviewClinics(data as ClinicPreview[])
+      })
   }, [])
 
   const handleSubmit = (q: string = query) => {
@@ -122,12 +134,6 @@ export default function HomePage() {
     saveToHistory(trimmed)
     setShowHistory(false)
     const params = new URLSearchParams({ q: trimmed })
-    if (pet) params.set('pet', pet)
-    router.push(`/search?${params.toString()}`)
-  }
-
-  const handleBrowseAll = () => {
-    const params = new URLSearchParams()
     if (pet) params.set('pet', pet)
     router.push(`/search?${params.toString()}`)
   }
@@ -152,393 +158,323 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand">
+    <div style={{ minHeight: '100vh', background: 'var(--color-clay-bg)' }}>
+      <ClayNav current="home" />
 
-      {/* ── Navbar ──────────────────────────────────────────────────────────── */}
-      <nav className="bg-ink sticky top-0 z-50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 shrink-0">
-            <PawPrint size={18} className="text-gold" />
-            <span className="text-snow font-bold text-sm sm:text-base tracking-tight leading-tight">
-              <span className="hidden xs:inline">寵物專科診所搜尋</span>
-              <span className="xs:hidden">寵物診所搜尋</span>
-            </span>
+      {/* ── Hero ─────────────────────────────────────────── */}
+      <section style={{
+        padding: '56px 32px 44px',
+        background: 'var(--color-clay-hero)',
+        borderBottom: '1px solid var(--color-clay-border)',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', right: -100, top: -80, width: 380, height: 380,
+          borderRadius: '50%', background: 'var(--color-clay-hero-accent)',
+          filter: 'blur(50px)', opacity: 0.55, pointerEvents: 'none',
+        }} />
+        <div style={{ position: 'relative', maxWidth: 960, margin: '0 auto' }}>
+          {/* Badge */}
+          <div style={{
+            display: 'inline-block', fontSize: 12,
+            color: 'var(--color-clay-primary)',
+            background: 'var(--color-clay-primary-soft)',
+            padding: '6px 12px', borderRadius: 999, fontWeight: 700, marginBottom: 20,
+          }}>
+            台北市 {clinicCount ?? 272} 間動物醫院
           </div>
-          <div className="flex items-center gap-1 sm:gap-3">
-            <button onClick={handleBrowseAll} className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1">
-              <Building2 size={16} className="sm:hidden" />
-              <span className="hidden sm:inline">瀏覽診所</span>
+
+          {/* Headline */}
+          <h1 style={{
+            fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800,
+            letterSpacing: -1.5, lineHeight: 1.1,
+            color: 'var(--color-clay-text)', marginBottom: 14, marginTop: 0,
+          }}>
+            找到最適合<br />
+            <span style={{ color: 'var(--color-clay-primary)' }}>你毛孩的</span>專科診所
+          </h1>
+          <p style={{
+            fontSize: 16, color: 'var(--color-clay-text-soft)',
+            marginBottom: 26, maxWidth: 520, lineHeight: 1.6,
+          }}>
+            描述症狀，我們幫你找到台北市最專業的動物醫院
+          </p>
+
+          {/* Search box */}
+          <div style={{
+            background: 'var(--color-clay-surface)', padding: 8, borderRadius: 14,
+            display: 'flex', gap: 8, alignItems: 'center', maxWidth: 640,
+            boxShadow: '0 10px 40px rgb(79 56 28 / 0.10)',
+            border: '1px solid var(--color-clay-border)',
+            position: 'relative',
+          }}>
+            <div style={{ position: 'relative', flex: 1 }}>
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                onFocus={() => setShowHistory(true)}
+                placeholder="例如：我家狗狗一直抓癢、掉毛⋯"
+                style={{
+                  width: '100%', padding: '12px 14px', fontSize: 14,
+                  border: 'none', background: 'transparent', outline: 'none',
+                  fontFamily: 'inherit', color: 'var(--color-clay-text)',
+                }}
+              />
+              {showHistory && searchHistory.length > 0 && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 6,
+                  background: 'var(--color-clay-surface)',
+                  border: '1px solid var(--color-clay-border)',
+                  borderRadius: 12, boxShadow: '0 8px 24px rgb(79 56 28 / 0.15)',
+                  zIndex: 50, overflow: 'hidden',
+                }}>
+                  <p style={{
+                    fontSize: 11, color: 'var(--color-clay-text-mute)',
+                    padding: '12px 16px 4px', fontWeight: 700,
+                    textTransform: 'uppercase', letterSpacing: 1, margin: 0,
+                  }}>最近搜尋</p>
+                  {searchHistory.map((item) => (
+                    <div key={item}
+                      onMouseDown={() => { setQuery(item); handleSubmit(item) }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        padding: '10px 16px', cursor: 'pointer',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'var(--color-clay-section)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <Search size={13} style={{ color: 'var(--color-clay-text-mute)' }} />
+                      <span style={{ flex: 1, fontSize: 14, color: 'var(--color-clay-text)' }}>{item}</span>
+                      <button
+                        onMouseDown={(e) => { e.stopPropagation(); removeFromHistory(item) }}
+                        style={{
+                          background: 'none', border: 'none',
+                          color: 'var(--color-clay-text-mute)', cursor: 'pointer',
+                          fontSize: 12, padding: 4,
+                        }}
+                      >✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button onClick={() => handleSubmit()} style={{
+              padding: '12px 28px', borderRadius: 10, border: 'none',
+              background: 'var(--color-clay-primary)', color: '#fff',
+              fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+              whiteSpace: 'nowrap',
+            }}>搜尋</button>
+          </div>
+
+          {/* Pet filter + Nearby */}
+          <div style={{ display: 'flex', gap: 8, marginTop: 18, flexWrap: 'wrap', alignItems: 'center' }}>
+            {PET_OPTIONS.map(opt => (
+              <Chip key={opt.value} active={pet === opt.value} onClick={() => setPet(opt.value)}>
+                {opt.label}
+              </Chip>
+            ))}
+            <button
+              onClick={handleNearby}
+              disabled={geoState === 'loading'}
+              style={{
+                marginLeft: 'auto', padding: '7px 13px', borderRadius: 999,
+                fontSize: 12.5, fontWeight: 500,
+                background: 'var(--color-clay-chip-bg)',
+                color: geoState === 'error'
+                  ? 'var(--color-clay-danger)'
+                  : 'var(--color-clay-chip-text)',
+                border: `1px solid ${geoState === 'error' ? 'var(--color-clay-danger)' : 'var(--color-clay-chip-border)'}`,
+                cursor: geoState === 'loading' ? 'not-allowed' : 'pointer',
+                fontFamily: 'inherit',
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+              }}
+            >
+              <MapPin size={13} />
+              {geoState === 'loading' ? '定位中...' : geoState === 'error' ? '無法定位' : '附近診所'}
             </button>
-            <Link href="/guide" className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1">
-              <Stethoscope size={16} className="sm:hidden" />
-              <span className="hidden sm:inline">🩺 症狀對照</span>
-            </Link>
-            <Link href="/emergency" className="text-xs sm:text-sm font-bold transition-colors hover:opacity-80 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1" style={{ color: '#e16162' }}>
-              <span className="sm:hidden relative flex items-center justify-center">
-                <Siren size={16} />
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-coral animate-pulse-dot" />
-              </span>
-              <span className="hidden sm:inline flex items-center gap-1">
-                <span className="inline-block w-2 h-2 rounded-full bg-coral animate-pulse-dot mr-1" />
-                急診
-              </span>
-            </Link>
-            <Link href="/favorites" className="text-mist hover:text-gold text-xs sm:text-sm font-medium transition-colors duration-200 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1">
-              <Heart size={16} className="sm:hidden" />
-              <span className="hidden sm:inline">🤍 收藏</span>
-            </Link>
+          </div>
+
+          {/* Hot symptoms */}
+          <div style={{ marginTop: 24 }}>
+            <div style={{
+              fontSize: 11, color: 'var(--color-clay-text-mute)',
+              marginBottom: 10, fontWeight: 700, letterSpacing: 1,
+            }}>熱門症狀搜尋</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', maxWidth: 720 }}>
+              {QUICK_TAGS.map(s => (
+                <Chip key={s} onClick={() => { setQuery(s); handleSubmit(s) }}>{s}</Chip>
+              ))}
+            </div>
           </div>
         </div>
-      </nav>
+      </section>
 
-      {/* ── Hero ────────────────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-16 lg:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-center">
-
-          {/* Left column — 60% */}
-          <div className="lg:col-span-3">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-ink rounded-full px-4 py-1.5 mb-6">
-              <span className="w-2 h-2 rounded-full bg-gold animate-pulse shrink-0" />
-              <span className="text-mist text-sm font-medium">
-                台北市 {clinicCount ?? '272'} 間動物醫院
-              </span>
-            </div>
-
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-snow leading-tight mb-6">
-              找到最適合<br />
-              你毛孩的<br />
-              <span className="text-gold text-5xl sm:text-6xl lg:text-7xl">專科診所</span>
-            </h1>
-
-            {/* Subtitle — #4: larger, slight opacity */}
-            <p className="text-mist text-lg sm:text-xl opacity-90 max-w-md leading-relaxed mb-6">
-              描述症狀，我們幫你找到台北市最專業的動物醫院
-            </p>
-
-            {/* Divider — #4 */}
-            <div className="w-16 h-px bg-mist/30 mb-8" />
-
-            {/* Search box */}
-            <div className="flex gap-2 mb-4">
-              <div className="relative flex-1">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                  onFocus={() => setShowHistory(true)}
-                  placeholder="描述你的寵物症狀，例如：口臭、掉毛、一直抓"
-                  className="w-full bg-ink border border-mist/30 rounded-xl px-4 py-3.5 text-base text-snow placeholder:text-mist/40 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent shadow-sm"
-                />
-                {showHistory && searchHistory.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-ink border border-mist/20 rounded-xl shadow-xl z-50 overflow-hidden">
-                    <p className="text-xs text-mist/40 px-4 pt-3 pb-1 font-medium uppercase tracking-wide">最近搜尋</p>
-                    {searchHistory.map((item) => (
-                      <div
-                        key={item}
-                        className="flex items-center gap-2 px-4 py-2.5 hover:bg-white/5 cursor-pointer group"
-                        onMouseDown={() => { setQuery(item); handleSubmit(item) }}
-                      >
-                        <Search size={13} className="text-mist/30 shrink-0" />
-                        <span className="flex-1 text-sm text-mist">{item}</span>
-                        <button
-                          onMouseDown={(e) => { e.stopPropagation(); removeFromHistory(item) }}
-                          className="text-mist/20 hover:text-mist/60 transition-colors opacity-0 group-hover:opacity-100 text-xs px-1"
-                        >✕</button>
-                      </div>
-                    ))}
+      {/* ── Preview clinic cards ───────────────────────────── */}
+      {previewClinics.length > 0 && (
+        <div style={{ padding: '36px 32px', maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between',
+            alignItems: 'baseline', marginBottom: 14,
+          }}>
+            <div style={{
+              fontSize: 13, color: 'var(--color-clay-text-mute)',
+              fontWeight: 700, letterSpacing: 1,
+            }}>搜尋結果預覽</div>
+            <Link href="/search" style={{
+              fontSize: 12, color: 'var(--color-clay-primary)',
+              fontWeight: 600, textDecoration: 'none',
+            }}>查看全部 {clinicCount ?? 271} 間 →</Link>
+          </div>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 14,
+          }}>
+            {previewClinics.map(c => (
+              <Link key={c.id} href={`/clinic/${c.id}`} style={{
+                background: 'var(--color-clay-surface)',
+                border: '1px solid var(--color-clay-border)',
+                borderRadius: 14, padding: 18,
+                boxShadow: '0 1px 2px rgb(79 56 28 / 0.04)',
+                textDecoration: 'none', display: 'block',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-clay-text)' }}>{c.name}</div>
+                  {c.is_24h ? (
+                    <div style={{
+                      fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 6,
+                      background: 'var(--color-clay-danger-soft)',
+                      color: 'var(--color-clay-danger)',
+                    }}>24H</div>
+                  ) : c.rating != null ? (
+                    <div style={{
+                      fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 6,
+                      background: 'var(--color-clay-sage-soft)',
+                      color: 'var(--color-clay-sage)',
+                    }}>★ {c.rating}</div>
+                  ) : null}
+                </div>
+                <div style={{
+                  fontSize: 12, color: 'var(--color-clay-text-soft)',
+                  marginBottom: 10, display: 'flex', alignItems: 'center', gap: 4,
+                }}><MapPin size={12} />{c.district}</div>
+                {c.specialty_tags?.length > 0 && (
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {c.specialty_tags.slice(0, 3).map(t => <Tag key={t}>{t}</Tag>)}
                   </div>
                 )}
-              </div>
-<button
-                onClick={() => handleSubmit()}
-                className="hover:opacity-90 active:opacity-80 text-ink px-6 py-3.5 rounded-xl font-bold text-base transition-opacity shadow-sm whitespace-nowrap"
-                style={{ background: 'linear-gradient(135deg, #f9bc60 0%, #e8a94d 100%)' }}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Two feature cards ──────────────────────────────── */}
+      <div style={{
+        padding: '0 32px 36px', maxWidth: 1000, margin: '0 auto',
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14,
+      }}>
+        <Link href="/guide" style={{
+          background: 'var(--color-clay-section)',
+          color: 'var(--color-clay-text)',
+          padding: 22, borderRadius: 14,
+          border: '1px solid var(--color-clay-border)',
+          textDecoration: 'none', display: 'block',
+        }}>
+          <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 4,
+            display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Stethoscope size={20} /> 症狀對照表
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--color-clay-text-soft)' }}>
+            不知道掛哪科？對照症狀快速找到專科 →
+          </div>
+        </Link>
+        <Link href="/emergency" style={{
+          background: 'var(--color-clay-danger)', color: '#fff',
+          padding: 22, borderRadius: 14, textDecoration: 'none', display: 'block',
+          boxShadow: '0 4px 16px rgb(199 62 58 / 0.25)',
+        }}>
+          <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 4,
+            display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Siren size={20} /> 24H 急診動物醫院
+          </div>
+          <div style={{ fontSize: 13, opacity: 0.9 }}>台北市 11 間全天候急診院所 →</div>
+        </Link>
+      </div>
+
+      {/* ── Specialties ────────────────────────────────────── */}
+      <section style={{ padding: '36px 32px', background: 'var(--color-clay-section)' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: 22, fontWeight: 800, color: 'var(--color-clay-text)',
+            marginBottom: 4, marginTop: 0,
+          }}>熱門專科搜尋</h2>
+          <p style={{
+            fontSize: 13, color: 'var(--color-clay-text-soft)',
+            marginBottom: 20, marginTop: 0,
+          }}>點擊專科，直接找到相關診所</p>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 12,
+          }}>
+            {SPECIALTIES.map(s => (
+              <button key={s.name}
+                onClick={() => router.push(`/search?q=${encodeURIComponent(s.q)}`)}
+                style={{
+                  background: 'var(--color-clay-surface)',
+                  border: '1px solid var(--color-clay-border)',
+                  borderRadius: 10, padding: '14px 16px',
+                  cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
+                  display: 'flex', alignItems: 'center', gap: 12,
+                }}
               >
-                搜尋
+                <div style={{
+                  width: 36, height: 36, borderRadius: 8,
+                  background: 'var(--color-clay-primary-soft)',
+                  color: 'var(--color-clay-primary)',
+                  display: 'grid', placeItems: 'center', flexShrink: 0,
+                }}>
+                  <SpecIcon name={s.icon} />
+                </div>
+                <div>
+                  <div style={{
+                    fontSize: 14, fontWeight: 800,
+                    color: 'var(--color-clay-primary)', marginBottom: 3,
+                  }}>{s.name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--color-clay-text-mute)' }}>{s.desc}</div>
+                </div>
               </button>
-            </div>
-
-            {/* Pet filter */}
-            <div className="flex gap-2 mb-6">
-              {PET_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => setPet(opt.value)}
-                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
-                    pet === opt.value
-                      ? 'bg-gold text-ink border-gold shadow-sm'
-                      : 'bg-transparent text-mist border-mist/40 hover:border-gold hover:text-gold'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-              {/* Nearby button */}
-              <button
-                onClick={handleNearby}
-                disabled={geoState === 'loading'}
-                className={`ml-auto px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border flex items-center gap-1.5 ${
-                  geoState === 'error'
-                    ? 'text-coral border-coral/40'
-                    : geoState === 'loading'
-                      ? 'text-mist/40 border-mist/20 cursor-not-allowed'
-                      : 'text-mist border-mist/40 hover:border-gold hover:text-gold'
-                }`}
-              >
-                <MapPin size={14} />
-                <span className="hidden sm:inline">
-                  {geoState === 'loading' ? '定位中...' : geoState === 'error' ? '無法定位' : '附近診所'}
-                </span>
-              </button>
-            </div>
-
-            {/* Quick symptom tags */}
-            <div>
-              <p className="text-mist/50 text-xs font-medium mb-2.5 uppercase tracking-wide">
-                熱門症狀搜尋
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {QUICK_TAGS.map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => { setQuery(tag); handleSubmit(tag) }}
-                    className="px-3 py-1.5 rounded-full text-xs text-mist bg-transparent border border-mist/30 hover:border-gold hover:text-gold transition-all duration-200"
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
-
-          {/* Right column — 40% illustration — #1 */}
-          <div className="hidden lg:block lg:col-span-2">
-            <div className="relative rounded-3xl border border-white/20 shadow-2xl p-6 overflow-hidden min-h-[420px]"
-              style={{ background: 'rgba(0,30,29,0.85)', backdropFilter: 'blur(12px)' }}
-            >
-              {/* Decorative blobs */}
-              <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-gold/15 blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-mist/15 blur-3xl pointer-events-none" />
-
-              {/* Header label */}
-              <p className="text-mist/50 text-xs font-medium uppercase tracking-wide mb-4 relative z-10">
-                搜尋結果預覽
-              </p>
-
-              {/* Mock clinic card 1 */}
-              <div className="bg-sand rounded-2xl p-4 mb-3 shadow-xl border border-white/20 -rotate-1 hover:rotate-0 transition-transform duration-300 relative z-10">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p className="font-bold text-ink text-sm">敦品動物醫院</p>
-                    <p className="text-ink/50 text-xs mt-0.5">📍 大安區　敦化南路一段</p>
-                  </div>
-                  <span className="text-xs font-semibold text-gold whitespace-nowrap"><Star size={12} className="inline mr-0.5 text-gold fill-gold" />4.8</span>
-                </div>
-                <p className="text-brand text-xs font-medium mb-2">🕐 今日 10:00 – 21:00</p>
-                <div className="flex gap-1.5">
-                  <span className="px-2 py-0.5 rounded-full text-xs bg-brand text-snow">牙科</span>
-                  <span className="px-2 py-0.5 rounded-full text-xs bg-brand text-snow">根管治療</span>
-                  <span className="px-2 py-0.5 rounded-full text-xs bg-brand text-snow">牙周病</span>
-                </div>
-              </div>
-
-              {/* Mock clinic card 2 */}
-              <div className="bg-sand rounded-2xl p-4 mb-3 shadow-xl border border-white/20 rotate-1 hover:rotate-0 transition-transform duration-300 relative z-10">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p className="font-bold text-ink text-sm">路米動物醫院</p>
-                    <p className="text-ink/50 text-xs mt-0.5">📍 中山區　民權西路</p>
-                  </div>
-                  <span className="text-xs font-semibold text-gold whitespace-nowrap"><Star size={12} className="inline mr-0.5 text-gold fill-gold" />4.2</span>
-                </div>
-                <p className="text-brand text-xs font-medium mb-2">🕐 今日 09:00 – 20:00</p>
-                <div className="flex gap-1.5 flex-wrap">
-                  <span className="px-2 py-0.5 rounded-full text-xs bg-brand text-snow">眼科</span>
-                  <span className="px-2 py-0.5 rounded-full text-xs bg-brand text-snow">腫瘤科</span>
-                </div>
-              </div>
-
-              {/* Mock clinic card 3 — partially visible */}
-              <div className="bg-sand rounded-2xl p-4 shadow-xl border border-white/20 opacity-60 scale-95 -mb-2 relative z-10">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p className="font-bold text-ink text-sm">汎亞動物醫院</p>
-                    <p className="text-ink/50 text-xs mt-0.5">📍 士林區　中山北路六段</p>
-                  </div>
-                  <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-coral text-snow">24H</span>
-                </div>
-                <div className="flex gap-1.5">
-                  <span className="px-2 py-0.5 rounded-full text-xs bg-brand text-snow">骨科</span>
-                  <span className="px-2 py-0.5 rounded-full text-xs bg-brand text-snow">神經外科</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
       </section>
 
-      {/* ── Quick links banner ──────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link
-            href="/guide"
-            className="flex items-center gap-4 bg-sand rounded-2xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group"
-          >
-            <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: '#dcfce7' }}>
-              <Stethoscope size={22} className="text-brand" />
-            </div>
-            <div>
-              <p className="font-bold text-ink group-hover:text-brand transition-colors">症狀對照表</p>
-              <p className="text-sm text-ink/50">不知道掛哪科？對照症狀快速找到專科</p>
-            </div>
-            <span className="ml-auto text-ink/30 group-hover:text-brand transition-colors text-lg">→</span>
-          </Link>
-          <Link
-            href="/emergency"
-            className="flex items-center gap-4 rounded-2xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group border"
-            style={{ background: 'rgba(225,97,98,0.08)', borderColor: 'rgba(225,97,98,0.2)' }}
-          >
-            <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(225,97,98,0.15)' }}>
-              <Siren size={22} style={{ color: '#e16162' }} />
-            </div>
-            <div>
-              <p className="font-bold text-snow group-hover:opacity-80 transition-opacity">24H 急診動物醫院</p>
-              <p className="text-sm text-mist/60">台北市 12 間全天候急診院所</p>
-            </div>
-            <span className="ml-auto text-mist/30 group-hover:text-snow transition-colors text-lg">→</span>
-          </Link>
-        </div>
-      </section>
+      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 32px' }}>
+        <RecentlyViewedSection />
+      </div>
 
-      {/* ── How it works — #2 ───────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-16 lg:py-20 rounded-2xl" style={{ background: 'rgba(0,84,80,0.3)' }}>
-        <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-snow mb-3">如何使用</h2>
-          <p className="text-mist">三個步驟，快速找到最適合的專科醫院</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {FEATURES.map((f, i) => (
-            <div
-              key={f.title}
-              className="bg-sand rounded-2xl p-7 relative overflow-hidden transition-all duration-200 hover:scale-[1.02] hover:shadow-xl"
-            >
-              {/* Step number — gold, visible, top-right */}
-              <span className="absolute top-4 right-5 text-6xl font-black select-none leading-none"
-                style={{ color: '#f9bc60', opacity: 0.25 }}
-              >
-                {i + 1}
-              </span>
-              <div className="mb-4">{f.icon === 'search' ? <Search size={36} className="text-brand" /> : f.icon === 'phone' ? <Phone size={36} className="text-brand" /> : <Star size={36} className="text-brand" />}</div>
-              <h3 className="font-semibold text-lg mb-2 relative z-10" style={{ color: '#001e1d' }}>
-                {f.title}
-              </h3>
-              <p className="text-sm leading-relaxed relative z-10" style={{ color: '#004643' }}>
-                {f.desc}
-              </p>
-            </div>
+      {/* ── Districts ──────────────────────────────────────── */}
+      <section style={{ padding: 32, maxWidth: 1000, margin: '0 auto' }}>
+        <h2 style={{
+          fontSize: 18, fontWeight: 800, color: 'var(--color-clay-text)',
+          marginBottom: 4, marginTop: 0,
+        }}>依行政區找診所</h2>
+        <p style={{
+          fontSize: 12, color: 'var(--color-clay-text-soft)',
+          marginBottom: 14, marginTop: 0,
+        }}>台北市 12 個行政區，完整覆蓋</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+          {DISTRICTS.map(d => (
+            <Chip key={d} href={`/district/${encodeURIComponent(d)}`}>{d}</Chip>
           ))}
         </div>
       </section>
 
-      {/* ── Popular specialties — #3 ─────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 pb-16 lg:pb-24">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-snow mb-3">熱門專科搜尋</h2>
-          <p className="text-mist">點擊專科，直接找到相關診所</p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {SPECIALTIES.map((spec) => (
-            <button
-              key={spec.name}
-              onClick={() => router.push(`/search?q=${encodeURIComponent(spec.q)}`)}
-              className="group bg-sand hover:bg-brand rounded-2xl p-6 text-left transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 border border-transparent hover:border-gold/20"
-              style={{ minHeight: '160px' }}
-            >
-              {/* Icon circle */}
-              <div
-                className="w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-colors duration-200 relative"
-                style={{ backgroundColor: spec.iconBg }}
-              >
-                <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
-                <span className="text-2xl leading-none relative z-10">
-                {spec.icon === 'tooth' ? <Stethoscope size={28} /> :
-                 spec.icon === 'eye' ? <Eye size={28} /> :
-                 spec.icon === 'heart' ? <Heart size={28} /> :
-                 spec.icon === 'bone' ? <Bone size={28} /> :
-                 spec.icon === 'ribbon' ? <Ribbon size={28} /> :
-                 spec.icon === 'leaf' || spec.icon === 'leaf2' ? <Leaf size={28} /> :
-                 spec.icon === 'brain' ? <Brain size={28} /> :
-                 spec.icon === 'scissors' ? <Scissors size={28} /> :
-                 spec.icon === 'droplets' ? <Droplets size={28} /> :
-                 spec.icon === 'activity' ? <Activity size={28} /> :
-                 spec.icon === 'siren' ? <Siren size={28} /> :
-                 <Stethoscope size={28} />}
-              </span>
-              </div>
-              <h3 className="font-semibold text-lg text-ink group-hover:text-snow mb-1 transition-colors duration-200">
-                {spec.name}
-              </h3>
-              <p className="text-sm text-ink/50 group-hover:text-mist leading-relaxed transition-colors duration-200">
-                {spec.desc}
-              </p>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <RecentlyViewedSection />
-
-      {/* ── Districts ── */}
-      <section className="max-w-7xl mx-auto px-6 pb-12">
-        <div className="text-center mb-6">
-          <h2 className="text-xl sm:text-2xl font-bold text-snow mb-2">依行政區找診所</h2>
-          <p className="text-mist text-sm">台北市 12 個行政區，完整覆蓋</p>
-        </div>
-        <div className="flex flex-wrap justify-center gap-2">
-          {['大安區','信義區','中山區','內湖區','士林區','文山區','松山區','中正區','萬華區','北投區','南港區','大同區'].map((d) => (
-            <Link
-              key={d}
-              href={`/district/${encodeURIComponent(d)}`}
-              className="px-4 py-2 rounded-full text-sm font-medium bg-ink text-mist hover:bg-mist/20 hover:text-snow transition-colors border border-mist/15"
-            >
-              {d}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Footer ──────────────────────────────────────────────────────────── */}
-      <footer className="bg-ink">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8">
-            {/* Left */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <PawPrint size={20} className="text-gold" />
-                <span className="text-snow font-bold">寵物專科診所搜尋</span>
-              </div>
-              <p className="text-mist/60 text-sm">台北市最完整的動物醫院專科查詢平台</p>
-            </div>
-            {/* Right */}
-            <div className="text-right">
-              <p className="text-mist/60 text-xs leading-relaxed">
-                資料來源：台北市動物保護處、Google Maps
-              </p>
-            </div>
-          </div>
-          <div className="border-t border-mist/10 pt-6">
-            <p className="text-mist/40 text-xs text-center">
-              © 2026 寵物專科診所搜尋　·　資料僅供參考，實際資訊請以診所公告為準
-            </p>
-          </div>
-        </div>
-      </footer>
-
+      <ClayFooter />
     </div>
   )
 }
