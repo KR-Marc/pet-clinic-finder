@@ -1,22 +1,16 @@
-import { AlertTriangle, Car, Clock, Map, MapPin, PawPrint, Phone, Star } from 'lucide-react'
+import { AlertTriangle, Clock, Map as MapIcon, MapPin, Phone, Star } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import UberButtonClient from './UberButtonClient'
+import { ClayNav, ClayFooter } from '@/app/components/clay'
 
 interface Clinic {
-  id: string
-  name: string
-  district: string
-  address: string
-  phone: string
-  rating: number | null
-  review_count: number | null
-  specialty_tags: string[]
-  opening_hours: string[] | null
-  is_24h: boolean
+  id: string; name: string; district: string; address: string
+  phone: string; rating: number | null; review_count: number | null
+  specialty_tags: string[]; opening_hours: string[] | null; is_24h: boolean
 }
 
-const WEEKDAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+const WEEKDAYS = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六']
 
 function getTodayHours(hours: string[] | null): string | null {
   if (!hours?.length) return null
@@ -37,7 +31,6 @@ async function fetchEmergencyClinics(): Promise<Clinic[]> {
     .select('id, name, district, address, phone, rating, review_count, specialty_tags, opening_hours, is_24h')
     .contains('specialty_tags', ['24H急診'])
     .order('rating', { ascending: false })
-
   const clinics = (data ?? []) as Clinic[]
   return clinics.sort((a, b) => {
     const aWarn = hasReviewWarning(a) ? 1 : 0
@@ -51,99 +44,180 @@ export default async function EmergencyPage() {
   const clinics = await fetchEmergencyClinics()
 
   return (
-    <main className="min-h-screen bg-brand">
-      <div className="bg-ink sticky top-0 z-10 shadow-md">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <Link href="/" className="text-mist/50 hover:text-snow text-sm">
-            <PawPrint size={14} className="inline mr-1" />首頁
-          </Link>
-        </div>
-      </div>
+    <div style={{ minHeight: '100vh', background: 'var(--color-clay-bg)' }}>
+      <ClayNav current="emergency" />
 
-      <div className="border-b border-mist/10" style={{ background: 'linear-gradient(180deg, #1a0000 0%, #001e1d 100%)' }}>
-        <div className="max-w-4xl mx-auto px-4 py-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-4"
-            style={{ background: '#e16162', color: '#fff' }}>🚨 緊急資訊</div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-snow mb-3">台北市 24H 急診動物醫院</h1>
-          <p className="text-mist/70 text-sm mb-2">遇到寵物緊急狀況時請直接撥打電話確認。</p>
-          <p className="text-xs font-semibold" style={{ color: '#f9bc60' }}>
+      {/* Red hero */}
+      <div style={{
+        background: 'linear-gradient(135deg, var(--color-clay-danger) 0%, #a82f2b 100%)',
+        color: '#fff', padding: '48px 32px',
+      }}>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, letterSpacing: 2,
+            background: 'rgba(255,255,255,0.18)',
+            padding: '6px 14px', borderRadius: 999,
+            fontWeight: 700, marginBottom: 16,
+          }}>🚨 緊急資訊</div>
+          <h1 style={{
+            fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800,
+            letterSpacing: -0.8, marginBottom: 10, marginTop: 0,
+          }}>台北市 24H 急診動物醫院</h1>
+          <p style={{
+            fontSize: 15, opacity: 0.95, marginBottom: 6, marginTop: 0,
+          }}>遇到寵物緊急狀況時請直接撥打電話確認。</p>
+          <p style={{ fontSize: 13, opacity: 0.8, margin: 0 }}>
             共 {clinics.length} 間全天候急診院所
           </p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 pt-6 pb-12">
-        <div className="rounded-xl p-4 mb-6 border border-mist/20"
-          style={{ background: 'rgba(225,97,98,0.1)' }}>
-          <p className="text-sm text-snow font-semibold mb-1">⚠️ 前往前請先來電確認</p>
-          <p className="text-xs text-mist/70">急診服務可能因醫師排班而有所調整，建議出發前先致電確認。</p>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '28px 24px 48px' }}>
+        {/* Warning banner */}
+        <div style={{
+          padding: '14px 18px', borderRadius: 10,
+          background: 'var(--color-clay-primary-soft)',
+          color: '#8a4621',
+          borderLeft: '4px solid var(--color-clay-primary)',
+          marginBottom: 22, fontSize: 13,
+        }}>
+          ⚠️ <b>前往前請先來電確認</b>　急診服務可能因醫師排班而有所調整，建議出發前先致電確認。
         </div>
 
-        <div className="flex flex-col gap-4">
+        {/* Cards grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+          gap: 14,
+        }}>
           {clinics.map(c => {
             const hours = getTodayHours(c.opening_hours)
             const warn = hasReviewWarning(c)
             const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(c.district + c.address)}&travelmode=driving`
 
             return (
-              <div key={c.id} className="bg-sand rounded-xl p-5 shadow-sm">
+              <div key={c.id} style={{
+                background: 'var(--color-clay-surface)',
+                border: '1px solid var(--color-clay-border)',
+                borderLeft: '4px solid var(--color-clay-danger)',
+                borderRadius: 14, padding: 20,
+                boxShadow: '0 1px 2px rgb(79 56 28 / 0.04)',
+              }}>
                 {warn && (
-                  <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg mb-3"
-                    style={{ background: 'rgba(249,188,96,0.18)', color: '#7a5a00', border: '1px solid rgba(249,188,96,0.4)' }}>
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    fontSize: 12, padding: '8px 12px', borderRadius: 8,
+                    background: 'var(--color-clay-primary-soft)',
+                    color: '#8a4621', marginBottom: 12,
+                  }}>
                     <AlertTriangle size={14} />
                     <span>此診所評論數量較多，建議參考多方資訊後再決定就診</span>
                   </div>
                 )}
-                <div className="flex items-start justify-between gap-3 mb-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Link href={`/clinic/${c.id}`} className="font-bold text-base text-ink hover:underline">{c.name}</Link>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-bold"
-                      style={{ background: '#e16162', color: '#fff' }}>24H急診</span>
+
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between',
+                  alignItems: 'start', marginBottom: 8, gap: 10,
+                }}>
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+                  }}>
+                    <Link href={`/clinic/${c.id}`} style={{
+                      fontSize: 16, fontWeight: 800,
+                      color: 'var(--color-clay-text)',
+                      textDecoration: 'none',
+                    }}>{c.name}</Link>
+                    <span style={{
+                      fontSize: 10, fontWeight: 800, letterSpacing: 0.5,
+                      padding: '3px 8px', borderRadius: 5,
+                      background: 'var(--color-clay-danger-soft)',
+                      color: 'var(--color-clay-danger)',
+                    }}>24H</span>
                   </div>
                   {c.rating != null && (
-                    <div className="flex flex-col items-end shrink-0">
-                      <span className="text-sm font-bold" style={{ color: '#f9bc60' }}>
-                        <Star size={13} className="inline mr-0.5 fill-gold text-gold" />{c.rating}
+                    <div style={{
+                      display: 'flex', flexDirection: 'column',
+                      alignItems: 'flex-end', flexShrink: 0,
+                    }}>
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 3,
+                        fontSize: 12, fontWeight: 700,
+                        background: 'var(--color-clay-sage-soft)',
+                        color: 'var(--color-clay-sage)',
+                        padding: '3px 8px', borderRadius: 6,
+                      }}>
+                        <Star size={11} fill="currentColor" /> {c.rating}
                       </span>
                       {c.review_count != null && (
-                        <span className="text-xs" style={{ color: 'rgba(0,30,29,0.45)' }}>
-                          {c.review_count.toLocaleString()} 則
-                        </span>
+                        <span style={{
+                          fontSize: 11, color: 'var(--color-clay-text-mute)',
+                          marginTop: 3,
+                        }}>{c.review_count.toLocaleString()} 則</span>
                       )}
                     </div>
                   )}
                 </div>
-                <p className="text-xs mb-1" style={{ color: 'rgba(0,30,29,0.5)' }}>
-                  <MapPin size={13} className="inline mr-0.5" />{c.district}・{c.address}
+
+                <p style={{
+                  fontSize: 13, color: 'var(--color-clay-text-soft)',
+                  marginBottom: 4, marginTop: 0,
+                  display: 'flex', alignItems: 'center', gap: 4,
+                }}>
+                  <MapPin size={12} />{c.district}・{c.address}
                 </p>
+
                 {hours && (
-                  <p className="text-xs mb-3 font-medium"
-                    style={{ color: hours === '休息' ? '#e16162' : '#16a34a' }}>
-                    <Clock size={13} className="inline mr-0.5" />今日 {hours}
+                  <p style={{
+                    fontSize: 12, fontWeight: 600, marginBottom: 14, marginTop: 0,
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    color: 'var(--color-clay-sage)',
+                  }}>
+                    <Clock size={12} />今日 24 小時營業
                   </p>
                 )}
-                <div className="flex gap-2 mb-2">
-                  <a href={`tel:${c.phone}`}
-                    className="flex-1 py-3 rounded-xl text-center font-bold text-sm flex items-center justify-center gap-1.5"
-                    style={{ background: 'linear-gradient(135deg, #e16162 0%, #c0392b 100%)', color: 'white' }}>
+
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <a href={`tel:${c.phone}`} style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    padding: '11px 20px', borderRadius: 10,
+                    background: 'var(--color-clay-danger)',
+                    color: '#fff', fontSize: 14, fontWeight: 700,
+                    textDecoration: 'none', flex: '1 1 auto', minWidth: 130,
+                  }}>
                     <Phone size={16} />立即撥打
                   </a>
-                  <a href={navUrl} target="_blank" rel="noopener noreferrer"
-                    className="flex-1 py-3 rounded-xl text-center font-bold text-sm flex items-center justify-center gap-1.5"
-                    style={{ background: '#2980b9', color: 'white' }}>
-                    <Map size={16} />導航前往
+                  <a
+                    href={navUrl}
+                    target="_blank" rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                      padding: '11px 18px', borderRadius: 10,
+                      background: 'var(--color-clay-surface)',
+                      color: 'var(--color-clay-text)',
+                      border: '1px solid var(--color-clay-border)',
+                      fontSize: 14, fontWeight: 600,
+                      textDecoration: 'none', flex: '1 1 auto', minWidth: 130,
+                    }}
+                  >
+                    <MapIcon size={16} />導航前往
                   </a>
                 </div>
-                <UberButtonClient
-                  clinicName={c.name}
-                  district={c.district}
-                  address={c.address}
-                />
+
+                <div style={{ marginTop: 8 }}>
+                  <UberButtonClient
+                    clinicName={c.name}
+                    district={c.district}
+                    address={c.address}
+                  />
+                </div>
               </div>
             )
           })}
         </div>
       </div>
-    </main>
+
+      <ClayFooter />
+    </div>
   )
 }
