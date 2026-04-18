@@ -38,15 +38,16 @@
   --color-clay-tag-bg:      #fbe9dc;
   --color-clay-tag-text:    #8a4621;
 
-  /* Legacy alias — 維持向後相容 */
-  --color-brand:  #faf7f2;
-  --color-brand2: #f2ede4;
-  --color-ink:    #2a241e;
-  --color-snow:   #fffffe;
-  --color-mist:   #5c5246;
-  --color-gold:   #c96f3b;
-  --color-sand:   #ffffff;
-  --color-coral:  #c73e3a;
+  /* Legacy alias — 映射到 Warm Clay (淺色主題) */
+  /* 原本深綠底 → 改成 clay-bg；原本白文字 → 改成 clay-text；原本薄荷色文字 → clay-text-soft */
+  --color-brand:  #faf7f2;   /* was #004643 dark green → clay-bg */
+  --color-brand2: #f2ede4;   /* was #005450 → clay-section */
+  --color-ink:    #ffffff;   /* was #001e1d (nav/button dark bg) → surface white（沿用淺色卡片底）*/
+  --color-snow:   #2a241e;   /* was #fffffe (headline on dark) → clay-text (headline on light) */
+  --color-mist:   #5c5246;   /* was #abd1c6 mint text → clay-text-soft */
+  --color-gold:   #c96f3b;   /* was #f9bc60 → clay-primary */
+  --color-sand:   #ffffff;   /* was #eae6e8 card bg → surface */
+  --color-coral:  #c73e3a;   /* was #e16162 24H badge → clay-danger */
 }
 
 @theme inline {
