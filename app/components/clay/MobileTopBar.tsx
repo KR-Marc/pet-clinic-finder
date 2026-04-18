@@ -7,13 +7,16 @@ import { ChevronLeft, MoreHorizontal } from 'lucide-react'
 interface Props {
   title: string
   back?: boolean
-  backHref?: string  // if provided, link to this URL; otherwise router.back()
-  action?: React.ReactNode  // right-side action (default: ···)
+  backHref?: string
+  action?: React.ReactNode
 }
 
 /**
- * MobileTopBar — H5 sticky top bar, used on mobile only.
- * Wrap with className="hide-on-desktop" data-flex="true" in pages.
+ * MobileTopBar — H5 sticky top bar shown on mobile only (≤767px).
+ *
+ * Visibility is controlled by CSS class .hide-on-desktop in globals.css.
+ * The component renders itself unconditionally; the wrapper div hides it
+ * on desktop via media query.
  */
 export default function MobileTopBar({ title, back = true, backHref, action }: Props) {
   const router = useRouter()

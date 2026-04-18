@@ -73,15 +73,9 @@ body {
  * H5 / Mobile responsive system (breakpoint: 768px)
  * ───────────────────────────────────────────────────────────── */
 
-/* Visibility utilities */
-.hide-on-mobile { display: initial; }
-.hide-on-desktop { display: none; }
-
-/* Layout utilities — desktop default, mobile override below */
-.h5-stack-on-mobile { /* desktop: keep as-is, mobile: flex-direction column */ }
-.h5-grid-1col-on-mobile { /* desktop: keep grid, mobile: single column */ }
-.h5-shrink-padding { /* desktop: keep, mobile: tighter padding */ }
-.h5-hero { /* desktop: large hero, mobile: compact hero */ }
+/* Visibility utilities — desktop default */
+.hide-on-mobile { /* visible on desktop */ }
+.hide-on-desktop { display: none !important; }
 
 @media (max-width: 767px) {
   /* Show bottom tab bar */
@@ -91,52 +85,56 @@ body {
 
   /* Visibility */
   .hide-on-mobile { display: none !important; }
-  .hide-on-desktop { display: initial !important; }
-  .hide-on-desktop[data-block="true"] { display: block !important; }
+  .hide-on-desktop { display: revert !important; }
   .hide-on-desktop[data-flex="true"] { display: flex !important; }
+  .hide-on-desktop[data-block="true"] { display: block !important; }
+  .hide-on-desktop[data-grid="true"] { display: grid !important; }
 
   /* Body bottom padding to clear BottomTabBar (64px tall) */
   body { padding-bottom: 64px; }
 
-  /* Layout transformations on mobile */
-  .h5-stack-on-mobile {
-    grid-template-columns: 1fr !important;
-    flex-direction: column !important;
-  }
-  .h5-grid-1col-on-mobile {
+  /* Layout transformations */
+  .h5-grid-1col {
     grid-template-columns: 1fr !important;
   }
-  .h5-grid-2col-on-mobile {
+  .h5-grid-2col {
     grid-template-columns: 1fr 1fr !important;
   }
 
-  /* Tighten generic page padding on mobile */
-  .h5-shrink-padding {
+  /* Page padding tightening on mobile */
+  .h5-px-tight {
     padding-left: 18px !important;
     padding-right: 18px !important;
+  }
+  .h5-py-tight {
+    padding-top: 28px !important;
+    padding-bottom: 28px !important;
   }
 
   /* Hero shrinking */
   .h5-hero {
-    padding-top: 28px !important;
-    padding-bottom: 28px !important;
-    padding-left: 18px !important;
-    padding-right: 18px !important;
+    padding: 28px 18px !important;
   }
-  .h5-hero h1 {
+  .h5-hero-h1 {
     font-size: 28px !important;
     line-height: 1.15 !important;
+    letter-spacing: -1px !important;
   }
-  .h5-hero p,
-  .h5-hero .h5-hero-sub {
+  .h5-hero-sub {
     font-size: 13px !important;
   }
 
-  /* Horizontal scroll for chip rows on mobile */
+  /* Section heading shrink */
+  .h5-section-title {
+    font-size: 18px !important;
+  }
+
+  /* Horizontal scroll for chip rows */
   .h5-chip-scroll {
     overflow-x: auto !important;
     flex-wrap: nowrap !important;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
   .h5-chip-scroll::-webkit-scrollbar { display: none; }
 }

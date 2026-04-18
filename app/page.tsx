@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import RecentlyViewedSection from './components/RecentlyViewedSection'
 import { ClayNav, ClayFooter, Chip, Tag } from './components/clay'
+import MobileTopBar from './components/clay/MobileTopBar'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const QUICK_TAGS = ['嘔吐', '拉肚子', '抽搐', '血尿', '血便', '呼吸困難', '食慾不振', '咳嗽', '沒精神', '掉毛', '一直抓', '半夜急診']
@@ -159,10 +160,13 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-clay-bg)' }}>
-      <ClayNav current="home" />
+      <div className="hide-on-mobile">
+        <ClayNav current="home" />
+      </div>
+      <MobileTopBar title="寵物專科診所搜尋" back={false} />
 
       {/* ── Hero ─────────────────────────────────────────── */}
-      <section style={{
+      <section className="h5-hero" style={{
         padding: '56px 32px 44px',
         background: 'var(--color-clay-hero)',
         borderBottom: '1px solid var(--color-clay-border)',
@@ -185,7 +189,7 @@ export default function HomePage() {
           </div>
 
           {/* Headline */}
-          <h1 style={{
+          <h1 className="h5-hero-h1" style={{
             fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 800,
             letterSpacing: -1.5, lineHeight: 1.1,
             color: 'var(--color-clay-text)', marginBottom: 14, marginTop: 0,
@@ -193,7 +197,7 @@ export default function HomePage() {
             找到最適合<br />
             <span style={{ color: 'var(--color-clay-primary)' }}>你毛孩的</span>專科診所
           </h1>
-          <p style={{
+          <p className="h5-hero-sub" style={{
             fontSize: 16, color: 'var(--color-clay-text-soft)',
             marginBottom: 26, maxWidth: 520, lineHeight: 1.6,
           }}>
