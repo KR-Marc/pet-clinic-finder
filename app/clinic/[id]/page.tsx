@@ -12,6 +12,7 @@ import ReportButton from './ReportButton'
 import FavoriteButton from './FavoriteButton'
 import RecentlyViewedTracker from './RecentlyViewedTracker'
 import { ClayNav, ClayFooter, Tag } from '@/app/components/clay'
+import MobileTopBar from '@/app/components/clay/MobileTopBar'
 
 interface Clinic {
   id: string; name: string; district: string; address: string
@@ -148,7 +149,10 @@ export default async function ClinicPage({
         id={clinic.id} name={clinic.name} district={clinic.district}
         rating={clinic.rating} specialty_tags={clinic.specialty_tags}
       />
-      <ClayNav />
+      <div className="hide-on-mobile">
+        <ClayNav />
+      </div>
+      <MobileTopBar title={clinic.name} />
 
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '24px 24px 48px' }}>
         {/* Back link */}

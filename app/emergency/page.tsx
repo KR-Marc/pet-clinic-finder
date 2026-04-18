@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import UberButtonClient from './UberButtonClient'
 import { ClayNav, ClayFooter } from '@/app/components/clay'
+import MobileTopBar from '@/app/components/clay/MobileTopBar'
 
 interface Clinic {
   id: string; name: string; district: string; address: string
@@ -45,7 +46,10 @@ export default async function EmergencyPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-clay-bg)' }}>
-      <ClayNav current="emergency" />
+      <div className="hide-on-mobile">
+        <ClayNav current="emergency" />
+      </div>
+      <MobileTopBar title="24H 急診" backHref="/" />
 
       {/* Red hero */}
       <div style={{
@@ -88,7 +92,7 @@ export default async function EmergencyPage() {
         {/* Cards grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: 14,
         }}>
           {clinics.map(c => {
