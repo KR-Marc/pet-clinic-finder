@@ -1,8 +1,9 @@
 import Link from 'next/link'
-import { MapPin, Phone, Star } from 'lucide-react'
+import { ArrowLeft, MapPin, Phone, Star } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { Metadata } from 'next'
+import { ClayNav, ClayFooter } from '@/app/components/clay'
 
 export const metadata: Metadata = {
   title: '診所比較 | 台北寵物專科診所搜尋',
@@ -29,6 +30,30 @@ function parseHoursMap(openingHours: string[]): Record<string, string> {
   return map
 }
 
+const RowLabel = ({ children }: { children: React.ReactNode }) => (
+  <td style={{
+    padding: '16px 16px 16px 0',
+    fontSize: 12, fontWeight: 700,
+    color: 'var(--color-clay-text-mute)',
+    textTransform: 'uppercase', letterSpacing: 0.5,
+    verticalAlign: 'top',
+    borderTop: '1px solid var(--color-clay-border)',
+    width: 96,
+  }}>{children}</td>
+)
+
+const Cell = ({ children }: { children: React.ReactNode }) => (
+  <td style={{
+    padding: '16px',
+    verticalAlign: 'top',
+    borderTop: '1px solid var(--color-clay-border)',
+  }}>{children}</td>
+)
+
+const Dash = () => (
+  <span style={{ fontSize: 12, color: 'var(--color-clay-text-mute)' }}>—</span>
+)
+
 export default async function ComparePage({
   searchParams,
 }: {
@@ -48,169 +73,291 @@ export default async function ComparePage({
   const todayName = getTaiwanWeekday()
 
   return (
-    <main className="min-h-screen bg-brand">
-      {/* Nav */}
-      <div className="bg-ink sticky top-0 z-10 shadow-md">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link href="/search" className="text-mist/50 hover:text-snow text-sm transition-colors">
-            ← 回搜尋結果
-          </Link>
-          <span className="text-mist/30">|</span>
-          <span className="text-snow text-sm font-medium">診所比較</span>
+    <main style={{ minHeight: '100vh', background: 'var(--color-clay-bg)', color: 'var(--color-clay-text)' }}>
+      <ClayNav />
+
+      {/* Hero */}
+      <div style={{
+        background: 'var(--color-clay-hero)',
+        borderBottom: '1px solid var(--color-clay-border)',
+        padding: '40px 24px 32px',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', right: -100, top: -80, width: 380, height: 380,
+          borderRadius: '50%', background: 'var(--color-clay-hero-accent)',
+          filter: 'blur(50px)', opacity: 0.55, pointerEvents: 'none',
+        }} />
+        <div style={{ position: 'relative', maxWidth: 1100, margin: '0 auto' }}>
+          {/* Breadcrumb */}
+          <div style={{ marginBottom: 16 }}>
+            <Link href="/search" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              fontSize: 13, color: 'var(--color-clay-text-soft)',
+              textDecoration: 'none', fontWeight: 600,
+            }}>
+              <ArrowLeft size={14} /> 回搜尋結果
+            </Link>
+          </div>
+
+          {/* Eyebrow */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, color: 'var(--color-clay-primary)',
+            background: 'var(--color-clay-primary-soft)',
+            padding: '5px 12px', borderRadius: 999, fontWeight: 700,
+            marginBottom: 12,
+          }}>
+            ⇄ 診所比較
+          </div>
+          <h1 style={{
+            fontSize: 28, fontWeight: 800, letterSpacing: -0.8,
+            margin: '0 0 8px',
+            color: 'var(--color-clay-text)',
+          }}>
+            並排比較 {clinics.length} 間診所
+          </h1>
+          <p style={{
+            fontSize: 14, color: 'var(--color-clay-text-soft)',
+            margin: 0, lineHeight: 1.7,
+          }}>
+            一次看清評分、特色、專科、營業時間 — 幫你決定該選哪間。
+          </p>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-8 overflow-x-auto">
-        <table className="w-full border-collapse" style={{ minWidth: `${clinics.length * 240}px` }}>
-          {/* Header row — clinic names */}
-          <thead>
-            <tr>
-              <th className="w-28 shrink-0" />
-              {clinics.map((clinic) => (
-                <th key={clinic.id} className="px-4 pb-4 text-left align-top">
-                  <Link
-                    href={`/clinic/${clinic.id}`}
-                    className="font-bold text-base text-snow hover:text-gold transition-colors leading-snug block"
-                  >
-                    {clinic.name}
-                  </Link>
-                  <p className="text-xs text-mist/50 mt-1"><MapPin size={13} className="inline mr-0.5" /> {clinic.district}</p>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {/* Rating */}
-            <tr className="border-t border-mist/10">
-              <td className="py-4 pr-4 text-xs font-semibold text-mist/50 align-top">評分</td>
-              {clinics.map((clinic) => (
-                <td key={clinic.id} className="px-4 py-4 align-top">
-                  {clinic.rating != null ? (
-                    <span className="text-sm font-bold" style={{ color: '#f9bc60' }}><Star size={13} className="inline mr-0.5 fill-gold text-gold" /> {clinic.rating}</span>
-                  ) : (
-                    <span className="text-xs text-mist/30">—</span>
-                  )}
-                </td>
-              ))}
-            </tr>
-
-            {/* 24H / Appointment */}
-            <tr className="border-t border-mist/10">
-              <td className="py-4 pr-4 text-xs font-semibold text-mist/50 align-top">特色</td>
-              {clinics.map((clinic) => (
-                <td key={clinic.id} className="px-4 py-4 align-top">
-                  <div className="flex flex-wrap gap-1.5">
-                    {clinic.is_24h && (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-bold" style={{ background: '#e16162', color: '#fff' }}>24H急診</span>
-                    )}
-                    {clinic.is_appointment && (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-semibold" style={{ background: '#f9bc60', color: '#001e1d' }}>需預約</span>
-                    )}
-                    {!clinic.is_24h && !clinic.is_appointment && (
-                      <span className="text-xs text-mist/30">—</span>
-                    )}
-                  </div>
-                </td>
-              ))}
-            </tr>
-
-            {/* Specialty tags */}
-            <tr className="border-t border-mist/10">
-              <td className="py-4 pr-4 text-xs font-semibold text-mist/50 align-top">專科</td>
-              {clinics.map((clinic) => (
-                <td key={clinic.id} className="px-4 py-4 align-top">
-                  <div className="flex flex-wrap gap-1">
-                    {clinic.specialty_tags?.length > 0
-                      ? clinic.specialty_tags.map((tag: string) => (
-                          <span key={tag} className="px-2 py-0.5 rounded-full text-xs font-medium bg-brand text-snow">{tag}</span>
-                        ))
-                      : <span className="text-xs text-mist/30">—</span>
-                    }
-                  </div>
-                </td>
-              ))}
-            </tr>
-
-            {/* Phone */}
-            <tr className="border-t border-mist/10">
-              <td className="py-4 pr-4 text-xs font-semibold text-mist/50 align-top">電話</td>
-              {clinics.map((clinic) => (
-                <td key={clinic.id} className="px-4 py-4 align-top">
-                  {clinic.phone ? (
-                    <a href={`tel:${clinic.phone}`} className="text-sm font-semibold hover:opacity-70 transition-opacity" style={{ color: '#f9bc60' }}>
-                      {clinic.phone}
-                    </a>
-                  ) : (
-                    <span className="text-xs text-mist/30">—</span>
-                  )}
-                </td>
-              ))}
-            </tr>
-
-            {/* Opening hours */}
-            <tr className="border-t border-mist/10">
-              <td className="py-4 pr-4 text-xs font-semibold text-mist/50 align-top">營業時間</td>
-              {clinics.map((clinic) => {
-                const hoursMap = clinic.opening_hours ? parseHoursMap(clinic.opening_hours) : {}
-                return (
-                  <td key={clinic.id} className="px-4 py-4 align-top">
-                    {Object.keys(hoursMap).length > 0 ? (
-                      <div className="rounded-lg overflow-hidden border border-mist/10">
-                        {WEEKDAYS_TABLE.map((day) => {
-                          const hrs = hoursMap[day]
-                          if (!hrs) return null
-                          const isToday = day === todayName
-                          const isClosed = hrs === '休息'
-                          return (
-                            <div
-                              key={day}
-                              className="flex items-center justify-between px-2 py-1.5 text-xs border-b border-mist/5 last:border-0"
-                              style={isToday ? { background: 'rgba(249,188,96,0.15)' } : undefined}
-                            >
-                              <span className="w-8 shrink-0" style={{ color: isToday ? '#f9bc60' : 'rgba(171,209,198,0.5)', fontWeight: isToday ? 700 : 400 }}>
-                                {DAY_SHORT[day]}
-                              </span>
-                              <span style={{ color: isClosed ? '#e16162' : isToday ? '#f9bc60' : 'rgba(171,209,198,0.7)', fontWeight: isToday ? 700 : 400 }}>
-                                {hrs}
-                              </span>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    ) : (
-                      <span className="text-xs text-mist/30">未收錄</span>
-                    )}
-                  </td>
-                )
-              })}
-            </tr>
-
-            {/* Action row */}
-            <tr className="border-t border-mist/10">
-              <td className="py-4 pr-4" />
-              {clinics.map((clinic) => (
-                <td key={clinic.id} className="px-4 py-4">
-                  <div className="flex flex-col gap-2">
-                    <a
-                      href={`tel:${clinic.phone}`}
-                      className="block text-center py-2 rounded-xl text-xs font-semibold hover:opacity-90 transition-opacity"
-                      style={{ background: '#f9bc60', color: '#001e1d' }}
-                    >
-                      <><Phone size={16} className="inline-block mr-1.5" />立即撥打</>
-                    </a>
+      {/* Compare table */}
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 24px 56px', overflowX: 'auto' }}>
+        <div style={{
+          background: 'var(--color-clay-surface)',
+          border: '1px solid var(--color-clay-border)',
+          borderRadius: 14,
+          padding: 8,
+          boxShadow: '0 1px 2px rgb(79 56 28 / 0.04)',
+        }}>
+          <table style={{
+            width: '100%', borderCollapse: 'collapse',
+            minWidth: `${clinics.length * 240 + 96}px`,
+          }}>
+            {/* Header row — clinic names */}
+            <thead>
+              <tr>
+                <th style={{ width: 96 }} />
+                {clinics.map((clinic) => (
+                  <th key={clinic.id} style={{ padding: '20px 16px 16px', textAlign: 'left', verticalAlign: 'top' }}>
                     <Link
                       href={`/clinic/${clinic.id}`}
-                      className="block text-center py-2 rounded-xl text-xs font-medium hover:text-snow transition-colors border border-mist/30 text-mist"
+                      style={{
+                        display: 'block',
+                        fontSize: 16, fontWeight: 800,
+                        color: 'var(--color-clay-text)',
+                        textDecoration: 'none', lineHeight: 1.3,
+                      }}
                     >
-                      查看詳情 →
+                      {clinic.name}
                     </Link>
-                  </div>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+                    <p style={{
+                      margin: '4px 0 0', fontSize: 12,
+                      color: 'var(--color-clay-text-soft)',
+                      display: 'inline-flex', alignItems: 'center', gap: 3,
+                    }}>
+                      <MapPin size={12} /> {clinic.district}
+                    </p>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {/* Rating */}
+              <tr>
+                <RowLabel>評分</RowLabel>
+                {clinics.map((clinic) => (
+                  <Cell key={clinic.id}>
+                    {clinic.rating != null ? (
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        fontSize: 13, fontWeight: 700,
+                        background: 'var(--color-clay-sage-soft)',
+                        color: 'var(--color-clay-sage)',
+                        padding: '4px 10px', borderRadius: 6,
+                      }}>
+                        <Star size={13} style={{ fill: 'currentColor' }} /> {clinic.rating}
+                      </span>
+                    ) : <Dash />}
+                  </Cell>
+                ))}
+              </tr>
+
+              {/* 24H / Appointment */}
+              <tr>
+                <RowLabel>特色</RowLabel>
+                {clinics.map((clinic) => (
+                  <Cell key={clinic.id}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {clinic.is_24h && (
+                        <span style={{
+                          padding: '3px 10px', borderRadius: 999,
+                          fontSize: 11, fontWeight: 800,
+                          background: 'var(--color-clay-danger)', color: '#fff',
+                        }}>24H 急診</span>
+                      )}
+                      {clinic.is_appointment && (
+                        <span style={{
+                          padding: '3px 10px', borderRadius: 999,
+                          fontSize: 11, fontWeight: 700,
+                          background: 'var(--color-clay-primary-soft)',
+                          color: 'var(--color-clay-primary)',
+                        }}>需預約</span>
+                      )}
+                      {!clinic.is_24h && !clinic.is_appointment && <Dash />}
+                    </div>
+                  </Cell>
+                ))}
+              </tr>
+
+              {/* Specialty tags */}
+              <tr>
+                <RowLabel>專科</RowLabel>
+                {clinics.map((clinic) => (
+                  <Cell key={clinic.id}>
+                    {clinic.specialty_tags?.length > 0 ? (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                        {clinic.specialty_tags.map((tag: string) => (
+                          <span key={tag} style={{
+                            fontSize: 11, fontWeight: 600,
+                            padding: '3px 9px', borderRadius: 6,
+                            background: 'var(--color-clay-tag-bg)',
+                            color: 'var(--color-clay-tag-text)',
+                          }}>{tag}</span>
+                        ))}
+                      </div>
+                    ) : <Dash />}
+                  </Cell>
+                ))}
+              </tr>
+
+              {/* Phone */}
+              <tr>
+                <RowLabel>電話</RowLabel>
+                {clinics.map((clinic) => (
+                  <Cell key={clinic.id}>
+                    {clinic.phone ? (
+                      <a href={`tel:${clinic.phone}`} style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        fontSize: 13, fontWeight: 700,
+                        color: 'var(--color-clay-primary)',
+                        textDecoration: 'none',
+                      }}>
+                        <Phone size={12} /> {clinic.phone}
+                      </a>
+                    ) : <Dash />}
+                  </Cell>
+                ))}
+              </tr>
+
+              {/* Opening hours */}
+              <tr>
+                <RowLabel>營業時間</RowLabel>
+                {clinics.map((clinic) => {
+                  const hoursMap = clinic.opening_hours ? parseHoursMap(clinic.opening_hours) : {}
+                  return (
+                    <Cell key={clinic.id}>
+                      {Object.keys(hoursMap).length > 0 ? (
+                        <div style={{
+                          borderRadius: 10,
+                          border: '1px solid var(--color-clay-border)',
+                          overflow: 'hidden',
+                        }}>
+                          {WEEKDAYS_TABLE.map((day, idx) => {
+                            const hrs = hoursMap[day]
+                            if (!hrs) return null
+                            const isToday = day === todayName
+                            const isClosed = hrs === '休息'
+                            return (
+                              <div
+                                key={day}
+                                style={{
+                                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                  padding: '7px 10px', fontSize: 12,
+                                  borderBottom: idx < WEEKDAYS_TABLE.length - 1 ? '1px solid var(--color-clay-border)' : 'none',
+                                  background: isToday ? 'var(--color-clay-primary-soft)' : 'transparent',
+                                }}
+                              >
+                                <span style={{
+                                  width: 32, flexShrink: 0,
+                                  color: isToday ? 'var(--color-clay-primary)' : 'var(--color-clay-text-mute)',
+                                  fontWeight: isToday ? 700 : 500,
+                                }}>
+                                  {DAY_SHORT[day]}
+                                </span>
+                                <span style={{
+                                  color: isClosed
+                                    ? 'var(--color-clay-danger)'
+                                    : isToday
+                                      ? 'var(--color-clay-primary)'
+                                      : 'var(--color-clay-text-soft)',
+                                  fontWeight: isToday ? 700 : 400,
+                                }}>
+                                  {hrs}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 12, color: 'var(--color-clay-text-mute)' }}>未收錄</span>
+                      )}
+                    </Cell>
+                  )
+                })}
+              </tr>
+
+              {/* Action row */}
+              <tr>
+                <td style={{
+                  padding: '16px 16px 16px 0',
+                  borderTop: '1px solid var(--color-clay-border)',
+                }} />
+                {clinics.map((clinic) => (
+                  <td key={clinic.id} style={{
+                    padding: '16px',
+                    borderTop: '1px solid var(--color-clay-border)',
+                  }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <a
+                        href={`tel:${clinic.phone}`}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                          padding: '10px 14px', borderRadius: 10,
+                          background: 'var(--color-clay-primary)', color: '#fff',
+                          fontSize: 13, fontWeight: 700, textDecoration: 'none',
+                        }}
+                      >
+                        <Phone size={14} /> 立即撥打
+                      </a>
+                      <Link
+                        href={`/clinic/${clinic.id}`}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                          padding: '10px 14px', borderRadius: 10,
+                          background: 'var(--color-clay-surface)',
+                          color: 'var(--color-clay-text)',
+                          border: '1px solid var(--color-clay-border)',
+                          fontSize: 13, fontWeight: 600, textDecoration: 'none',
+                        }}
+                      >
+                        查看詳情 →
+                      </Link>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <ClayFooter />
     </main>
   )
 }

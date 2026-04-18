@@ -2,20 +2,33 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 export default function BackButton() {
   const router = useRouter()
   return (
-    <div className="flex items-center gap-3">
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
       <button
         onClick={() => router.back()}
-        className="text-mist hover:text-snow text-sm font-medium transition-colors"
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          padding: 0, background: 'transparent', border: 'none',
+          color: 'var(--color-clay-text-soft)',
+          fontSize: 14, fontWeight: 600, cursor: 'pointer',
+          fontFamily: 'inherit',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-clay-primary)' }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-clay-text-soft)' }}
       >
-        ← 回上頁
+        <ArrowLeft size={14} /> 回上頁
       </button>
+      <span style={{ color: 'var(--color-clay-text-mute)', fontSize: 12 }}>·</span>
       <Link
         href="/search"
-        className="text-mist/40 hover:text-mist text-xs transition-colors"
+        style={{
+          color: 'var(--color-clay-text-mute)',
+          fontSize: 12, textDecoration: 'none',
+        }}
       >
         搜尋頁
       </Link>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { ArrowUp } from 'lucide-react'
 
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false)
@@ -17,10 +18,22 @@ export default function ScrollToTop() {
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       aria-label="回到頂部"
-      className="fixed bottom-6 right-5 z-50 w-11 h-11 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
-      style={{ background: '#f9bc60', color: '#001e1d' }}
+      style={{
+        position: 'fixed', bottom: 24, right: 20, zIndex: 50,
+        width: 44, height: 44, borderRadius: '50%',
+        background: 'var(--color-clay-primary)',
+        color: '#fff',
+        border: 'none',
+        boxShadow: '0 4px 16px rgb(79 56 28 / 0.18)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer',
+        transition: 'transform 0.2s ease',
+        fontFamily: 'inherit',
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.08)' }}
+      onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
     >
-      ↑
+      <ArrowUp size={18} />
     </button>
   )
 }
