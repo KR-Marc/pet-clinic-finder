@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import ClinicList, { type Clinic } from './ClinicList'
 import SearchBar from './SearchBar'
 import { ClayNav, ClayFooter } from '@/app/components/clay'
+import MobileTopBar from '@/app/components/clay/MobileTopBar'
 
 const KNOWN_TAGS = [
   '牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科',
@@ -165,7 +166,10 @@ export default async function SearchPage({
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-clay-bg)' }}>
-      <ClayNav current="search" />
+      <div className="hide-on-mobile">
+        <ClayNav current="search" />
+      </div>
+      <MobileTopBar title="瀏覽診所" backHref="/" />
 
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 24px 40px' }}>
         {/* Subtitle */}
