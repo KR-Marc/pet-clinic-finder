@@ -1,26 +1,40 @@
 'use client'
+import { Share2 } from 'lucide-react'
+import { useState } from 'react'
 
-export default function ShareButton({ name, className = '' }: { name: string; className?: string }) {
+export default function ShareButton({ name }: { name: string; className?: string }) {
+  const [copied, setCopied] = useState(false)
+
   const handleShare = async () => {
+    const url = typeof window !== 'undefined' ? window.location.href : ''
+    const title = `${name} | 台北寵物專科診所`
     if (navigator.share) {
-      await navigator.share({
-        title: `${name} | 台北寵物專科診所`,
-        text: `推薦這家診所：${name}`,
-        url: window.location.href,
-      })
-    } else {
-      await navigator.clipboard.writeText(window.location.href)
-      alert('連結已複製！')
+      try {
+        await navigator.share({ title, url })
+        return
+      } catch {}
     }
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {}
   }
 
   return (
     <button
       onClick={handleShare}
-      className={`px-4 py-3 rounded-xl font-medium text-sm transition-colors hover:text-snow border border-mist/30 bg-ink text-mist flex items-center justify-center gap-1.5 ${className}`}
-      aria-label="分享此診所"
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        padding: '11px 18px', borderRadius: 10,
+        background: 'var(--color-clay-surface)',
+        color: 'var(--color-clay-text)',
+        border: '1px solid var(--color-clay-border)',
+        fontSize: 14, fontWeight: 600, cursor: 'pointer',
+        fontFamily: 'inherit',
+      }}
     >
-      🔗 <span className="hidden sm:inline">分享</span>
+      <Share2 size={16} />{copied ? '已複製連結' : '分享'}
     </button>
   )
 }

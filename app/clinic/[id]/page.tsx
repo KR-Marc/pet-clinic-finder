@@ -412,12 +412,14 @@ export default async function ClinicPage({
               borderRadius: 14, overflow: 'hidden',
               border: '1px solid var(--color-clay-border)',
               background: 'var(--color-clay-section)',
-              minHeight: 260, position: 'relative',
+              height: 280, position: 'relative',
             }}>
               <iframe
                 title={`${clinic.name} 地圖位置`}
-                width="100%" height="260"
-                style={{ border: 0, display: 'block' }}
+                style={{
+                  border: 0, display: 'block',
+                  width: '100%', height: '100%',
+                }}
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
