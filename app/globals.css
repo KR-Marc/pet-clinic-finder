@@ -1,27 +1,63 @@
 @import "tailwindcss";
 
-/* ── Happy Hues Palette #10 ────────────────────────────────────────────────── */
+/* ── Warm Clay Palette ─────────────────────────────────────────────────── */
 @theme {
-  --color-brand:  #004643;   /* main background — deep dark green   */
-  --color-brand2: #005450;   /* slightly lighter green for sections */
-  --color-ink:    #001e1d;   /* darkest — nav, button text          */
-  --color-snow:   #fffffe;   /* headlines on dark bg                */
-  --color-mist:   #abd1c6;   /* paragraph / secondary text          */
-  --color-gold:   #f9bc60;   /* primary button / accent             */
-  --color-sand:   #eae6e8;   /* card background — slightly brighter */
-  --color-coral:  #e16162;   /* urgent / 24H badge                  */
+  /* Surfaces */
+  --color-clay-bg:         #faf7f2;
+  --color-clay-surface:    #ffffff;
+  --color-clay-section:    #f2ede4;
+  --color-clay-hero:       #f5ede1;
+  --color-clay-hero-accent:#e8c9a8;
+  --color-clay-footer:     #ede6d8;
+
+  /* Text */
+  --color-clay-text:       #2a241e;
+  --color-clay-text-soft:  #5c5246;
+  --color-clay-text-mute:  #9a8f7f;
+
+  /* Border / Shadow */
+  --color-clay-border:     #e3d9c8;
+
+  /* Brand — 陶土橘 */
+  --color-clay-primary:       #c96f3b;
+  --color-clay-primary-hover: #b55f2e;
+  --color-clay-primary-soft:  #fbe9dc;
+
+  /* Accent — 鼠尾草綠 */
+  --color-clay-sage:       #6b8e4e;
+  --color-clay-sage-soft:  #e6eedb;
+
+  /* Danger — 急診紅 */
+  --color-clay-danger:      #c73e3a;
+  --color-clay-danger-soft: #f8dcda;
+
+  /* Chip / Tag */
+  --color-clay-chip-bg:     #fdfaf3;
+  --color-clay-chip-text:   #5c4a36;
+  --color-clay-chip-border: #e3d9c8;
+  --color-clay-tag-bg:      #fbe9dc;
+  --color-clay-tag-text:    #8a4621;
+
+  /* Legacy alias — 維持向後相容 */
+  --color-brand:  #faf7f2;
+  --color-brand2: #f2ede4;
+  --color-ink:    #2a241e;
+  --color-snow:   #fffffe;
+  --color-mist:   #5c5246;
+  --color-gold:   #c96f3b;
+  --color-sand:   #ffffff;
+  --color-coral:  #c73e3a;
 }
 
-/* Override built-in background/foreground */
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background-color: #004643;
-  color: #abd1c6;
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #faf7f2;
+  color: #2a241e;
+  font-family: "Noto Sans TC", -apple-system, system-ui, sans-serif;
 }
 
 /* 急診脈動動畫 */
