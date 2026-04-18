@@ -72,7 +72,8 @@ function sortClinics(clinics: Clinic[], sort: SortOption, userLat?: number, user
       return dA - dB
     })
   }
-  return clinics
+  // Default: always push closed-today clinics to the end
+  return [...clinics].sort((a, b) => (isOpenToday(a) ? 0 : 1) - (isOpenToday(b) ? 0 : 1))
 }
 
 function getPageNumbers(current: number, total: number): (number | '…')[] {
