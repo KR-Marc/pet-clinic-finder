@@ -155,15 +155,15 @@ export default async function ClinicPage({
       <MobileTopBar title="診所詳情" backHref="/search" />
 
       <div style={{ maxWidth: 960, margin: '0 auto', padding: '24px 24px 48px' }}>
-        {/* Back link */}
-        <Link href="/search" style={{
+        {/* Back link (desktop only — mobile uses MobileTopBar back button) */}
+        <Link href="/search" className="hide-on-mobile" style={{
           fontSize: 12, color: 'var(--color-clay-text-mute)',
           marginBottom: 18, display: 'inline-block',
           textDecoration: 'none',
         }}>← 回診所列表</Link>
 
         {/* Hero card */}
-        <div style={{
+        <div className="h5-hero-card" style={{
           background: 'var(--color-clay-surface)',
           border: '1px solid var(--color-clay-border)',
           borderRadius: 16, padding: 28, marginBottom: 18,
@@ -274,7 +274,7 @@ export default async function ClinicPage({
           )}
 
           {/* CTA buttons row */}
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <div className="h5-cta-3col" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <a href={`tel:${clinic.phone}`} style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '11px 20px', borderRadius: 10,
@@ -283,7 +283,7 @@ export default async function ClinicPage({
               textDecoration: 'none', flex: '1 1 auto',
               justifyContent: 'center', minWidth: 140,
             }}>
-              <Phone size={16} />立即撥打 {clinic.phone}
+              <Phone size={16} /><span className="h5-cta-phone">立即撥打 {clinic.phone}</span>
             </a>
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
@@ -324,13 +324,13 @@ export default async function ClinicPage({
         </div>
 
         {/* Two-column main content */}
-        <div style={{
+        <div className="h5-grid-1col" style={{
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)',
           gap: 18,
         }}>
           {/* Left column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, minWidth: 0 }}>
+          <div className="h5-detail-left" style={{ display: 'flex', flexDirection: 'column', gap: 18, minWidth: 0 }}>
             {/* Info section */}
             <section style={sectionStyle}>
               <h2 style={sectionTitleStyle}>診所資訊</h2>
@@ -410,9 +410,9 @@ export default async function ClinicPage({
           </div>
 
           {/* Right column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, minWidth: 0 }}>
+          <div className="h5-detail-right" style={{ display: 'flex', flexDirection: 'column', gap: 18, minWidth: 0 }}>
             {/* Map */}
-            <div style={{
+            <div className="h5-map" style={{
               borderRadius: 14, overflow: 'hidden',
               border: '1px solid var(--color-clay-border)',
               background: 'var(--color-clay-section)',
