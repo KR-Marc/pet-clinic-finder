@@ -31,8 +31,15 @@ export default function UberButtonClient({ clinicName, district, address }: Prop
   return (
     <a
       href="#"
-      className="md:hidden py-2.5 rounded-xl text-center font-semibold text-sm flex items-center justify-center gap-2"
-      style={{ background: '#1a1a1a', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+      style={{
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+        padding: '11px 18px', borderRadius: 10, width: '100%',
+        background: 'var(--color-clay-surface)',
+        color: 'var(--color-clay-text)',
+        border: '1px solid var(--color-clay-border)',
+        fontSize: 14, fontWeight: 600, textDecoration: 'none',
+        boxSizing: 'border-box',
+      }}
       onClick={handleClick}
     >
       <Car size={16} />Uber 叫車前往

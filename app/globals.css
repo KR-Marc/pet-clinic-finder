@@ -68,3 +68,10 @@ body {
 .animate-pulse-dot {
   animation: pulse-dot 1.5s ease-in-out infinite;
 }
+
+/* Bottom tab bar: visible only on small screens */
+@media (max-width: 639px) {
+  .bottom-tab-bar {
+    display: block !important;
+  }
+}
