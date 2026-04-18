@@ -38,16 +38,15 @@
   --color-clay-tag-bg:      #fbe9dc;
   --color-clay-tag-text:    #8a4621;
 
-  /* Legacy alias — 映射到 Warm Clay (淺色主題) */
-  /* 原本深綠底 → 改成 clay-bg；原本白文字 → 改成 clay-text；原本薄荷色文字 → clay-text-soft */
-  --color-brand:  #faf7f2;   /* was #004643 dark green → clay-bg */
-  --color-brand2: #f2ede4;   /* was #005450 → clay-section */
-  --color-ink:    #ffffff;   /* was #001e1d (nav/button dark bg) → surface white（沿用淺色卡片底）*/
-  --color-snow:   #2a241e;   /* was #fffffe (headline on dark) → clay-text (headline on light) */
-  --color-mist:   #5c5246;   /* was #abd1c6 mint text → clay-text-soft */
-  --color-gold:   #c96f3b;   /* was #f9bc60 → clay-primary */
-  --color-sand:   #ffffff;   /* was #eae6e8 card bg → surface */
-  --color-coral:  #c73e3a;   /* was #e16162 24H badge → clay-danger */
+  /* Legacy alias — 重新設計讓深棕字在白卡上可見 */
+  --color-brand:  #faf7f2;   /* page bg */
+  --color-brand2: #f2ede4;   /* section bg */
+  --color-ink:    #2a241e;   /* 主文字色（text-ink / bg-ink 都用深棕，bg-ink 極少見） */
+  --color-snow:   #2a241e;   /* 舊 headline 白 → 改深棕以便在淺底上可見 */
+  --color-mist:   #5c5246;   /* 舊薄荷次要文字 → clay-text-soft */
+  --color-gold:   #c96f3b;   /* primary */
+  --color-sand:   #ffffff;   /* card */
+  --color-coral:  #c73e3a;   /* danger */
 }
 
 @theme inline {

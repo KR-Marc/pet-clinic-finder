@@ -374,8 +374,9 @@ export default function HomePage() {
 
       {/* ── Two feature cards ──────────────────────────────── */}
       <div style={{
-        padding: '0 32px 36px', maxWidth: 1000, margin: '0 auto',
+        padding: '36px 32px', maxWidth: 1000, margin: '0 auto', width: '100%',
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14,
+        boxSizing: 'border-box',
       }}>
         <Link href="/guide" style={{
           background: 'var(--color-clay-section)',
