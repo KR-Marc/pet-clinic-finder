@@ -127,25 +127,49 @@ export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms
 
   if (symptoms.length === 0) return null
 
-  const urgencyColor = { low: '#4ade80', medium: '#f9bc60', high: '#e16162' }
+  const urgencyColor = {
+    low: 'var(--color-clay-sage)',
+    medium: 'var(--color-clay-primary)',
+    high: 'var(--color-clay-danger)',
+  }
+  const urgencyBg = {
+    low: 'var(--color-clay-sage-soft)',
+    medium: 'var(--color-clay-primary-soft)',
+    high: 'var(--color-clay-danger-soft)',
+  }
   const urgencyLabel = { low: '可先觀察', medium: '建議近期就診', high: '建議立即就醫' }
 
   return (
-    <div
-      className="rounded-xl p-4 mb-5 border border-mist/20"
-      style={{ background: 'rgba(0,30,29,0.6)' }}
-    >
+    <div style={{
+      background: 'var(--color-clay-surface)',
+      border: '1px solid var(--color-clay-border)',
+      borderRadius: 14, padding: 16, marginBottom: 16,
+    }}>
       {/* Header */}
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-base">🩺</span>
-        <p className="text-xs font-semibold text-mist/70 uppercase tracking-wide">AI 症狀分析</p>
-        <span className="text-xs text-mist/30 ml-auto">僅供參考，請以獸醫診斷為準</span>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12,
+      }}>
+        <span style={{ fontSize: 16 }}>🩺</span>
+        <p style={{
+          fontSize: 11, fontWeight: 700,
+          color: 'var(--color-clay-text-mute)',
+          textTransform: 'uppercase', letterSpacing: 1.5, margin: 0,
+        }}>AI 症狀分析</p>
+        <span style={{
+          fontSize: 11, color: 'var(--color-clay-text-mute)',
+          marginLeft: 'auto',
+        }}>僅供參考，請以獸醫診斷為準</span>
       </div>
 
       {loading && (
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-gold animate-pulse shrink-0" />
-          <p className="text-sm text-mist/60">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{
+            width: 10, height: 10, borderRadius: '50%',
+            background: 'var(--color-clay-primary)',
+            animation: 'pulse 1.5s ease-in-out infinite',
+            flexShrink: 0,
+          }} />
+          <p style={{ fontSize: 13, color: 'var(--color-clay-text-soft)', margin: 0 }}>
             {loadingStep === 0 && '正在理解症狀描述…'}
             {loadingStep === 1 && '正在比對可能病因…'}
             {loadingStep === 2 && '正在尋找適合的專科…'}
@@ -154,63 +178,79 @@ export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms
       )}
 
       {error && (
-        <div className="flex items-center gap-2">
-          <span><Search size={14} className="inline mr-1" /></span>
-          <p className="text-sm" style={{ color: 'rgba(171,209,198,0.6)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Search size={14} style={{ color: 'var(--color-clay-text-mute)' }} />
+          <p style={{ fontSize: 13, color: 'var(--color-clay-text-mute)', margin: 0 }}>
             AI 分析暫時無法使用，請直接參考下方診所列表，或稍後重新整理頁面再試。
           </p>
         </div>
       )}
 
       {data && (
-        <div className="space-y-2.5">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {/* Summary + urgency */}
-          <div className="flex items-start justify-between gap-3">
-            <p className="text-sm font-medium text-snow leading-relaxed">{data.summary}</p>
-            <span
-              className="px-2.5 py-0.5 rounded-full text-xs font-bold shrink-0"
-              style={{
-                background: `${urgencyColor[data.urgency]}20`,
-                color: urgencyColor[data.urgency],
-              }}
-            >
+          <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', gap: 12 }}>
+            <p style={{
+              fontSize: 14, fontWeight: 500,
+              color: 'var(--color-clay-text)',
+              lineHeight: 1.6, margin: 0,
+            }}>{data.summary}</p>
+            <span style={{
+              padding: '4px 10px', borderRadius: 999,
+              fontSize: 11, fontWeight: 700, flexShrink: 0,
+              background: urgencyBg[data.urgency],
+              color: urgencyColor[data.urgency],
+            }}>
               {urgencyLabel[data.urgency]}
             </span>
           </div>
 
           {/* Causes */}
           <div>
-            <p className="text-xs text-mist/50 mb-1.5">可能原因</p>
-            <div className="flex flex-wrap gap-1.5">
+            <p style={{
+              fontSize: 11, color: 'var(--color-clay-text-mute)',
+              marginBottom: 6, marginTop: 0, fontWeight: 700, letterSpacing: 1,
+            }}>可能原因</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {data.causes.map((c) => (
-                <span
-                  key={c}
-                  className="px-2.5 py-0.5 rounded-full text-xs font-medium"
-                  style={{ background: 'rgba(171,209,198,0.12)', color: '#abd1c6' }}
-                >
-                  {c}
-                </span>
+                <span key={c} style={{
+                  padding: '4px 10px', borderRadius: 999,
+                  fontSize: 12, fontWeight: 500,
+                  background: 'var(--color-clay-section)',
+                  color: 'var(--color-clay-text-soft)',
+                  border: '1px solid var(--color-clay-border)',
+                }}>{c}</span>
               ))}
             </div>
           </div>
 
           {/* Advice */}
-          <p className="text-xs leading-relaxed" style={{ color: 'rgba(171,209,198,0.7)' }}>
+          <p style={{
+            fontSize: 12, lineHeight: 1.6,
+            color: 'var(--color-clay-text-soft)',
+            margin: 0,
+          }}>
             💡 {data.advice}
           </p>
 
           {/* Specialties */}
           {data.specialties && data.specialties.length > 0 && (
-            <div className="pt-2 border-t border-mist/10">
-              <p className="text-xs text-mist/50 mb-1.5">建議就診專科</p>
-              <div className="flex flex-wrap gap-1.5">
+            <div style={{
+              paddingTop: 12,
+              borderTop: '1px solid var(--color-clay-border)',
+            }}>
+              <p style={{
+                fontSize: 11, color: 'var(--color-clay-text-mute)',
+                marginBottom: 8, marginTop: 0, fontWeight: 700, letterSpacing: 1,
+              }}>建議就診專科</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {data.specialties.map((s: string) => (
-                  <Link
-                    key={s}
-                    href={`/search?q=${encodeURIComponent(s)}`}
-                    className="px-2.5 py-0.5 rounded-full text-xs font-semibold transition-opacity hover:opacity-80"
-                    style={{ background: '#f9bc60', color: '#001e1d' }}
-                  >
+                  <Link key={s} href={`/search?q=${encodeURIComponent(s)}`} style={{
+                    padding: '5px 12px', borderRadius: 999,
+                    fontSize: 12, fontWeight: 700,
+                    background: 'var(--color-clay-primary)',
+                    color: '#fff', textDecoration: 'none',
+                  }}>
                     {s} →
                   </Link>
                 ))}
@@ -223,20 +263,28 @@ export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms
             const supplements = getSupplements(data.specialties ?? [], data.urgency)
             if (supplements.length === 0) return null
             return (
-              <div className="pt-2 border-t border-mist/10">
-                <p className="text-xs text-mist/50 mb-1.5">🛒 居家保養建議</p>
-                <div className="flex flex-wrap gap-1.5 mb-2">
+              <div style={{
+                paddingTop: 12,
+                borderTop: '1px solid var(--color-clay-border)',
+              }}>
+                <p style={{
+                  fontSize: 11, color: 'var(--color-clay-text-mute)',
+                  marginBottom: 8, marginTop: 0, fontWeight: 700, letterSpacing: 1,
+                }}>🛒 居家保養建議</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
                   {supplements.map((s) => (
-                    <span key={s.label} className="inline-flex items-center gap-1">
+                    <span key={s.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                       <a
                         href={`https://shopee.tw/search?keyword=${encodeURIComponent(s.keyword)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-2.5 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
                         style={{
-                          background: 'rgba(249,188,96,0.12)',
-                          color: '#f9bc60',
-                          border: '1px solid rgba(249,188,96,0.25)',
+                          padding: '5px 10px', borderRadius: 999,
+                          fontSize: 11, fontWeight: 500,
+                          background: 'var(--color-clay-tag-bg)',
+                          color: 'var(--color-clay-tag-text)',
+                          border: '1px solid var(--color-clay-border)',
+                          textDecoration: 'none',
                         }}
                       >
                         {s.label} 蝦皮↗
@@ -245,11 +293,13 @@ export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms
                         href={`https://ecshweb.pchome.com.tw/search/v3.3/?q=${encodeURIComponent(s.keyword)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
                         style={{
-                          background: 'rgba(171,209,198,0.1)',
-                          color: '#abd1c6',
-                          border: '1px solid rgba(171,209,198,0.2)',
+                          padding: '4px 8px', borderRadius: 999,
+                          fontSize: 11, fontWeight: 500,
+                          background: 'var(--color-clay-chip-bg)',
+                          color: 'var(--color-clay-chip-text)',
+                          border: '1px solid var(--color-clay-chip-border)',
+                          textDecoration: 'none',
                         }}
                       >
                         PC↗
@@ -257,8 +307,11 @@ export default function SymptomExplainer({ symptoms, onSpecialties }: { symptoms
                     </span>
                   ))}
                 </div>
-                <p className="text-xs" style={{ color: 'rgba(171,209,198,0.35)' }}>
-                  <AlertTriangle size={14} className="inline mr-1" /> 保養品為輔助參考，無法取代獸醫診斷
+                <p style={{
+                  fontSize: 11, color: 'var(--color-clay-text-mute)',
+                  margin: 0, display: 'flex', alignItems: 'center', gap: 4,
+                }}>
+                  <AlertTriangle size={12} /> 保養品為輔助參考，無法取代獸醫診斷
                 </p>
               </div>
             )
