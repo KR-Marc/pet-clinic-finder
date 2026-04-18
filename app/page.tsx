@@ -336,15 +336,15 @@ export default function HomePage() {
             <div style={{
               fontSize: 13, color: 'var(--color-clay-text-mute)',
               fontWeight: 700, letterSpacing: 1,
-            }}>搜尋結果預覽</div>
+            }}>推薦診所</div>
             <Link href="/search" style={{
               fontSize: 12, color: 'var(--color-clay-primary)',
               fontWeight: 600, textDecoration: 'none',
             }}>查看全部 {clinicCount ?? 271} 間 →</Link>
           </div>
-          <div style={{
+          <div className="h5-grid-1col" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(3, 1fr)',
             gap: 14,
           }}>
             {previewClinics.map(c => (
@@ -389,7 +389,7 @@ export default function HomePage() {
       {/* ── Two feature cards ──────────────────────────────── */}
       <div style={{
         padding: '36px 32px', maxWidth: 1000, margin: '0 auto', width: '100%',
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14,
+        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14,
         boxSizing: 'border-box',
       }}>
         <Link href="/guide" style={{
@@ -431,9 +431,9 @@ export default function HomePage() {
             fontSize: 13, color: 'var(--color-clay-text-soft)',
             marginBottom: 20, marginTop: 0,
           }}>點擊專科，直接找到相關診所</p>
-          <div style={{
+          <div className="h5-grid-2col" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
             gap: 12,
           }}>
             {SPECIALTIES.map(s => (
