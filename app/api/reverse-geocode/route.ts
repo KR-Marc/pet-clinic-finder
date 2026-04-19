@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit, getIp } from '@/lib/rateLimit'
 
 export async function GET(req: NextRequest) {
+  if (!checkRateLimit(getIp(req), 30)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const lat = req.nextUrl.searchParams.get('lat')
   const lng = req.nextUrl.searchParams.get('lng')
   const debug = req.nextUrl.searchParams.get('debug') === '1'
+
+  // Validate lat/lng are numeric
   if (!lat || !lng) return NextResponse.json({ error: 'missing lat/lng' }, { status: 400 })
+  if (isNaN(Number(lat)) || isNaN(Number(lng))) {
+    return NextResponse.json({ error: 'invalid lat/lng' }, { status: 400 })
+  }
 
   const key = process.env.GOOGLE_MAPS_SERVER_KEY
   const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&language=zh-TW&key=${key}`

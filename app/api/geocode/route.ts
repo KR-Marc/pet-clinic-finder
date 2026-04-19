@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit, getIp } from '@/lib/rateLimit'
 
 export async function GET(req: NextRequest) {
+  if (!checkRateLimit(getIp(req), 30)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const address = req.nextUrl.searchParams.get('address')
   if (!address) return NextResponse.json({ error: 'missing address' }, { status: 400 })
+  if (address.length > 200) return NextResponse.json({ error: 'address too long' }, { status: 400 })
 
   const key = process.env.GOOGLE_MAPS_SERVER_KEY
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&language=zh-TW&key=${key}`

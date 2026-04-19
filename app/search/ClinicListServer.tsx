@@ -27,6 +27,7 @@ async function fetchClinics(q: string, district: string, openOnly: boolean): Pro
       .order('district', { ascending: true })
       .order('name', { ascending: true })
     if (district) query = query.eq('district', district)
+    query = query.limit(500)
     const { data } = await query
     let results = (data ?? []) as Clinic[]
     if (openOnly) results = results.filter(c => isOpenToday(c))
