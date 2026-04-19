@@ -7,17 +7,14 @@ export default function OpenFilter() {
   const searchParams = useSearchParams()
   const source = searchParams.get('source') ?? ''
   const openParam = searchParams.get('open')
-  // nearby 預設開啟，其他預設關閉
-  const active = openParam === 'true' || (source === 'nearby' && openParam !== 'false')
+  const active = openParam !== 'false'
 
   const handleToggle = () => {
     const params = new URLSearchParams(searchParams.toString())
     if (active) {
-      // 當前是開的，要關掉
-      if (source === 'nearby') params.set('open', 'false')
-      else params.delete('open')
+      params.set('open', 'false')
     } else {
-      params.set('open', 'true')
+      params.delete('open')
     }
     params.delete('page')
     router.push(`/search?${params.toString()}`)
