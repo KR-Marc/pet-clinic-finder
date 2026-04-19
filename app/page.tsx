@@ -317,16 +317,14 @@ export default function HomePage() {
         borderBottom: '1px solid var(--color-clay-border)',
       }}>
         {[
-          { num: clinicCount ?? 271, label: '間動物醫院', suffix: '' },
-          { num: 12, label: '個行政區', suffix: '' },
-          { num: 14, label: '個專科類別', suffix: '' },
+          { num: clinicCount ?? 271, label: '間動物醫院' },
+          { num: 12, label: '個行政區' },
+          { num: 14, label: '個專科類別' },
         ].map(({ num, label }, i) => (
-          <Link key={i} href="/search" style={{
-            textDecoration: 'none',
+          <div key={i} style={{
             padding: '24px 20px',
             textAlign: 'center',
             borderRight: i < 2 ? '1px solid var(--color-clay-border)' : 'none',
-            display: 'block',
           }}>
             <div style={{
               fontSize: 'clamp(32px, 4vw, 48px)',
@@ -341,7 +339,7 @@ export default function HomePage() {
               color: 'var(--color-clay-text-soft)',
               fontWeight: 500,
             }}>{label}</div>
-          </Link>
+          </div>
         ))}
       </div>
 
