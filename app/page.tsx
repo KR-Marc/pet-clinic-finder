@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import {
-  MapPin, Search, Siren, Stethoscope, Clock, Star,
+  MapPin, Search, Siren, Stethoscope,
   Eye, Heart, Bone, Ribbon, Leaf, Brain, Scissors,
   Droplets, Activity,
 } from 'lucide-react'
@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import RecentlyViewedSection from './components/RecentlyViewedSection'
-import { ClayNav, ClayFooter, Chip, Tag } from './components/clay'
+import { ClayNav, ClayFooter, Chip } from './components/clay'
 import MobileTopBar from './components/clay/MobileTopBar'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -36,11 +36,6 @@ const SPECIALTIES = [
 ]
 
 const DISTRICTS = ['大安區','信義區','中山區','內湖區','士林區','文山區','松山區','中正區','萬華區','北投區','南港區','大同區']
-
-type ClinicPreview = {
-  id: string; name: string; district: string; rating: number | null
-  specialty_tags: string[]; is_24h: boolean
-}
 
 type GeoState = 'idle' | 'loading' | 'error'
 
@@ -79,7 +74,6 @@ export default function HomePage() {
   const [geoState, setGeoState] = useState<GeoState>('idle')
   const [searchHistory, setSearchHistory] = useState<string[]>([])
   const [showHistory, setShowHistory] = useState(false)
-  const [previewClinics, setPreviewClinics] = useState<ClinicPreview[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -116,17 +110,6 @@ export default function HomePage() {
   useEffect(() => {
     supabase.from('clinics').select('id', { count: 'exact', head: true })
       .then(({ count }) => { if (count != null) setClinicCount(count) })
-  }, [])
-
-  useEffect(() => {
-    supabase
-      .from('clinics')
-      .select('id, name, district, rating, specialty_tags, is_24h')
-      .order('rating', { ascending: false, nullsFirst: false })
-      .limit(3)
-      .then(({ data }) => {
-        if (data) setPreviewClinics(data as ClinicPreview[])
-      })
   }, [])
 
   const handleSubmit = (q: string = query) => {
@@ -326,65 +309,41 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Preview clinic cards ───────────────────────────── */}
-      {previewClinics.length > 0 && (
-        <div style={{ padding: '36px 32px', maxWidth: 1000, margin: '0 auto' }}>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between',
-            alignItems: 'baseline', marginBottom: 14,
+      {/* ── Stats highlight ───────────────────────────────── */}
+      <div style={{
+        padding: '40px 32px', maxWidth: 1000, margin: '0 auto',
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1,
+        borderTop: '1px solid var(--color-clay-border)',
+        borderBottom: '1px solid var(--color-clay-border)',
+      }}>
+        {[
+          { num: clinicCount ?? 271, label: '間動物醫院', suffix: '' },
+          { num: 12, label: '個行政區', suffix: '' },
+          { num: 14, label: '個專科類別', suffix: '' },
+        ].map(({ num, label }, i) => (
+          <Link key={i} href="/search" style={{
+            textDecoration: 'none',
+            padding: '24px 20px',
+            textAlign: 'center',
+            borderRight: i < 2 ? '1px solid var(--color-clay-border)' : 'none',
+            display: 'block',
           }}>
             <div style={{
-              fontSize: 13, color: 'var(--color-clay-text-mute)',
-              fontWeight: 700, letterSpacing: 1,
-            }}>推薦診所</div>
-            <Link href="/search" style={{
-              fontSize: 12, color: 'var(--color-clay-primary)',
-              fontWeight: 600, textDecoration: 'none',
-            }}>查看全部 {clinicCount ?? 271} 間 →</Link>
-          </div>
-          <div className="h5-grid-1col" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 14,
-          }}>
-            {previewClinics.map(c => (
-              <Link key={c.id} href={`/clinic/${c.id}`} style={{
-                background: 'var(--color-clay-surface)',
-                border: '1px solid var(--color-clay-border)',
-                borderRadius: 14, padding: 18,
-                boxShadow: '0 1px 2px rgb(79 56 28 / 0.04)',
-                textDecoration: 'none', display: 'block',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 8 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-clay-text)' }}>{c.name}</div>
-                  {c.is_24h ? (
-                    <div style={{
-                      fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 6,
-                      background: 'var(--color-clay-danger-soft)',
-                      color: 'var(--color-clay-danger)',
-                    }}>24H</div>
-                  ) : c.rating != null ? (
-                    <div style={{
-                      fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 6,
-                      background: 'var(--color-clay-sage-soft)',
-                      color: 'var(--color-clay-sage)',
-                    }}>★ {c.rating}</div>
-                  ) : null}
-                </div>
-                <div style={{
-                  fontSize: 12, color: 'var(--color-clay-text-soft)',
-                  marginBottom: 10, display: 'flex', alignItems: 'center', gap: 4,
-                }}><MapPin size={12} />{c.district}</div>
-                {c.specialty_tags?.length > 0 && (
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                    {c.specialty_tags.slice(0, 3).map(t => <Tag key={t}>{t}</Tag>)}
-                  </div>
-                )}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
+              fontSize: 'clamp(32px, 4vw, 48px)',
+              fontWeight: 800,
+              color: 'var(--color-clay-primary)',
+              letterSpacing: -1.5,
+              lineHeight: 1,
+              marginBottom: 6,
+            }}>{num}</div>
+            <div style={{
+              fontSize: 13,
+              color: 'var(--color-clay-text-soft)',
+              fontWeight: 500,
+            }}>{label}</div>
+          </Link>
+        ))}
+      </div>
 
       {/* ── Two feature cards ──────────────────────────────── */}
       <div style={{
