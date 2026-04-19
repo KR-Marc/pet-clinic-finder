@@ -18,7 +18,7 @@ function remapTags(tags: string[]): string[] {
 
 const aiTagCache = new Map<string, string[]>()
 
-async function fetchClinics(q: string, pet: string, district: string): Promise<Clinic[]> {
+async function fetchClinics(q: string, pet: string, district: string, openOnly: boolean): Promise<Clinic[]> {
   const queryTerms = q.split(',').map((t) => t.trim()).filter(Boolean)
 
   if (queryTerms.length === 0) {
@@ -29,7 +29,8 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
     if (pet && pet !== 'both') query = query.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
     if (district) query = query.eq('district', district)
     const { data } = await query
-    const results = (data ?? []) as Clinic[]
+    let results = (data ?? []) as Clinic[]
+    if (openOnly) results = results.filter(c => isOpenToday(c))
     return [...results].sort((a, b) => openScore(a) - openScore(b))
   }
 
@@ -136,10 +137,23 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
     return (b.clinic.rating ?? 0) - (a.clinic.rating ?? 0)
   })
 
-  return [...scoredTagClinics.map((s) => s.clinic), ...nameOnly]
+  let final = [...scoredTagClinics.map((s) => s.clinic), ...nameOnly]
+  if (openOnly) final = final.filter(c => isOpenToday(c))
+  return final
 }
 
 const WEEKDAYS_CHECK = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六']
+function isOpenToday(clinic: Clinic): boolean {
+  if (clinic.is_24h) return true
+  if (!clinic.opening_hours?.length) return false
+  const today = WEEKDAYS_CHECK[new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Taipei' })).getDay()]
+  const entry = clinic.opening_hours.find(h => h.startsWith(today))
+  if (!entry) return false
+  const idx = entry.indexOf(': ')
+  const hours = idx >= 0 ? entry.slice(idx + 2) : null
+  return hours !== '休息'
+}
+
 // 0 = 今日營業（含 24H）, 1 = 無時間資料（不確定）, 2 = 今日休息
 function openScore(clinic: Clinic): 0 | 1 | 2 {
   if (clinic.is_24h) return 0
@@ -154,14 +168,16 @@ function openScore(clinic: Clinic): 0 | 1 | 2 {
 }
 
 export default async function ClinicListServer({
-  q, pet, district, queryTerms, source,
+  q, pet, district, queryTerms, source, open,
 }: {
   q: string
   pet: string
   district: string
   queryTerms: string[]
   source: string
+  open: string
 }) {
-  const clinics = await fetchClinics(q, pet, district)
+  const openOnly = open !== 'false'
+  const clinics = await fetchClinics(q, pet, district, openOnly)
   return <ClinicList clinics={clinics} queryTerms={queryTerms} source={source} />
 }
