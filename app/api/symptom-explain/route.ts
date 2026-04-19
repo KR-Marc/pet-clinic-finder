@@ -1,5 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// ── Simple in-memory rate limiter ─────────────────────────────────────────────
+// Limits each IP to 10 requests per minute
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT = 10
+const RATE_WINDOW_MS = 60 * 1000 // 1 minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimitMap.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS })
+    return true
+  }
+  if (entry.count >= RATE_LIMIT) return false
+  entry.count++
+  return true
+}
+
 const KNOWN_TAGS = [
   '牙科', '眼科', '心臟科', '骨科', '腫瘤科', '皮膚科', '神經外科',
   '泌尿科', '腎臟科', '外科', '內科', '復健', '中獸醫', '24H急診', '重症加護',
@@ -60,14 +78,31 @@ async function extractKeySymptoms(input: string): Promise<string[]> {
 
 // ── 步驟二：分析症狀並回傳完整資訊 ──────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  // Rate limit check
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    ?? req.headers.get('x-real-ip')
+    ?? 'unknown'
+
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait a moment.' },
+      { status: 429 }
+    )
+  }
+
   const { symptoms } = await req.json()
 
   if (!symptoms || symptoms.length === 0) {
     return NextResponse.json({ error: 'No symptoms provided' }, { status: 400 })
   }
 
-  // 判斷是否為自然語言長句（超過 10 個字）
+  // Input length validation
   const rawInput = symptoms[0] as string
+  if (!rawInput || rawInput.length > 200) {
+    return NextResponse.json({ error: 'Invalid input length' }, { status: 400 })
+  }
+
+  // 判斷是否為自然語言長句（超過 10 個字）
   let processedSymptoms: string[] = symptoms
 
   if (rawInput.length > 10) {

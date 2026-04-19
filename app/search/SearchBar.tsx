@@ -15,6 +15,8 @@ export default function SearchBar({
   const addTag = (val: string) => {
     const trimmed = val.trim()
     if (!trimmed || tags.includes(trimmed)) return
+    if (trimmed.length > 100) return
+    if (tags.length >= 5) return
     setTags((prev) => [...prev, trimmed])
     setInput('')
   }
