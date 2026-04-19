@@ -42,6 +42,13 @@ function isOpenToday(clinic: Clinic): boolean {
   const hours = getTodayHours(clinic.opening_hours)
   return hours !== null && hours !== '休息'
 }
+// 0 = 今日營業（含 24H）, 1 = 無時間資料（不確定）, 2 = 今日休息
+function openScoreClient(clinic: Clinic): 0 | 1 | 2 {
+  if (clinic.is_24h) return 0
+  const hours = getTodayHours(clinic.opening_hours)
+  if (hours === null) return 1
+  return hours === '休息' ? 2 : 0
+}
 
 type SortOption = 'default' | 'rating' | 'open_first' | 'distance'
 
@@ -63,7 +70,7 @@ function sortClinics(clinics: Clinic[], sort: SortOption, userLat?: number, user
     })
   }
   if (sort === 'open_first') {
-    return [...clinics].sort((a, b) => (isOpenToday(a) ? 0 : 1) - (isOpenToday(b) ? 0 : 1))
+    return [...clinics].sort((a, b) => openScoreClient(a) - openScoreClient(b))
   }
   if (sort === 'distance' && userLat != null && userLng != null) {
     return [...clinics].sort((a, b) => {
@@ -72,8 +79,8 @@ function sortClinics(clinics: Clinic[], sort: SortOption, userLat?: number, user
       return dA - dB
     })
   }
-  // Default: always push closed-today clinics to the end
-  return [...clinics].sort((a, b) => (isOpenToday(a) ? 0 : 1) - (isOpenToday(b) ? 0 : 1))
+  // Default: open > unknown > closed
+  return [...clinics].sort((a, b) => openScoreClient(a) - openScoreClient(b))
 }
 
 function getPageNumbers(current: number, total: number): (number | '…')[] {

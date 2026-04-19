@@ -30,11 +30,7 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
     if (district) query = query.eq('district', district)
     const { data } = await query
     const results = (data ?? []) as Clinic[]
-    return [...results].sort((a, b) => {
-      const aOpen = isOpenToday(a) ? 0 : 1
-      const bOpen = isOpenToday(b) ? 0 : 1
-      return aOpen - bOpen
-    })
+    return [...results].sort((a, b) => openScore(a) - openScore(b))
   }
 
   const { data: allSymptoms } = await supabase
@@ -144,14 +140,17 @@ async function fetchClinics(q: string, pet: string, district: string): Promise<C
 }
 
 const WEEKDAYS_CHECK = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六']
-function isOpenToday(clinic: Clinic): boolean {
-  if (!clinic.opening_hours?.length) return true
+// 0 = 今日營業（含 24H）, 1 = 無時間資料（不確定）, 2 = 今日休息
+function openScore(clinic: Clinic): 0 | 1 | 2 {
+  if (clinic.is_24h) return 0
+  if (!clinic.opening_hours?.length) return 1
   const today = WEEKDAYS_CHECK[new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Taipei' })).getDay()]
   const entry = clinic.opening_hours.find(h => h.startsWith(today))
-  if (!entry) return true
+  if (!entry) return 1
   const idx = entry.indexOf(': ')
   const hours = idx >= 0 ? entry.slice(idx + 2) : null
-  return hours !== '休息'
+  if (hours === null) return 1
+  return hours === '休息' ? 2 : 0
 }
 
 export default async function ClinicListServer({
