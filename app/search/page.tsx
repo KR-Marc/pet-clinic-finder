@@ -8,9 +8,9 @@ import MobileTopBar from '@/app/components/clay/MobileTopBar'
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; pet?: string; district?: string; source?: string; open?: string }>
+  searchParams: Promise<{ q?: string; district?: string; source?: string; open?: string }>
 }) {
-  const { q = '', pet = '', district = '', source = '', open = '' } = await searchParams
+  const { q = '', district = '', source = '', open = '' } = await searchParams
 
   const queryTerms = q.split(',').map((t) => t.trim()).filter(Boolean)
   const subtitleText = queryTerms.length === 0
@@ -38,7 +38,7 @@ export default async function SearchPage({
 
         {/* Search bar (tags input) */}
         <Suspense fallback={null}>
-          <SearchBar initialQ={q} initialPet={pet} />
+          <SearchBar initialQ={q} />
         </Suspense>
 
         {/* Results */}
@@ -52,7 +52,7 @@ export default async function SearchPage({
           }}>載入中⋯</div>
         }>
           <ClinicListServer
-            q={q} pet={pet} district={district}
+            q={q} district={district}
             queryTerms={queryTerms} source={source}
             open={open}
           />

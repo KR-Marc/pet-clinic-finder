@@ -14,12 +14,6 @@ import MobileTopBar from './components/clay/MobileTopBar'
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const QUICK_TAGS = ['嘔吐', '拉肚子', '抽搐', '血尿', '血便', '呼吸困難', '食慾不振', '咳嗽', '沒精神', '掉毛', '一直抓', '半夜急診']
-const PET_OPTIONS = [
-  { label: '全部', value: '' },
-  { label: '貓', value: 'cat' },
-  { label: '狗', value: 'dog' },
-]
-
 const SPECIALTIES = [
   { icon: 'tooth', name: '牙科', desc: '口臭、掉牙、牙齦紅腫', q: '牙科' },
   { icon: 'eye', name: '眼科', desc: '眼屎多、眼睛紅、白內障', q: '眼科' },
@@ -69,7 +63,6 @@ function SpecIcon({ name }: { name: string }) {
 export default function HomePage() {
   const router = useRouter()
   const [query, setQuery] = useState('')
-  const [pet, setPet] = useState('')
   const [clinicCount, setClinicCount] = useState<number | null>(null)
   const [geoState, setGeoState] = useState<GeoState>('idle')
   const [searchHistory, setSearchHistory] = useState<string[]>([])
@@ -118,7 +111,6 @@ export default function HomePage() {
     saveToHistory(trimmed)
     setShowHistory(false)
     const params = new URLSearchParams({ q: trimmed })
-    if (pet) params.set('pet', pet)
     router.push(`/search?${params.toString()}`)
   }
 
@@ -132,7 +124,6 @@ export default function HomePage() {
           const district = await reverseGeocodeDistrict(latitude, longitude)
           const params = new URLSearchParams({ source: 'nearby' })
           if (district) params.set('district', district)
-          if (pet) params.set('pet', pet)
           router.push(`/search?${params.toString()}`)
         } catch { setGeoState('error') }
       },
@@ -256,13 +247,8 @@ export default function HomePage() {
             }}>搜尋</button>
           </div>
 
-          {/* Pet filter + Nearby */}
+          {/* Nearby */}
           <div style={{ display: 'flex', gap: 8, marginTop: 18, flexWrap: 'wrap', alignItems: 'center' }}>
-            {PET_OPTIONS.map(opt => (
-              <Chip key={opt.value} active={pet === opt.value} onClick={() => setPet(opt.value)}>
-                {opt.label}
-              </Chip>
-            ))}
             <button
               onClick={handleNearby}
               disabled={geoState === 'loading'}

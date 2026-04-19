@@ -1,26 +1,17 @@
 'use client'
 import { useState } from 'react'
-import { Cat, Dog } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Chip } from '@/app/components/clay'
 
-const PET_OPTIONS = [
-  { label: '全部', value: '' },
-  { label: '貓', value: 'cat' },
-  { label: '狗', value: 'dog' },
-]
-
 export default function SearchBar({
-  initialQ, initialPet,
-}: { initialQ: string; initialPet: string }) {
+  initialQ,
+}: { initialQ: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [tags, setTags] = useState<string[]>(
     initialQ ? initialQ.split(',').map((t) => t.trim()).filter(Boolean) : []
   )
   const [input, setInput] = useState('')
-  const [pet, setPet] = useState(initialPet)
-
   const addTag = (val: string) => {
     const trimmed = val.trim()
     if (!trimmed || tags.includes(trimmed)) return
@@ -45,7 +36,6 @@ export default function SearchBar({
     if (input.trim()) setInput('')
     const params = new URLSearchParams()
     if (allTags.length > 0) params.set('q', allTags.join(','))
-    if (pet) params.set('pet', pet)
     const district = searchParams.get('district') ?? ''
     if (district) params.set('district', district)
     router.push(`/search?${params.toString()}`)
@@ -118,16 +108,6 @@ export default function SearchBar({
           : `搜尋同時符合以上 ${tags.length} 個症狀的診所`}
       </p>
 
-      {/* Pet filter */}
-      <div style={{ display: 'flex', gap: 7 }}>
-        {PET_OPTIONS.map((opt) => (
-          <Chip key={opt.value} active={pet === opt.value} onClick={() => setPet(opt.value)}>
-            {opt.value === 'cat' ? <><Cat size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />貓</>
-              : opt.value === 'dog' ? <><Dog size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />狗</>
-              : opt.label}
-          </Chip>
-        ))}
-      </div>
     </div>
   )
 }

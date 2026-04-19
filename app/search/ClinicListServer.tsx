@@ -18,7 +18,7 @@ function remapTags(tags: string[]): string[] {
 
 const aiTagCache = new Map<string, string[]>()
 
-async function fetchClinics(q: string, pet: string, district: string, openOnly: boolean): Promise<Clinic[]> {
+async function fetchClinics(q: string, district: string, openOnly: boolean): Promise<Clinic[]> {
   const queryTerms = q.split(',').map((t) => t.trim()).filter(Boolean)
 
   if (queryTerms.length === 0) {
@@ -26,7 +26,6 @@ async function fetchClinics(q: string, pet: string, district: string, openOnly: 
       .from('clinics').select('*')
       .order('district', { ascending: true })
       .order('name', { ascending: true })
-    if (pet && pet !== 'both') query = query.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
     if (district) query = query.eq('district', district)
     const { data } = await query
     let results = (data ?? []) as Clinic[]
@@ -99,7 +98,6 @@ async function fetchClinics(q: string, pet: string, district: string, openOnly: 
 
   if (allFuzzyTags.size > 0) {
     let tagQuery = supabase.from('clinics').select('*').overlaps('specialty_tags', [...allFuzzyTags])
-    if (pet && pet !== 'both') tagQuery = tagQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
     if (district) tagQuery = tagQuery.eq('district', district)
     const { data } = await tagQuery
     let results = (data ?? []) as Clinic[]
@@ -115,14 +113,12 @@ async function fetchClinics(q: string, pet: string, district: string, openOnly: 
 
   if (tagClinics.length === 0 && lastAiTags.length > 0) {
     let fallbackQuery = supabase.from('clinics').select('*').overlaps('specialty_tags', lastAiTags)
-    if (pet && pet !== 'both') fallbackQuery = fallbackQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
     if (district) fallbackQuery = fallbackQuery.eq('district', district)
     const { data: fallbackData } = await fallbackQuery
     tagClinics = (fallbackData ?? []) as Clinic[]
   }
 
   let nameQuery = supabase.from('clinics').select('*').ilike('name', `%${queryTerms[0]}%`)
-  if (pet && pet !== 'both') nameQuery = nameQuery.or(`pet_types.cs.{${pet}},pet_types.cs.{both}`)
   if (district) nameQuery = nameQuery.eq('district', district)
   const { data: nameClinics } = await nameQuery
   const seen = new Set(tagClinics.map((c) => c.id))
@@ -168,16 +164,15 @@ function openScore(clinic: Clinic): 0 | 1 | 2 {
 }
 
 export default async function ClinicListServer({
-  q, pet, district, queryTerms, source, open,
+  q, district, queryTerms, source, open,
 }: {
   q: string
-  pet: string
   district: string
   queryTerms: string[]
   source: string
   open: string
 }) {
   const openOnly = open !== 'false'
-  const clinics = await fetchClinics(q, pet, district, openOnly)
+  const clinics = await fetchClinics(q, district, openOnly)
   return <ClinicList clinics={clinics} queryTerms={queryTerms} source={source} />
 }
