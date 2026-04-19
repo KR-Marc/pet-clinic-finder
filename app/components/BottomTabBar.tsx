@@ -29,6 +29,7 @@ export default function BottomTabBar() {
             <Link
               key={href}
               href={href}
+              prefetch={true}
               style={{
                 flex: 1, display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center', gap: 3,
