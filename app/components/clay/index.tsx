@@ -220,6 +220,28 @@ export function ClayFooter() {
         color: 'var(--color-clay-text)',
       }}>寵物專科診所搜尋</div>
       <div>台北市最完整的動物醫院專科查詢平台　·　© 2026</div>
+      <div style={{
+        marginTop: 16,
+        paddingTop: 14,
+        borderTop: '1px solid var(--color-clay-border)',
+        fontSize: 11,
+        color: 'var(--color-clay-text-mute)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+      }}>
+        <span>Made with 🐾 by</span>
+        <span style={{ fontWeight: 700, color: 'var(--color-clay-text-soft)' }}>Marc</span>
+        <span style={{ color: 'var(--color-clay-border)' }}>×</span>
+        <span style={{ fontWeight: 700, color: 'var(--color-clay-text-soft)' }}>Clio</span>
+        <span style={{
+          fontSize: 9, fontWeight: 700,
+          padding: '2px 5px', borderRadius: 4,
+          background: 'var(--color-clay-primary-soft)',
+          color: 'var(--color-clay-primary)',
+          letterSpacing: 0.5,
+        }}>AI</span>
+      </div>
     </footer>
   )
 }
