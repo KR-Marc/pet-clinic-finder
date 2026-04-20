@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { Clock, MapPin, Star, Phone } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import PetFilter from './PetFilter'
 import DistrictFilter from './DistrictFilter'
 import OpenFilter from './OpenFilter'
 import SymptomExplainer from './SymptomExplainer'
@@ -376,11 +375,7 @@ export default function ClinicList({
           })()}
         </div>
 
-        {/* Filter row 1: pet + open */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-          <PetFilter />
-          <OpenFilter />
-        </div>
+        <OpenFilter />
 
         {/* Filter row 2: district + sort */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
