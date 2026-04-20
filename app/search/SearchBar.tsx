@@ -23,6 +23,7 @@ export default function SearchBar({
   const removeTag = (tag: string) => setTags((prev) => prev.filter((t) => t !== tag))
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing) return
     if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
       e.preventDefault()
       if (input.trim()) addTag(input)

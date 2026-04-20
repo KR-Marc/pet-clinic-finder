@@ -115,7 +115,7 @@ export default function ClinicList({
   const currentPage = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
 
   const [sort, setSort] = useState<SortOption>(source === 'nearby' ? 'open_first' : 'rating')
-  const [activeTag, setActiveTag] = useState<string>('')
+  const [activeTags, setActiveTags] = useState<string[]>([])
   const [compareList, setCompareList] = useState<Clinic[]>([])
   const [aiFallbackClinics, setAiFallbackClinics] = useState<Clinic[]>([])
   const [logged, setLogged] = useState(false)
@@ -143,9 +143,9 @@ export default function ClinicList({
 
   const filtered = useMemo(() => {
     let result = openOnly ? clinics.filter(isOpenToday) : clinics
-    if (activeTag) result = result.filter((c) => c.specialty_tags.includes(activeTag))
+    if (activeTags.length > 0) result = result.filter((c) => activeTags.some(t => c.specialty_tags.includes(t)))
     return result
-  }, [clinics, openOnly, activeTag])
+  }, [clinics, openOnly, activeTags])
 
   const sorted = useMemo(() => sortClinics(filtered, sort, userLat, userLng),
     [filtered, sort, userLat, userLng])
@@ -173,10 +173,9 @@ export default function ClinicList({
   }
 
   const handleTagFilter = (tag: string) => {
-    setActiveTag((prev) => (prev === tag ? '' : tag))
-    const params = new URLSearchParams(searchParams.toString())
-    params.delete('page')
-    router.push(`/search?${params.toString()}`)
+    setActiveTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    )
   }
 
   const toggleCompare = (clinic: Clinic) => {
@@ -375,10 +374,8 @@ export default function ClinicList({
           })()}
         </div>
 
-        <OpenFilter />
-
-        {/* Filter row 2: district + sort */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+        {/* Filter row 2: district + sort + open */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap', alignItems: 'center' }}>
           <DistrictFilter />
           <div style={{ position: 'relative' }}>
             <select
@@ -392,6 +389,7 @@ export default function ClinicList({
               <option value="distance">距離最近</option>
             </select>
           </div>
+          <OpenFilter />
         </div>
 
         {/* Specialty tag chips */}
@@ -401,12 +399,12 @@ export default function ClinicList({
           borderTop: '1px solid var(--color-clay-border)',
         }}>
           {SPECIALTY_TAGS.map((tag) => (
-            <Chip key={tag} active={activeTag === tag} onClick={() => handleTagFilter(tag)}>
+            <Chip key={tag} active={activeTags.includes(tag)} onClick={() => handleTagFilter(tag)}>
               {tag}
             </Chip>
           ))}
-          {activeTag && (
-            <button onClick={() => handleTagFilter('')} style={{
+          {activeTags.length > 0 && (
+            <button onClick={() => setActiveTags([])} style={{
               padding: '7px 13px', borderRadius: 999,
               fontSize: 12.5, fontWeight: 500,
               background: 'var(--color-clay-danger-soft)',
