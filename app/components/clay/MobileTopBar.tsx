@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, MoreHorizontal } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
 
 interface Props {
   title: string
@@ -86,7 +86,7 @@ export default function MobileTopBar({ title, back = true, backHref, action }: P
         display: 'grid', placeItems: 'center',
         color: 'var(--color-clay-text-soft)',
       }}>
-        {action ?? <MoreHorizontal size={18} />}
+        {action ?? null}
       </div>
     </div>
   )
