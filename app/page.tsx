@@ -192,7 +192,7 @@ export default function HomePage() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+                onKeyDown={(e) => { if (e.nativeEvent.isComposing) return; if (e.key === 'Enter') handleSubmit() }}
                 onFocus={() => setShowHistory(true)}
                 placeholder="例如：我家狗狗一直抓癢、掉毛⋯"
                 style={{
